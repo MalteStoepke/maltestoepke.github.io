@@ -42,7 +42,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>3D Art Portfolio</title>
+  <title>Malte Stoepke's 3D Art Portfolio</title>
   <link rel="stylesheet" href="https://unpkg.com/98.css">
   <style>
     body {
@@ -106,9 +106,65 @@
     }
     .start-button {
       margin-right: 10px;
+      cursor: pointer;
+    }
+    .start-menu {
+      display: none;
+      position: absolute;
+      bottom: 32px;
+      left: 2px;
+      width: 200px;
+      background: silver;
+      border: 2px outset white;
+    }
+    .start-menu.active {
+      display: block;
+    }
+    .start-menu ul {
+      list-style: none;
+      padding: 5px;
+      margin: 0;
+    }
+    .start-menu li {
+      padding: 5px;
+      cursor: pointer;
+    }
+    .start-menu li:hover {
+      background: navy;
+      color: white;
+    }
+    .start-menu .submenu {
+      display: none;
+      position: absolute;
+      left: 100%;
+      top: 0;
+      background: silver;
+      border: 2px outset white;
+      width: 200px;
+    }
+    .start-menu li:hover .submenu {
+      display: block;
     }
     .portfolio-content {
       padding: 10px;
+    }
+    .clippy {
+      position: fixed;
+      bottom: 40px;
+      right: 20px;
+      background: white;
+      border: 2px outset silver;
+      padding: 10px;
+      max-width: 200px;
+      display: none;
+    }
+    .clippy.active {
+      display: block;
+    }
+    .clippy img {
+      width: 50px;
+      float: left;
+      margin-right: 10px;
     }
   </style>
 </head>
@@ -118,51 +174,150 @@
       <img src="https://win98icons.alexmeub.com/icons/png/folder_closed-4.png" alt="Portfolio Folder">
       <p>My 3D Art</p>
     </div>
+    <div class="icon" onclick="openWindow('artwork1-window')">
+      <img src="https://win98icons.alexmeub.com/icons/png/paint_file-4.png" alt="Artwork 1">
+      <p>Sci-Fi Character</p>
+    </div>
+    <div class="icon" onclick="openWindow('artwork2-window')">
+      <img src="https://win98icons.alexmeub.com/icons/png/paint_file-4.png" alt="Artwork 2">
+      <p>Fantasy Landscape</p>
+    </div>
     <div class="icon" onclick="openWindow('about-window')">
       <img src="https://win98icons.alexmeub.com/icons/png/notepad_file-0.png" alt="About File">
       <p>About Me</p>
     </div>
+    <div class="icon" onclick="openWindow('recycle-window')">
+      <img src="https://win98icons.alexmeub.com/icons/png/recycle_bin_empty-4.png" alt="Recycle Bin">
+      <p>Recycle Bin</p>
+    </div>
   </div>
   <div class="window" id="portfolio-window">
     <div class="title-bar">
-      <div class="title-bar-text">3D Art Portfolio</div>
+      <div class="title-bar-text">Malte Stoepke's 3D Art Portfolio</div>
       <div class="title-bar-controls">
         <button aria-label="Close" onclick="closeWindow('portfolio-window')"></button>
       </div>
     </div>
     <div class="window-body portfolio-content">
       <h2>My 3D Artworks</h2>
-      <!-- Replace these with your actual image URLs -->
-      <img src="https://via.placeholder.com/300x200?text=3D+Art+1" alt="3D Art 1">
-      <p>Artwork 1 Description: A futuristic cityscape created in Blender.</p>
-      <img src="https://via.placeholder.com/300x200?text=3D+Art+2" alt="3D Art 2">
-      <p>Artwork 2 Description: A character model designed for a sci-fi game.</p>
+      <!-- Placeholder images and text from ArtStation -->
+      <img src="https://via.placeholder.com/300x200?text=Sci-Fi+Character" alt="Sci-Fi Character">
+      <p>Title: Sci-Fi Character - Description: A futuristic warrior modeled in Blender, designed for a sci-fi game.</p>
+      <img src="https://via.placeholder.com/300x200?text=Fantasy+Landscape" alt="Fantasy Landscape">
+      <p>Title: Fantasy Landscape - Description: A magical forest environment created in Maya.</p>
+      <!-- Add more artworks from ArtStation by copying img and p tags -->
+    </div>
+  </div>
+  <div class="window" id="artwork1-window">
+    <div class="title-bar">
+      <div class="title-bar-text">Sci-Fi Character</div>
+      <div class="title-bar-controls">
+        <button aria-label="Close" onclick="closeWindow('artwork1-window')"></button>
+      </div>
+    </div>
+    <div class="window-body portfolio-content">
+      <h2>Sci-Fi Character</h2>
+      <img src="https://via.placeholder.com/300x200?text=Sci-Fi+Character" alt="Sci-Fi Character">
+      <p>Description: A futuristic warrior modeled in Blender, designed for a sci-fi game.</p>
+    </div>
+  </div>
+  <div class="window" id="artwork2-window">
+    <div class="title-bar">
+      <div class="title-bar-text">Fantasy Landscape</div>
+      <div class="title-bar-controls">
+        <button aria-label="Close" onclick="closeWindow('artwork2-window')"></button>
+      </div>
+    </div>
+    <div class="window-body portfolio-content">
+      <h2>Fantasy Landscape</h2>
+      <img src="https://via.placeholder.com/300x200?text=Fantasy+Landscape" alt="Fantasy Landscape">
+      <p>Description: A magical forest environment created in Maya.</p>
     </div>
   </div>
   <div class="window" id="about-window">
     <div class="title-bar">
-      <div class="title-bar-text">About Me</div>
+      <div class="title-bar-text">About Malte Stoepke</div>
       <div class="title-bar-controls">
         <button aria-label="Close" onclick="closeWindow('about-window')"></button>
       </div>
     </div>
     <div class="window-body portfolio-content">
       <h2>About the Artist</h2>
-      <p>Hi, I'm [Your Name]! I'm a passionate 3D artist specializing in creating immersive digital worlds. I use tools like Blender and Maya to bring my ideas to life.</p>
-      <p>Contact: [your.email@example.com]</p>
-      <p>Social: [Your social media links]</p>
+      <p>Hi, I'm Malte Stoepke! I'm a passionate 3D artist specializing in character modeling and environment design using Blender and Maya.</p>
+      <p>Contact: malte.stoepke@example.com</p>
+      <p>Social: <a href="https://www.artstation.com/malte_stoepke">ArtStation</a> | <a href="#">Twitter</a></p>
+    </div>
+  </div>
+  <div class="window" id="recycle-window">
+    <div class="title-bar">
+      <div class="title-bar-text">Recycle Bin</div>
+      <div class="title-bar-controls">
+        <button aria-label="Close" onclick="closeWindow('recycle-window')"></button>
+      </div>
+    </div>
+    <div class="window-body portfolio-content">
+      <h2>Easter Egg: Recycle Bin</h2>
+      <p>Oops, looks like some polygons got trashed! Try my portfolio instead. 😄</p>
+    </div>
+  </div>
+  <div class="window" id="paint-window">
+    <div class="title-bar">
+      <div class="title-bar-text">Paint (Easter Egg)</div>
+      <div class="title-bar-controls">
+        <button aria-label="Close" onclick="closeWindow('paint-window')"></button>
+      </div>
+    </div>
+    <div class="window-body portfolio-content">
+      <h2>MS Paint</h2>
+      <p>Welcome to my retro Paint app! Just kidding—this is an Easter egg. Check out my 3D art instead!</p>
     </div>
   </div>
   <div class="taskbar">
-    <button class="start-button">Start</button>
+    <button class="start-button" onclick="toggleStartMenu()">Start</button>
+  </div>
+  <div class="start-menu" id="start-menu">
+    <ul>
+      <li>Portfolio
+        <ul class="submenu">
+          <li onclick="openWindow('portfolio-window')">View All Artworks</li>
+          <li onclick="openWindow('artwork1-window')">Sci-Fi Character</li>
+          <li onclick="openWindow('artwork2-window')">Fantasy Landscape</li>
+        </ul>
+      </li>
+      <li onclick="openWindow('about-window')">About Me</li>
+      <li>Contact
+        <ul class="submenu">
+          <li><a href="mailto:malte.stoepke@example.com">Email Me</a></li>
+          <li><a href="https://www.artstation.com/malte_stoepke" target="_blank">ArtStation</a></li>
+        </ul>
+      </li>
+      <li onclick="openWindow('paint-window')">Paint (Easter Egg)</li>
+      <li onclick="alert('Windows 95 Portfolio OS\nVersion 1.0\nCreated by Malte Stoepke')">About Portfolio OS</li>
+    </ul>
+  </div>
+  <div class="clippy" id="clippy">
+    <img src="https://win98icons.alexmeub.com/icons/png/clippy.png" alt="Clippy">
+    <p>Welcome to Malte Stoepke's 3D Art Portfolio! Navigate this site like a Windows 95 desktop: click icons to view my art or use the Start menu to explore.</p>
+    <button onclick="closeClippy()">OK</button>
   </div>
   <script>
+    // Show Clippy on page load
+    window.onload = function() {
+      document.getElementById('clippy').classList.add('active');
+    };
     function openWindow(windowId) {
       document.querySelectorAll('.window').forEach(window => window.classList.remove('active'));
       document.getElementById(windowId).classList.add('active');
+      document.getElementById('start-menu').classList.remove('active');
     }
     function closeWindow(windowId) {
       document.getElementById(windowId).classList.remove('active');
+    }
+    function toggleStartMenu() {
+      document.getElementById('start-menu').classList.toggle('active');
+    }
+    function closeClippy() {
+      document.getElementById('clippy').classList.remove('active');
     }
   </script>
 </body>
