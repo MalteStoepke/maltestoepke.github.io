@@ -22,18 +22,27 @@ function initPaint() {
     function draw(e) {
         if (!painting) return;
 
+        // Prevent default to avoid issues with touch/pointer events
+        e.preventDefault();
+
         const rect = canvas.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
 
         ctx.lineWidth = 5;
         ctx.lineCap = 'round';
-        ctx.strokeStyle = currentColor;
+        ctx.strokeStyle = currentColor; // Ensure currentColor is used
         ctx.lineTo(x, y);
         ctx.stroke();
         ctx.beginPath();
         ctx.moveTo(x, y);
     }
+
+    // Remove any existing listeners to prevent duplicates
+    canvas.removeEventListener('mousedown', startPosition);
+    canvas.removeEventListener('mouseup', endPosition);
+    canvas.removeEventListener('mousemove', draw);
+    canvas.removeEventListener('mouseleave', endPosition);
 
     // Set up mouse event listeners
     canvas.addEventListener('mousedown', startPosition);
@@ -44,6 +53,7 @@ function initPaint() {
     // Color selection
     window.setColor = function(color) {
         currentColor = color;
+        ctx.strokeStyle = color; // Update context immediately
     };
 
     // Save as PNG
