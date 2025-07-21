@@ -6,6 +6,7 @@
     <title>Malte Stoepke's Portfolio OS</title>
     <link rel="stylesheet" href="https://unpkg.com/98.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="https://gitcdn.xyz/repo/pi0/clippyjs/master/assets/clippy.css">
     <style>
         * {
             margin: 0;
@@ -15,7 +16,7 @@
         }
 
         body {
-            background: #008080 url('https://i.imgur.com/rA9aA2x.png') no-repeat center center fixed;
+            background: #008080 url('https://static.wikitide.net/windowswallpaperwiki/2/24/Clouds_%28Windows_95%29.png') no-repeat center center fixed;
             background-size: cover;
             height: 100vh;
             overflow: hidden;
@@ -561,6 +562,48 @@
                 height: 24px;
             }
         }
+
+        @media screen and (max-width: 600px), screen and (orientation: portrait) {
+            .window {
+                width: 100% !important;
+                height: calc(100vh - 40px) !important;
+                top: 0 !important;
+                left: 0 !important;
+                position: fixed;
+                resize: none;
+            }
+
+            .desktop {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: flex-start;
+                align-content: flex-start;
+            }
+
+            .icon {
+                position: relative;
+                margin: 10px;
+                width: 80px;
+            }
+
+            .taskbar {
+                height: 40px;
+            }
+
+            .start-button {
+                height: 36px;
+            }
+
+            .start-menu {
+                width: 100%;
+                bottom: 40px;
+                left: 0;
+            }
+
+            .taskbar-time {
+                min-width: 120px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -575,12 +618,13 @@
         <img src="https://win98icons.alexmeub.com/icons/png/windows-0.png" alt="Windows 95" width="48" height="48">
         <h2>Portfolio OS</h2>
         <p>Starting...</p>
+        <p>Made by Malte Stoepke</p>
         <div class="loading-bar">
             <div class="loading-progress" id="loading-progress"></div>
         </div>
     </div>
 
-    <div id="login-screen">
+    <div id="login-screen" style="display: none;">
         <div class="login-box">
             <div class="login-title">Portfolio OS Login</div>
             <img src="https://win98icons.alexmeub.com/icons/png/keys-4.png" alt="Keys" width="48" height="48" style="margin-bottom: 10px;">
@@ -599,7 +643,7 @@
         </div>
     </div>
     
-    <div class="desktop" id="desktop">
+    <div class="desktop" id="desktop" style="display: none;">
         <div class="icon" data-id="my-computer" style="left: 20px; top: 20px;" ondblclick="openWindow('my-computer-window')">
             <img src="https://win98icons.alexmeub.com/icons/png/computer-4.png" alt="My Computer">
             <p>My Computer</p>
@@ -623,6 +667,10 @@
         <div class="icon" data-id="pixelsweeper" style="left: 20px; top: 420px;" ondblclick="openWindow('pixelsweeper-window')">
             <img src="https://win98icons.alexmeub.com/icons/png/minesweeper-2.png" alt="PixelSweeper">
             <p>PixelSweeper</p>
+        </div>
+        <div class="icon" data-id="recycle" style="left: 20px; top: 500px;" ondblclick="openWindow('recycle-window')">
+            <img src="https://win98icons.alexmeub.com/icons/png/recycle_full-2.png" alt="Recycle Bin">
+            <p>Recycle Bin</p>
         </div>
         <!-- Dynamic icons for artworks will be added here -->
     </div>
@@ -766,6 +814,25 @@
         </div>
     </div>
 
+    <div class="window" id="recycle-window" style="width: 400px; height: 300px;">
+        <div class="title-bar">
+            <div class="title-bar-text">Recycle Bin</div>
+            <div class="title-bar-controls">
+                <button aria-label="Minimize" onclick="minimizeWindow('recycle-window')"></button>
+                <button aria-label="Maximize" onclick="maximizeWindow('recycle-window')"></button>
+                <button aria-label="Close" onclick="closeWindow('recycle-window')"></button>
+            </div>
+        </div>
+        <div class="window-body">
+            <p>Unfinished work:</p>
+            <ul>
+                <li>Project 1: Incomplete 3D model</li>
+                <li>Project 2: Draft blog post</li>
+                <!-- Add more as needed -->
+            </ul>
+        </div>
+    </div>
+
     <div class="window" id="add-artifact-window" style="width: 400px; height: 350px;">
         <div class="title-bar">
             <div class="title-bar-text">Add New Artifact</div>
@@ -806,7 +873,7 @@
         </ul>
     </div>
     
-    <div class="taskbar">
+    <div class="taskbar" style="display: none;">
         <button class="start-button" id="start-button">
             <img src="https://win98icons.alexmeub.com/icons/png/windows-0.png" alt="Start">
             <span>Start</span>
@@ -818,8 +885,9 @@
     
     <div class="start-menu" id="start-menu">
         <ul>
-            <li onclick="openWindow('portfolio-window')"><img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png">My 3D Art</li>
+            <li onclick="openWindow('portfolio-window')"><img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png">All Artifacts</li>
             <li onclick="openWindow('ie-window')"><img src="https://win98icons.alexmeub.com/icons/png/msie2-0.png">Blog</li>
+            <li onclick="openWindow('about-window')"><img src="https://win98icons.alexmeub.com/icons/png/notepad_file-1.png">About Me</li>
             <li id="add-artifact-menu" onclick="openWindow('add-artifact-window')" style="display: none;"><img src="https://win98icons.alexmeub.com/icons/png/paint_file-0.png">Add New Artifact</li>
             <li class="start-menu-separator"></li>
             <li onclick="openWindow('paint-window')"><img src="https://win98icons.alexmeub.com/icons/png/paint-0.png">Paint</li>
@@ -833,6 +901,8 @@
         <i class="fas fa-volume-up" id="sound-icon"></i>
     </div>
     
+    <script src="https://unpkg.com/jquery@3.2.1"></script>
+    <script src="https://unpkg.com/clippyjs@latest"></script>
     <script>
     // --- State & Config ---
     let db;
@@ -847,6 +917,7 @@
 
     // --- DOM Elements ---
     const desktop = document.getElementById('desktop');
+    const taskbar = document.querySelector('.taskbar');
     const taskbarApps = document.getElementById('taskbar-apps');
     const startMenu = document.getElementById('start-menu');
     const loginScreen = document.getElementById('login-screen');
@@ -854,38 +925,60 @@
     const contextMenu = document.getElementById('context-menu');
     
     // --- Initialization ---
-    window.onload = () => {
+    document.addEventListener('DOMContentLoaded', () => {
         // Simulate loading progress
         let progress = 0;
         const interval = setInterval(() => {
             progress += 20;
             document.getElementById('loading-progress').style.width = progress + '%';
+            
             if (progress >= 100) {
                 clearInterval(interval);
                 setTimeout(() => {
                     loadingScreen.style.display = 'none';
                     document.getElementById('startup-sound').play().catch(e => console.log("Audio autoplay blocked."));
+                    
+                    // Initialize the OS after loading screen disappears
+                    initOS();
                 }, 500);
             }
         }, 200);
+    });
+
+    function initOS() {
+        // Auto login as guest
+        guestLogin();
         
+        // Initialize components
         initDB();
         updateClock();
-        setInterval(updateClock, 1000);
         setupEventListeners();
         initPaint();
-    };
+        startMinesweeper(8, 8, 10);
+    }
 
     function initDB() {
         const request = indexedDB.open('PortfolioOSDB', 1);
 
-        request.onerror = (event) => console.error("Database error: ", event.target.errorCode);
+        request.onerror = (event) => {
+            console.error("Database error: ", event.target.errorCode);
+            // Proceed even if DB fails
+            guestLogin();
+        };
+        
         request.onsuccess = (event) => {
             db = event.target.result;
             console.log("Database opened successfully.");
             loadArtworks();
             loadBlogPosts();
+            // Load Clippy after DB is ready
+            clippy.load('Clippy', function(agent) {
+                window.clippyAgent = agent;
+                agent.show();
+                agent.speak('Hi! I\'m Clippy. Welcome to Malte Stoepke\'s Portfolio OS. This is a Windows 95 styled website showcasing my 3D art. Double-click on icons to explore!');
+            });
         };
+        
         request.onupgradeneeded = (event) => {
             let db = event.target.result;
             const artworkStore = db.createObjectStore('artworks', { keyPath: 'id', autoIncrement: true });
@@ -893,6 +986,14 @@
             
             const postStore = db.createObjectStore('blogPosts', { keyPath: 'id', autoIncrement: true });
             postStore.createIndex('date', 'date', { unique: false });
+            
+            // Add sample blog post
+            const samplePost = { 
+                title: "Welcome to my Portfolio OS!", 
+                content: "This is my interactive portfolio in Windows 95 style. Feel free to explore my artworks and blog posts.",
+                date: new Date().toISOString()
+            };
+            postStore.add(samplePost);
         };
     }
     
@@ -955,6 +1056,9 @@
             loginScreen.style.display = 'none';
             updateUIAfterLogin();
             playSound('start-sound');
+            if (window.clippyAgent) {
+                window.clippyAgent.speak('Logged in as admin. You can now edit and add content.');
+            }
         } else {
             playSound('error-sound');
             alert("Incorrect username or password.");
@@ -978,6 +1082,10 @@
     }
     
     function updateUIAfterLogin() {
+        // Show desktop and taskbar
+        desktop.style.display = 'block';
+        taskbar.style.display = 'flex';
+        
         document.getElementById('taskbar-user').textContent = currentUser;
         const addArtifactMenu = document.getElementById('add-artifact-menu');
         
@@ -1013,9 +1121,7 @@
     
     // --- Clock ---
     function updateClock() {
-        const now = new Date();
-        const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        document.getElementById('taskbar-time').textContent = timeString;
+        document.getElementById('taskbar-time').textContent = 'Last Update: 07/21/2025';
     }
     
     // --- Window Management ---
@@ -1033,6 +1139,48 @@
         openWindows[winId] = { minimized: false };
         updateTaskbar();
         startMenu.classList.remove('active');
+
+        // Clippy explanation
+        if (window.clippyAgent) {
+            let explanation = '';
+            switch (winId) {
+                case 'my-computer-window':
+                    explanation = 'This is My Computer. It contains access to my portfolio.';
+                    break;
+                case 'portfolio-window':
+                    explanation = 'Here is my 3D Art gallery. Click on items to view details.';
+                    break;
+                case 'ie-window':
+                    explanation = 'This is my personal blog, styled as Internet Explorer.';
+                    break;
+                case 'about-window':
+                    explanation = 'Read about me in this Notepad file.';
+                    break;
+                case 'paint-window':
+                    explanation = 'Use Paint to create your own artwork and save it to the desktop.';
+                    break;
+                case 'pixelsweeper-window':
+                    explanation = 'Play PixelSweeper, a Minesweeper clone.';
+                    break;
+                case 'add-artifact-window':
+                    explanation = 'Add a new artwork to your portfolio here.';
+                    break;
+                case 'add-post-window':
+                    explanation = 'Write and publish a new blog post.';
+                    break;
+                case 'recycle-window':
+                    explanation = 'This is the Recycle Bin, containing unfinished work.';
+                    break;
+                default:
+                    if (winId.startsWith('artwork-window-')) {
+                        explanation = 'Viewing a specific artwork. You can edit the description if logged in.';
+                    }
+                    break;
+            }
+            if (explanation) {
+                window.clippyAgent.speak(explanation);
+            }
+        }
     }
     
     function closeWindow(winId) {
@@ -1663,11 +1811,11 @@
         playSound('click-sound');
     }
     
-    // Initialize PixelSweeper on page load
-    window.onload = () => {
-        // ... existing initialization code ...
-        startMinesweeper(8, 8, 10);
-    };
+    // TODO: Integrate ArtStation API for automatic upload of artifacts
+    // Example: Fetch from https://www.artstation.com/users/malte_stoepke/projects.json and add to DB
+
+    // TODO: Integrate Twitch API for channel/live info
+    // Example: Fetch from https://api.twitch.tv/helix/search/channels?query=channelname
     
     </script>
 </body>
