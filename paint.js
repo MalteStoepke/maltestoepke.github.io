@@ -1,109 +1,53 @@
-
 function initPaint() {
     const canvas = document.getElementById('paint-canvas');
     const ctx = canvas.getContext('2d');
     let painting = false;
     let currentTool = 'brush';
     let currentColor = 'black';
-    let currentLayer = 0;
-    let layers = [{ canvas: canvas, ctx: ctx }]; // Initial layer
-    let layerCanvases = [canvas]; // Store canvas elements for layers
+    let currentLayer = 0; // 0 = background, 1 = foreground
+    const layers = [
+        { canvas: canvas, ctx: ctx }, // Background layer
+        { canvas: document.createElement('canvas'), ctx: null } // Foreground layer
+    ];
 
-    // Layer management
-    const maxLayers = 5;
-    let layerContainer = null;
+    // Initialize canvases
+    layers[1].canvas.width = canvas.width;
+    layers[1].canvas.height = canvas.height;
+    layers[1].canvas.className = 'paint-canvas';
+    layers[1].canvas.style.position = 'absolute';
+    layers[1].canvas.style.left = canvas.offsetLeft + 'px';
+    layers[1].canvas.style.top = canvas.offsetTop + 'px';
+    canvas.parentNode.appendChild(layers[1].canvas);
+    layers[1].ctx = layers[1].canvas.getContext('2d');
+    layers[1].ctx.fillStyle = 'transparent';
+    layers[1].ctx.fillRect(0, 0, layers[1].canvas.width, layers[1].canvas.height);
 
-    // Initialize canvas
+    // Clear background canvas
     ctx.fillStyle = 'white';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Create layer controls
-    function createLayerControls() {
+    // Create simple layer toggle
+    function createLayerToggle() {
         const toolsDiv = document.querySelector('.paint-tools');
-        layerContainer = document.createElement('div');
-        layerContainer.className = 'layer-controls';
-        layerContainer.style.marginLeft = '10px';
-        layerContainer.innerHTML = `
-            <select id="layer-select" onchange="switchLayer(this.value)">
-                <option value="0">Layer 1</option>
-            </select>
-            <button onclick="addLayer()">Add Layer</button>
-            <button onclick="deleteLayer()">Delete Layer</button>
-            <button onclick="mergeLayers()">Merge Down</button>
+        const toggle = document.createElement('select');
+        toggle.id = 'layer-toggle';
+        toggle.innerHTML = `
+            <option value="0">Background Layer</option>
+            <option value="1">Foreground Layer</option>
         `;
-        toolsDiv.appendChild(layerContainer);
-    }
-
-    function addLayer() {
-        if (layers.length >= maxLayers) {
-            alert('Maximum layer limit reached!');
-            playSound('error-sound');
-            return;
-        }
-        const newCanvas = document.createElement('canvas');
-        newCanvas.width = canvas.width;
-        newCanvas.height = canvas.height;
-        newCanvas.className = 'paint-canvas';
-        newCanvas.style.position = 'absolute';
-        newCanvas.style.left = canvas.offsetLeft + 'px';
-        newCanvas.style.top = canvas.offsetTop + 'px';
-        canvas.parentNode.appendChild(newCanvas);
-        const newCtx = newCanvas.getContext('2d');
-        newCtx.fillStyle = 'transparent';
-        newCtx.fillRect(0, 0, newCanvas.width, newCanvas.height);
-        layers.push({ canvas: newCanvas, ctx: newCtx });
-        layerCanvases.push(newCanvas);
-        currentLayer = layers.length - 1;
-        updateLayerSelect();
-        setupCanvasListeners(newCanvas);
-        switchLayer(currentLayer);
-    }
-
-    function deleteLayer() {
-        if (layers.length <= 1) {
-            alert('Cannot delete the last layer!');
-            playSound('error-sound');
-            return;
-        }
-        layers[currentLayer].canvas.remove();
-        layers.splice(currentLayer, 1);
-        layerCanvases.splice(currentLayer, 1);
-        currentLayer = Math.min(currentLayer, layers.length - 1);
-        updateLayerSelect();
-        switchLayer(currentLayer);
-    }
-
-    function mergeLayers() {
-        if (currentLayer === 0) {
-            alert('Cannot merge the bottom layer!');
-            playSound('error-sound');
-            return;
-        }
-        const lowerCtx = layers[currentLayer - 1].ctx;
-        lowerCtx.drawImage(layers[currentLayer].canvas, 0, 0);
-        deleteLayer();
-    }
-
-    function updateLayerSelect() {
-        const select = document.getElementById('layer-select');
-        select.innerHTML = '';
-        layers.forEach((_, i) => {
-            const option = document.createElement('option');
-            option.value = i;
-            option.text = `Layer ${i + 1}`;
-            select.appendChild(option);
-        });
-        select.value = currentLayer;
+        toggle.onchange = () => switchLayer(toggle.value);
+        toggle.style.marginLeft = '10px';
+        toggle.style.padding = '2px';
+        toggle.style.fontSize = '12px';
+        toolsDiv.appendChild(toggle);
     }
 
     function switchLayer(layerIndex) {
         currentLayer = parseInt(layerIndex);
-        ctx = layers[currentLayer].ctx;
-        canvas = layers[currentLayer].canvas;
-        layerCanvases.forEach((c, i) => {
-            c.style.zIndex = i === currentLayer ? 2 : 1;
-            c.style.opacity = i === currentLayer ? 1 : 0.7;
-        });
+        layers[0].canvas.style.zIndex = currentLayer === 0 ? 2 : 1;
+        layers[1].canvas.style.zIndex = currentLayer === 1 ? 2 : 1;
+        layers[0].canvas.style.opacity = currentLayer === 0 ? 1 : 0.8;
+        layers[1].canvas.style.opacity = currentLayer === 1 ? 1 : 0.8;
     }
 
     // Drawing logic with pressure sensitivity
@@ -114,17 +58,18 @@ function initPaint() {
 
     function endPosition() {
         painting = false;
-        ctx.beginPath();
+        layers[currentLayer].ctx.beginPath();
     }
 
     function draw(e) {
         if (!painting) return;
 
-        const rect = canvas.getBoundingClientRect();
+        const rect = layers[currentLayer].canvas.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
         const pressure = e.pressure || 1; // Fallback to 1 if pressure not supported
 
+        const ctx = layers[currentLayer].ctx;
         ctx.lineCap = 'round';
         ctx.lineWidth = 5 * pressure; // Adjust line width based on pressure
 
@@ -150,8 +95,9 @@ function initPaint() {
         targetCanvas.addEventListener('pointerleave', endPosition);
     }
 
-    // Initialize listeners for the base canvas
-    setupCanvasListeners(canvas);
+    // Initialize listeners for both canvases
+    setupCanvasListeners(layers[0].canvas);
+    setupCanvasListeners(layers[1].canvas);
 
     // Tool and color controls
     window.setTool = function(tool) {
@@ -167,22 +113,22 @@ function initPaint() {
     };
 
     window.clearCanvas = function() {
-        ctx.fillStyle = 'white';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        const ctx = layers[currentLayer].ctx;
+        ctx.fillStyle = currentLayer === 0 ? 'white' : 'transparent';
+        ctx.fillRect(0, 0, layers[currentLayer].canvas.width, layers[currentLayer].canvas.height);
     };
 
     // Save artwork to portfolio and download as PNG
     window.saveArtwork = function() {
-        // Merge all layers into a single canvas for saving
+        // Merge layers into a temporary canvas
         const tempCanvas = document.createElement('canvas');
         tempCanvas.width = canvas.width;
         tempCanvas.height = canvas.height;
         const tempCtx = tempCanvas.getContext('2d');
         tempCtx.fillStyle = 'white';
         tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-        layers.forEach(layer => {
-            tempCtx.drawImage(layer.canvas, 0, 0);
-        });
+        tempCtx.drawImage(layers[0].canvas, 0, 0);
+        tempCtx.drawImage(layers[1].canvas, 0, 0);
 
         // Save to portfolio
         const title = prompt('Enter a title for your artwork:');
@@ -213,6 +159,6 @@ function initPaint() {
         link.click();
     };
 
-    // Initialize layer controls
-    createLayerControls();
+    // Initialize layer toggle
+    createLayerToggle();
 }
