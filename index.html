@@ -1,43 +1,4 @@
-<script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-          return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
-
-                // Convert sheet to JSON to filter blank rows
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row => row.some(filledCell));
-
-                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
-                var headerRowIndex = filteredData.findIndex((row, index) =>
-                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                );
-                // Fallback
-                if (headerRowIndex === -1 || headerRowIndex > 25) {
-                  headerRowIndex = 0;
-                }
-
-                // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
-        </script><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -83,6 +44,7 @@
       width: 80%;
       max-height: 80%;
       overflow: auto;
+      cursor: move;
     }
     .window.active {
       display: block;
@@ -90,6 +52,12 @@
     .window img {
       max-width: 100%;
       height: auto;
+      display: block;
+      margin: 10px auto;
+    }
+    .window iframe {
+      max-width: 100%;
+      height: 400px;
       display: block;
       margin: 10px auto;
     }
@@ -103,10 +71,16 @@
       display: flex;
       align-items: center;
       padding: 0 5px;
+      justify-content: space-between;
     }
     .start-button {
       margin-right: 10px;
       cursor: pointer;
+    }
+    .taskbar-time {
+      font-size: 12px;
+      padding: 2px 5px;
+      border: 2px inset silver;
     }
     .start-menu {
       display: none;
@@ -150,21 +124,31 @@
     }
     .clippy {
       position: fixed;
-      bottom: 40px;
+      bottom: 100px;
       right: 20px;
       background: white;
       border: 2px outset silver;
-      padding: 10px;
-      max-width: 200px;
+      padding: 15px;
+      max-width: 300px;
       display: none;
+      z-index: 1000;
+      box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.5);
     }
     .clippy.active {
       display: block;
     }
     .clippy img {
-      width: 50px;
+      width: 80px;
       float: left;
-      margin-right: 10px;
+      margin-right: 15px;
+    }
+    .clippy p {
+      margin: 0 0 10px 0;
+      font-size: 14px;
+    }
+    .clippy button {
+      display: block;
+      margin: 0 auto;
     }
   </style>
 </head>
@@ -192,7 +176,7 @@
     </div>
   </div>
   <div class="window" id="portfolio-window">
-    <div class="title-bar">
+    <div class="title-bar" onmousedown="startDrag(event, 'portfolio-window')">
       <div class="title-bar-text">Malte Stoepke's 3D Art Portfolio</div>
       <div class="title-bar-controls">
         <button aria-label="Close" onclick="closeWindow('portfolio-window')"></button>
@@ -200,16 +184,15 @@
     </div>
     <div class="window-body portfolio-content">
       <h2>My 3D Artworks</h2>
-      <!-- Placeholder images and text from ArtStation -->
+      <!-- Replace with your ArtStation images and descriptions -->
       <img src="https://via.placeholder.com/300x200?text=Sci-Fi+Character" alt="Sci-Fi Character">
-      <p>Title: Sci-Fi Character - Description: A futuristic warrior modeled in Blender, designed for a sci-fi game.</p>
+      <p>Title: Sci-Fi Character - Description: A futuristic warrior modeled in Blender.</p>
       <img src="https://via.placeholder.com/300x200?text=Fantasy+Landscape" alt="Fantasy Landscape">
       <p>Title: Fantasy Landscape - Description: A magical forest environment created in Maya.</p>
-      <!-- Add more artworks from ArtStation by copying img and p tags -->
     </div>
   </div>
   <div class="window" id="artwork1-window">
-    <div class="title-bar">
+    <div class="title-bar" onmousedown="startDrag(event, 'artwork1-window')">
       <div class="title-bar-text">Sci-Fi Character</div>
       <div class="title-bar-controls">
         <button aria-label="Close" onclick="closeWindow('artwork1-window')"></button>
@@ -222,7 +205,7 @@
     </div>
   </div>
   <div class="window" id="artwork2-window">
-    <div class="title-bar">
+    <div class="title-bar" onmousedown="startDrag(event, 'artwork2-window')">
       <div class="title-bar-text">Fantasy Landscape</div>
       <div class="title-bar-controls">
         <button aria-label="Close" onclick="closeWindow('artwork2-window')"></button>
@@ -235,7 +218,7 @@
     </div>
   </div>
   <div class="window" id="about-window">
-    <div class="title-bar">
+    <div class="title-bar" onmousedown="startDrag(event, 'about-window')">
       <div class="title-bar-text">About Malte Stoepke</div>
       <div class="title-bar-controls">
         <button aria-label="Close" onclick="closeWindow('about-window')"></button>
@@ -249,7 +232,7 @@
     </div>
   </div>
   <div class="window" id="recycle-window">
-    <div class="title-bar">
+    <div class="title-bar" onmousedown="startDrag(event, 'recycle-window')">
       <div class="title-bar-text">Recycle Bin</div>
       <div class="title-bar-controls">
         <button aria-label="Close" onclick="closeWindow('recycle-window')"></button>
@@ -261,7 +244,7 @@
     </div>
   </div>
   <div class="window" id="paint-window">
-    <div class="title-bar">
+    <div class="title-bar" onmousedown="startDrag(event, 'paint-window')">
       <div class="title-bar-text">Paint (Easter Egg)</div>
       <div class="title-bar-controls">
         <button aria-label="Close" onclick="closeWindow('paint-window')"></button>
@@ -274,6 +257,7 @@
   </div>
   <div class="taskbar">
     <button class="start-button" onclick="toggleStartMenu()">Start</button>
+    <div class="taskbar-time">Last updated: July 21, 2025</div>
   </div>
   <div class="start-menu" id="start-menu">
     <ul>
@@ -296,8 +280,8 @@
     </ul>
   </div>
   <div class="clippy" id="clippy">
-    <img src="https://win98icons.alexmeub.com/icons/png/clippy.png" alt="Clippy">
-    <p>Welcome to Malte Stoepke's 3D Art Portfolio! Navigate this site like a Windows 95 desktop: click icons to view my art or use the Start menu to explore.</p>
+    <img src="https://raw.githubusercontent.com/saberland/saberland.github.io/master/images/clippy.png" alt="Clippy">
+    <p>Welcome to Malte Stoepke's 3D Art Portfolio! Navigate this site like a Windows 95 desktop: click icons to view my art, drag windows to move them, or use the Start menu to explore.</p>
     <button onclick="closeClippy()">OK</button>
   </div>
   <script>
@@ -306,7 +290,6 @@
       document.getElementById('clippy').classList.add('active');
     };
     function openWindow(windowId) {
-      document.querySelectorAll('.window').forEach(window => window.classList.remove('active'));
       document.getElementById(windowId).classList.add('active');
       document.getElementById('start-menu').classList.remove('active');
     }
@@ -318,6 +301,27 @@
     }
     function closeClippy() {
       document.getElementById('clippy').classList.remove('active');
+    }
+    // Drag functionality for windows
+    let currentWindow = null;
+    let offsetX, offsetY;
+    function startDrag(e, windowId) {
+      currentWindow = document.getElementById(windowId);
+      offsetX = e.clientX - parseInt(currentWindow.style.left || 0);
+      offsetY = e.clientY - parseInt(currentWindow.style.top || 0);
+      document.addEventListener('mousemove', dragWindow);
+      document.addEventListener('mouseup', stopDrag);
+    }
+    function dragWindow(e) {
+      if (currentWindow) {
+        currentWindow.style.left = (e.clientX - offsetX) + 'px';
+        currentWindow.style.top = (e.clientY - offsetY) + 'px';
+      }
+    }
+    function stopDrag() {
+      currentWindow = null;
+      document.removeEventListener('mousemove', dragWindow);
+      document.removeEventListener('mouseup', stopDrag);
     }
   </script>
 </body>
