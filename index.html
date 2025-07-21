@@ -3,51 +3,80 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Malte Stoepke's 3D Art Portfolio</title>
+  <title>Malte Stoepke's Portfolio OS</title>
   <link rel="stylesheet" href="https://unpkg.com/98.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    body {
-      background: teal;
-      font-family: "Windows95", sans-serif;
+    * {
       margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "MS Sans Serif", Arial, sans-serif;
+    }
+    
+    body {
+      background: #008080;
       height: 100vh;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
+      position: relative;
     }
+    
     .desktop {
       flex-grow: 1;
-      padding: 20px;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-      gap: 10px;
+      padding: 10px;
+      position: relative;
+      z-index: 1;
     }
+    
     .icon {
+      position: absolute;
       text-align: center;
       cursor: pointer;
+      padding: 8px;
+      width: 80px;
+      border: 1px solid transparent;
+      user-select: none;
     }
+    
+    .icon.draggable:hover {
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px dotted white;
+    }
+    
     .icon img {
-      width: 48px;
-      height: 48px;
+      width: 32px;
+      height: 32px;
+      object-fit: contain;
     }
+    
     .icon p {
       color: white;
       text-shadow: 1px 1px black;
       margin: 5px 0 0;
-      font-size: 12px;
+      font-size: 11px;
+      background: #008080;
+      padding: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
+    
     .window {
       display: none;
       position: absolute;
       top: 10%;
       left: 10%;
-      width: 80%;
+      width: 600px;
       max-height: 80%;
-      overflow: auto;
-      cursor: move;
+      overflow: hidden;
+      cursor: default;
       z-index: 10;
-      box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.3);
+      border: 2px solid #c0c0c0;
+      box-shadow: 2px 2px 0px #000000, -2px -2px 0px #ffffff;
     }
+    
     .window.maximized {
       width: 100% !important;
       height: calc(100% - 30px) !important;
@@ -55,234 +84,406 @@
       left: 0 !important;
       max-height: none;
     }
+    
     .window.active {
       display: block;
     }
-    .window img, .window iframe, .window video {
+    
+    .window-body {
+      padding: 8px;
+      background: #c0c0c0;
+      height: calc(100% - 22px);
+      overflow: auto;
+      font-size: 12px;
+    }
+    
+    .window-body img {
       max-width: 100%;
       height: auto;
       display: block;
-      margin: 10px auto;
+      margin: 8px auto;
+      border: 1px solid black;
     }
-    .window iframe {
-      height: 400px;
+    
+    .editable-field {
+      border: 2px inset #c0c0c0;
+      padding: 4px;
+      margin: 4px 0;
+      background: white;
     }
-    .window video {
-      max-height: 400px;
-      background: black;
-    }
+    
     .taskbar {
       height: 30px;
-      background: silver;
-      border-top: 2px solid white;
-      border-left: 2px solid white;
-      border-right: 2px solid black;
-      border-bottom: 2px solid black;
+      background: #c0c0c0;
+      border-top: 2px solid #ffffff;
+      border-bottom: 2px solid #000000;
       display: flex;
       align-items: center;
-      padding: 0 5px;
-      justify-content: space-between;
+      padding: 0 2px;
       position: relative;
       z-index: 100;
     }
+    
     .start-button {
-      margin-right: 10px;
+      margin-right: 2px;
       cursor: pointer;
       font-weight: bold;
+      padding: 2px 6px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      background: #c0c0c0;
+      border: 2px outset #ffffff;
     }
+    
+    .start-button:hover {
+      border: 2px inset #c0c0c0;
+    }
+    
+    .start-button img {
+      width: 16px;
+      height: 16px;
+      margin-right: 4px;
+    }
+    
     .taskbar-time {
-      font-size: 12px;
-      padding: 2px 5px;
-      border: 2px inset silver;
-      min-width: 140px;
+      font-size: 11px;
+      padding: 2px 4px;
+      border: 2px inset #c0c0c0;
+      background: #c0c0c0;
+      min-width: 80px;
       text-align: center;
     }
+    
+    .taskbar-user {
+      font-size: 11px;
+      padding: 2px 6px;
+      border: 2px inset #c0c0c0;
+      margin: 0 2px;
+      background: #c0c0c0;
+    }
+    
+    .taskbar-apps {
+      display: flex;
+      flex-grow: 1;
+      margin: 0 2px;
+      gap: 2px;
+    }
+    
+    .taskbar-app {
+      padding: 2px 6px;
+      border: 2px outset #ffffff;
+      font-size: 11px;
+      cursor: pointer;
+      max-width: 120px;
+      background: #c0c0c0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    
+    .taskbar-app.active {
+      border: 2px inset #c0c0c0;
+    }
+    
     .start-menu {
       display: none;
       position: absolute;
       bottom: 32px;
-      left: 2px;
-      width: 200px;
-      background: silver;
-      border: 2px outset white;
+      left: 0;
+      width: 180px;
+      background: #c0c0c0;
+      border: 2px outset #ffffff;
       z-index: 1000;
     }
+    
     .start-menu.active {
       display: block;
     }
+    
     .start-menu ul {
       list-style: none;
-      padding: 5px;
+      padding: 4px;
       margin: 0;
     }
+    
     .start-menu li {
-      padding: 5px;
+      padding: 4px 8px;
       cursor: pointer;
-      position: relative;
+      font-size: 12px;
     }
+    
     .start-menu li:hover {
-      background: navy;
+      background: #000080;
       color: white;
     }
-    .start-menu .submenu {
-      display: none;
-      position: absolute;
-      left: 100%;
-      top: 0;
-      background: silver;
-      border: 2px outset white;
-      width: 200px;
-    }
-    .start-menu li:hover .submenu {
-      display: block;
-    }
-    .portfolio-content {
-      padding: 10px;
-    }
-    .clippy {
+    
+    #login-screen {
       position: fixed;
-      bottom: 100px;
-      right: 20px;
-      background: white;
-      border: 2px outset silver;
-      padding: 15px;
-      max-width: 300px;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #008080;
       display: none;
-      z-index: 1001;
-      box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
     }
-    .clippy.active {
+    
+    .login-box {
+      background: #c0c0c0;
+      padding: 16px;
+      border: 2px outset #ffffff;
+      width: 280px;
+      text-align: center;
+    }
+    
+    .login-title {
+      background: #000080;
+      color: white;
+      padding: 4px;
+      margin: -16px -16px 16px -16px;
+      font-weight: bold;
+      font-size: 12px;
+    }
+    
+    .login-field {
+      margin: 12px 0;
+      text-align: left;
+    }
+    
+    .login-field label {
       display: block;
+      margin-bottom: 4px;
+      font-size: 12px;
+      font-weight: bold;
     }
-    .clippy img {
-      width: 80px;
-      float: left;
-      margin-right: 15px;
+    
+    .login-field input {
+      width: 100%;
+      padding: 4px;
+      border: 2px inset #c0c0c0;
+      font-family: "MS Sans Serif", Arial, sans-serif;
+      font-size: 12px;
     }
-    .clippy p {
-      margin: 0 0 10px 0;
-      font-size: 14px;
+    
+    .login-button {
+      background: #c0c0c0;
+      border: 2px outset #ffffff;
+      padding: 4px 12px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 12px;
     }
-    .clippy button {
-      display: block;
-      margin: 0 auto;
+    
+    .login-button:hover {
+      border: 2px inset #c0c0c0;
     }
+    
+    #add-artifact-window .window-body {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .paint-tools {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 8px;
+      background: #c0c0c0;
+      padding: 4px;
+      border: 2px inset #ffffff;
+    }
+    
+    .tool-button {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px outset #ffffff;
+      background: #c0c0c0;
+      cursor: pointer;
+    }
+    
+    .tool-button.active {
+      border: 2px inset #c0c0c0;
+    }
+    
     .paint-canvas {
       border: 1px solid black;
       background: white;
       cursor: crosshair;
+      display: block;
+      margin: 0 auto;
     }
-    .minesweeper-grid {
-      display: grid;
-      grid-template-columns: repeat(8, 30px);
-      gap: 2px;
-      background: silver;
-      padding: 5px;
-      margin: 10px auto;
-      width: fit-content;
-    }
-    .minesweeper-cell {
-      width: 30px;
-      height: 30px;
-      background: silver;
-      border: 2px outset white;
+    
+    .color-picker {
       display: flex;
-      align-items: center;
+      gap: 3px;
+      margin-top: 8px;
+      flex-wrap: wrap;
       justify-content: center;
-      font-size: 14px;
+    }
+    
+    .color-option {
+      width: 16px;
+      height: 16px;
+      border: 1px solid black;
       cursor: pointer;
     }
-    .minesweeper-cell.revealed {
-      border: 1px solid gray;
-      background: #c0c0c0;
-    }
-    .minesweeper-cell.flagged {
-      background: url('https://win98icons.alexmeub.com/icons/png/minesweeper_flag.png') center no-repeat;
-      background-size: 20px;
-    }
-    .minesweeper-cell.mine {
-      background: url('https://win98icons.alexmeub.com/icons/png/minesweeper_mine.png') center no-repeat red;
-      background-size: 20px;
-    }
-    .animated-title {
-      display: inline-block;
-      animation: bounce 4s infinite;
-      color: navy;
-    }
-    .taskbar-apps {
-      display: flex;
-      flex-grow: 1;
-      margin: 0 10px;
+    
+    .minesweeper-board {
+      display: grid;
       gap: 2px;
+      background: #c0c0c0;
+      padding: 8px;
+      border: 2px inset #ffffff;
     }
-    .taskbar-app {
-      padding: 2px 8px;
-      border: 2px outset white;
+    
+    .minesweeper-cell {
+      width: 20px;
+      height: 20px;
+      background: #c0c0c0;
+      border: 2px outset #ffffff;
+      text-align: center;
+      line-height: 20px;
       font-size: 12px;
       cursor: pointer;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 150px;
     }
-    .taskbar-app.active {
-      border: 2px inset silver;
+    
+    .minesweeper-cell.revealed {
+      border: 1px solid #808080;
+      background: #c0c0c0;
     }
-    .artwork-gallery {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 20px;
-      padding: 10px;
+    
+    .minesweeper-cell.mine {
+      background: red;
     }
-    .artwork-item {
-      cursor: pointer;
-      text-align: center;
+    
+    .minesweeper-controls {
+      margin-bottom: 8px;
+      display: flex;
+      gap: 4px;
     }
-    .artwork-item img {
+    
+    #loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
       width: 100%;
-      height: 150px;
-      object-fit: cover;
-      border: 2px outset silver;
+      height: 100%;
+      background: #008080;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 20000;
+      color: white;
+      font-size: 18px;
     }
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
+    
+    .loading-bar {
+      width: 200px;
+      height: 16px;
+      border: 2px inset #ffffff;
+      margin-top: 12px;
+      background: #000080;
+      overflow: hidden;
+    }
+    
+    .loading-progress {
+      height: 100%;
+      width: 0%;
+      background: #c0c0c0;
+      transition: width 0.5s;
+    }
+    
+    .audio-control {
+      position: fixed;
+      top: 4px;
+      right: 4px;
+      z-index: 100;
+      background: #c0c0c0;
+      border: 2px outset #ffffff;
+      padding: 2px 6px;
+      cursor: pointer;
+    }
+    
+    @media (max-width: 768px) {
+      .window {
+        width: 95%;
+        left: 2.5%;
+      }
+      
+      .icon {
+        width: 70px;
+      }
+      
+      .icon img {
+        width: 24px;
+        height: 24px;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="desktop">
-    <div class="icon" onclick="openWindow('portfolio-window')">
-      <img src="https://cdn.iconscout.com/icon/free/png-256/artstation-3521434-2944872.png" alt="ArtStation Portfolio">
-      <p>My 3D Art</p>
-    </div>
-    <div class="icon" onclick="openWindow('artwork1-window')">
-      <img src="https://win98icons.alexmeub.com/icons/png/3d-0.png" alt="Artwork 1">
-      <p>Cyberpunk Street</p>
-    </div>
-    <div class="icon" onclick="openWindow('artwork2-window')">
-      <img src="https://win98icons.alexmeub.com/icons/png/3d-0.png" alt="Artwork 2">
-      <p>Fantasy Castle</p>
-    </div>
-    <div class="icon" onclick="openWindow('about-window')">
-      <img src="https://win98icons.alexmeub.com/icons/png/notepad_file-0.png" alt="About File">
-      <p>About Me</p>
-    </div>
-    <div class="icon" onclick="openWindow('recycle-window')">
-      <img src="https://win98icons.alexmeub.com/icons/png/recycle_bin_empty-4.png" alt="Recycle Bin">
-      <p>Recycle Bin</p>
-    </div>
-    <div class="icon" onclick="openWindow('pixelsweeper-window')">
-      <img src="https://win98icons.alexmeub.com/icons/png/minesweeper-2.png" alt="PixelSweeper">
-      <p>PixelSweeper</p>
-    </div>
-    <div class="icon" onclick="openWindow('paint-window')">
-      <img src="https://win98icons.alexmeub.com/icons/png/paint-0.png" alt="Paint">
-      <p>Paint</p>
+  <div id="loading-screen">
+    <img src="https://win98icons.alexmeub.com/icons/png/windows-0.png" alt="Windows 95" width="48" height="48">
+    <h2>Portfolio OS</h2>
+    <p>Starting...</p>
+    <div class="loading-bar">
+      <div class="loading-progress" id="loading-progress"></div>
     </div>
   </div>
   
-  <!-- Portfolio Window -->
+  <div id="login-screen">
+    <div class="login-box">
+      <div class="login-title">Portfolio OS Login</div>
+      <img src="https://win98icons.alexmeub.com/icons/png/user-4.png" alt="User" width="48" height="48">
+      <div class="login-field">
+        <label for="username">Username:</label>
+        <input type="text" id="username" placeholder="Enter username">
+      </div>
+      <div class="login-field">
+        <label for="password">Password:</label>
+        <input type="password" id="password" placeholder="Enter password">
+      </div>
+      <div class="login-field">
+        <button class="login-button" onclick="login()">Log On</button>
+        <button class="login-button" onclick="guestLogin()">Continue as Guest</button>
+      </div>
+    </div>
+  </div>
+  
+  <div class="desktop" id="desktop">
+    <div class="icon" data-id="portfolio" style="left: 10px; top: 10px;" onclick="openWindow('portfolio-window')">
+      <img src="https://win98icons.alexmeub.com/icons/png/folder_closed-0.png" alt="Portfolio">
+      <p>My 3D Art</p>
+    </div>
+    <div class="icon" data-id="artwork1" style="left: 10px; top: 90px;" onclick="openWindow('artwork1-window')">
+      <img src="https://win98icons.alexmeub.com/icons/png/picture-2.png" alt="Artwork 1">
+      <p>Cyberpunk Street</p>
+    </div>
+    <div class="icon" data-id="artwork2" style="left: 10px; top: 170px;" onclick="openWindow('artwork2-window')">
+      <img src="https://win98icons.alexmeub.com/icons/png/picture-2.png" alt="Artwork 2">
+      <p>Fantasy Castle</p>
+    </div>
+    <div class="icon" data-id="about" style="left: 10px; top: 250px;" onclick="openWindow('about-window')">
+      <img src="https://win98icons.alexmeub.com/icons/png/notepad_file-0.png" alt="About">
+      <p>About Me</p>
+    </div>
+    <div class="icon" data-id="paint" style="left: 10px; top: 330px;" onclick="openWindow('paint-window')">
+      <img src="https://win98icons.alexmeub.com/icons/png/paint-0.png" alt="Paint">
+      <p>Paint</p>
+    </div>
+    <div class="icon" data-id="pixelsweeper" style="left: 10px; top: 410px;" onclick="openWindow('pixelsweeper-window')">
+      <img src="https://win98icons.alexmeub.com/icons/png/minesweeper-2.png" alt="PixelSweeper">
+      <p>PixelSweeper</p>
+    </div>
+  </div>
+  
   <div class="window" id="portfolio-window">
     <div class="title-bar" onmousedown="startDrag(event, 'portfolio-window'); bringToFront('portfolio-window')">
       <div class="title-bar-text">Malte Stoepke's 3D Art Portfolio</div>
@@ -292,9 +493,9 @@
         <button aria-label="Close" onclick="closeWindow('portfolio-window')"></button>
       </div>
     </div>
-    <div class="window-body portfolio-content">
-      <h2 class="animated-title">My 3D Artworks</h2>
-      <div class="artwork-gallery">
+    <div class="window-body">
+      <h2>My 3D Artworks</h2>
+      <div class="artwork-gallery" id="portfolio-gallery">
         <div class="artwork-item" onclick="openWindow('artwork1-window')">
           <img src="https://cdna.artstation.com/p/assets/images/images/065/180/622/large/malte-stoepke-cyberpunk-street.jpg?1690471608" alt="Cyberpunk Street">
           <p>Cyberpunk Street</p>
@@ -307,7 +508,6 @@
     </div>
   </div>
   
-  <!-- Cyberpunk Street Artwork -->
   <div class="window" id="artwork1-window">
     <div class="title-bar" onmousedown="startDrag(event, 'artwork1-window'); bringToFront('artwork1-window')">
       <div class="title-bar-text">Cyberpunk Street</div>
@@ -317,18 +517,17 @@
         <button aria-label="Close" onclick="closeWindow('artwork1-window')"></button>
       </div>
     </div>
-    <div class="window-body portfolio-content">
-      <h2 class="animated-title">Cyberpunk Street</h2>
-      <img src="https://cdna.artstation.com/p/assets/images/images/065/180/622/large/malte-stoepke-cyberpunk-street.jpg?1690471608" alt="Cyberpunk Street">
-      <p>Description: A cyberpunk street scene with neon signs and futuristic vehicles, created in Blender.</p>
-      <video controls>
-        <source src="https://cdn.artstation.com/videos/encoded/1/0/5/105fbd8aedc2f4d4aeb6b1e8f8e1c5b9.mp4" type="video/mp4">
-        Your browser does not support the video tag.
-      </video>
+    <div class="window-body">
+      <img src="https://cdna.artstation.com/p/assets/images/images/065/180/622/large/malte-stoepke-cyberpunk-street.jpg?1690471608" alt="Cyberpunk Street" id="artwork1-image">
+      <p class="editable-field" contenteditable="false" id="artwork1-desc">Description: A cyberpunk street scene with neon signs and futuristic vehicles, created in Blender.</p>
+      <div class="edit-controls" style="display: none;">
+        <button class="login-button" onclick="saveArtworkEdits('artwork1')">Save</button>
+        <input type="file" accept="image/*" id="artwork1-image-upload" style="display: none;">
+        <button class="login-button" onclick="document.getElementById('artwork1-image-upload').click()">Change Image</button>
+      </div>
     </div>
   </div>
   
-  <!-- Fantasy Castle Artwork -->
   <div class="window" id="artwork2-window">
     <div class="title-bar" onmousedown="startDrag(event, 'artwork2-window'); bringToFront('artwork2-window')">
       <div class="title-bar-text">Fantasy Castle</div>
@@ -338,15 +537,17 @@
         <button aria-label="Close" onclick="closeWindow('artwork2-window')"></button>
       </div>
     </div>
-    <div class="window-body portfolio-content">
-      <h2 class="animated-title">Fantasy Castle</h2>
-      <img src="https://cdna.artstation.com/p/assets/images/images/065/180/626/large/malte-stoepke-fantasy-castle.jpg?1690471622" alt="Fantasy Castle">
-      <p>Description: A fantasy castle floating in the sky, created using Blender and Photoshop.</p>
+    <div class="window-body">
+      <img src="https://cdna.artstation.com/p/assets/images/images/065/180/626/large/malte-stoepke-fantasy-castle.jpg?1690471622" alt="Fantasy Castle" id="artwork2-image">
+      <p class="editable-field" contenteditable="false" id="artwork2-desc">Description: A fantasy castle floating in the sky, created using Blender and Photoshop.</p>
+      <div class="edit-controls" style="display: none;">
+        <button class="login-button" onclick="saveArtworkEdits('artwork2')">Save</button>
+        <input type="file" accept="image/*" id="artwork2-image-upload" style="display: none;">
+        <button class="login-button" onclick="document.getElementById('artwork2-image-upload').click()">Change Image</button>
+      </div>
     </div>
   </div>
   
-  <!-- Other windows remain similar but updated with maximize/minimize buttons -->
-  <!-- About Window -->
   <div class="window" id="about-window">
     <div class="title-bar" onmousedown="startDrag(event, 'about-window'); bringToFront('about-window')">
       <div class="title-bar-text">About Malte Stoepke</div>
@@ -356,70 +557,110 @@
         <button aria-label="Close" onclick="closeWindow('about-window')"></button>
       </div>
     </div>
-    <div class="window-body portfolio-content">
-      <h2 class="animated-title">About the Artist</h2>
-      <p>Hi, I'm Malte Stoepke! I'm a passionate 3D artist specializing in character modeling and environment design using Blender, Maya, and ZBrush.</p>
-      <p>Contact: malte.stoepke@example.com</p>
-      <p>Social: <a href="https://www.artstation.com/malte_stoepke">ArtStation</a> | <a href="#">Twitter</a></p>
-    </div>
-  </div>
-  
-  <!-- Recycle Bin -->
-  <div class="window" id="recycle-window">
-    <div class="title-bar" onmousedown="startDrag(event, 'recycle-window'); bringToFront('recycle-window')">
-      <div class="title-bar-text">Recycle Bin</div>
-      <div class="title-bar-controls">
-        <button aria-label="Minimize" onclick="minimizeWindow('recycle-window')"></button>
-        <button aria-label="Maximize" onclick="maximizeWindow('recycle-window')"></button>
-        <button aria-label="Close" onclick="closeWindow('recycle-window')"></button>
+    <div class="window-body">
+      <p class="editable-field" contenteditable="false" id="about-bio">Hi, I'm Malte Stoepke! I'm a passionate 3D artist specializing in character modeling and environment design using Blender, Maya, and ZBrush.</p>
+      <p class="editable-field" contenteditable="false" id="about-contact">Contact: malte.stoepke@example.com</p>
+      <p class="editable-field" contenteditable="false" id="about-social">Social: <a href="https://www.artstation.com/malte_stoepke">ArtStation</a> | <a href="#">Twitter</a></p>
+      <img src="https://cdn.artstation.com/p/assets/images/images/065/180/622/large/malte-stoepke-cyberpunk-street.jpg?1690471608" id="about-image" style="max-width: 200px;">
+      <div class="edit-controls" style="display: none;">
+        <button class="login-button" onclick="saveAboutEdits()">Save</button>
+        <input type="file" accept="image/*" id="about-image-upload" style="display: none;">
+        <button class="login-button" onclick="document.getElementById('about-image-upload').click()">Change Image</button>
       </div>
     </div>
-    <div class="window-body portfolio-content">
-      <h2 class="animated-title">Easter Egg: Recycle Bin</h2>
-      <p>Oops, looks like some polygons got trashed! Try my portfolio instead. 😄</p>
-    </div>
   </div>
   
-  <!-- Paint -->
   <div class="window" id="paint-window">
     <div class="title-bar" onmousedown="startDrag(event, 'paint-window'); bringToFront('paint-window')">
-      <div class="title-bar-text">Paint (Easter Egg)</div>
+      <div class="title-bar-text">Paint</div>
       <div class="title-bar-controls">
         <button aria-label="Minimize" onclick="minimizeWindow('paint-window')"></button>
         <button aria-label="Maximize" onclick="maximizeWindow('paint-window')"></button>
         <button aria-label="Close" onclick="closeWindow('paint-window')"></button>
       </div>
     </div>
-    <div class="window-body portfolio-content">
-      <h2 class="animated-title">MS Paint</h2>
-      <canvas id="paintCanvas" class="paint-canvas" width="400" height="300"></canvas>
-      <p>Draw something fun! Use your mouse to sketch (black brush only).</p>
+    <div class="window-body">
+      <div class="paint-tools">
+        <div class="tool-button active" id="brush-tool" onclick="setTool('brush')">
+          <i class="fas fa-paint-brush"></i>
+        </div>
+        <div class="tool-button" id="text-tool" onclick="setTool('text')">
+          <i class="fas fa-font"></i>
+        </div>
+        <div class="tool-button" id="eraser-tool" onclick="setTool('eraser')">
+          <i class="fas fa-eraser"></i>
+        </div>
+        <div class="tool-button" onclick="clearCanvas()">
+          <i class="fas fa-trash"></i>
+        </div>
+        <button class="login-button" onclick="saveArtwork()" style="margin-left: 10px;">
+          <i class="fas fa-save"></i> Save to Desktop
+        </button>
+      </div>
+      <canvas id="paintCanvas" class="paint-canvas" width="500" height="400"></canvas>
+      <div class="color-picker">
+        <div class="color-option" style="background: black;" onclick="setColor('black')"></div>
+        <div class="color-option" style="background: red;" onclick="setColor('red')"></div>
+        <div class="color-option" style="background: green;" onclick="setColor('green')"></div>
+        <div class="color-option" style="background: blue;" onclick="setColor('blue')"></div>
+        <div class="color-option" style="background: yellow;" onclick="setColor('yellow')"></div>
+        <div class="color-option" style="background: purple;" onclick="setColor('purple')"></div>
+        <div class="color-option" style="background: orange;" onclick="setColor('orange')"></div>
+        <div class="color-option" style="background: pink;" onclick="setColor('pink')"></div>
+      </div>
     </div>
   </div>
   
-  <!-- PixelSweeper -->
   <div class="window" id="pixelsweeper-window">
     <div class="title-bar" onmousedown="startDrag(event, 'pixelsweeper-window'); bringToFront('pixelsweeper-window')">
-      <div class="title-bar-text">PixelSweeper (Easter Egg)</div>
+      <div class="title-bar-text">PixelSweeper</div>
       <div class="title-bar-controls">
         <button aria-label="Minimize" onclick="minimizeWindow('pixelsweeper-window')"></button>
         <button aria-label="Maximize" onclick="maximizeWindow('pixelsweeper-window')"></button>
         <button aria-label="Close" onclick="closeWindow('pixelsweeper-window')"></button>
       </div>
     </div>
-    <div class="window-body portfolio-content">
-      <h2 class="animated-title">PixelSweeper</h2>
-      <p>Click to reveal tiles, right-click to flag mines. Find all 10 mines to win!</p>
-      <button onclick="resetPixelSweeper()">New Game</button>
-      <div id="pixelsweeper-grid" class="minesweeper-grid"></div>
-      <p id="pixelsweeper-status">Mines left: 10</p>
+    <div class="window-body">
+      <div class="minesweeper-controls">
+        <button class="login-button" onclick="startMinesweeper(8, 8, 10)">Beginner</button>
+        <button class="login-button" onclick="startMinesweeper(16, 16, 40)">Intermediate</button>
+        <button class="login-button" onclick="startMinesweeper(30, 16, 99)">Expert</button>
+      </div>
+      <div id="minesweeper-board" class="minesweeper-board"></div>
+    </div>
+  </div>
+  
+  <div class="window" id="add-artifact-window">
+    <div class="title-bar" onmousedown="startDrag(event, 'add-artifact-window'); bringToFront('add-artifact-window')">
+      <div class="title-bar-text">Add New Artifact</div>
+      <div class="title-bar-controls">
+        <button aria-label="Close" onclick="closeWindow('add-artifact-window')"></button>
+      </div>
+    </div>
+    <div class="window-body">
+      <div class="login-field">
+        <label>Title:</label>
+        <input type="text" id="new-artifact-title">
+      </div>
+      <div class="login-field">
+        <label>Description:</label>
+        <textarea id="new-artifact-desc" class="editable-field"></textarea>
+      </div>
+      <div class="login-field">
+        <label>Image:</label>
+        <input type="file" accept="image/*" id="new-artifact-image">
+      </div>
+      <button class="login-button" onclick="addNewArtifact()">Add to Desktop</button>
     </div>
   </div>
   
   <div class="taskbar">
-    <button class="start-button" onclick="toggleStartMenu()">Start</button>
+    <button class="start-button" onclick="toggleStartMenu()">
+      <img src="https://win98icons.alexmeub.com/icons/png/windows-0.png" alt="Start"> Start
+    </button>
     <div id="taskbar-apps" class="taskbar-apps"></div>
-    <div id="taskbar-time" class="taskbar-time">Loading time...</div>
+    <div class="taskbar-user" id="current-user">Guest</div>
+    <div id="taskbar-time" class="taskbar-time">Loading...</div>
   </div>
   
   <div class="start-menu" id="start-menu">
@@ -432,56 +673,135 @@
         </ul>
       </li>
       <li onclick="openWindow('about-window')">About Me</li>
+      <li onclick="openWindow('paint-window')">Paint</li>
+      <li onclick="openWindow('pixelsweeper-window')">PixelSweeper</li>
       <li>Contact
         <ul class="submenu">
           <li><a href="mailto:malte.stoepke@example.com">Email Me</a></li>
           <li><a href="https://www.artstation.com/malte_stoepke" target="_blank">ArtStation</a></li>
         </ul>
       </li>
-      <li onclick="openWindow('paint-window')">Paint (Easter Egg)</li>
-      <li onclick="openWindow('pixelsweeper-window')">PixelSweeper (Easter Egg)</li>
-      <li onclick="alert('Windows 95 Portfolio OS\nVersion 1.0\nCreated by Malte Stoepke')">About Portfolio OS</li>
+      <li class="admin-only" style="display: none;" onclick="openWindow('add-artifact-window')">Add New Artifact</li>
+      <li onclick="showLogin()">Log In/Out</li>
+      <li onclick="alert('Portfolio OS\nVersion 2.0\nCreated by Malte Stoepke')">About Portfolio OS</li>
     </ul>
   </div>
   
-  <div class="clippy" id="clippy">
-    <img src="https://raw.githubusercontent.com/saberland/saberland.github.io/master/images/clippy.png" alt="Clippy">
-    <p>Welcome to Malte Stoepke's 3D Art Portfolio! Navigate this site like a Windows 95 desktop: click icons to view my art, drag windows to move them, or use the Start menu to explore.</p>
-    <button onclick="closeClippy()">OK</button>
+  <div class="audio-control" onclick="toggleSound()">
+    <i class="fas fa-volume-up" id="sound-icon"></i>
   </div>
   
-  <!-- Audio elements for sounds -->
   <audio id="window-open-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3"></audio>
   <audio id="window-close-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-quick-jump-arcade-game-239.mp3"></audio>
   <audio id="click-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-mouse-click-close-1113.mp3"></audio>
   <audio id="start-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-unlock-game-notification-253.mp3"></audio>
   
   <script>
-    // Show Clippy and initialize everything on page load
-    window.onload = function() {
-      document.getElementById('clippy').classList.add('active');
-      initPaint();
-      initPixelSweeper();
+    let currentUser = 'Guest';
+    let minimizedWindows = {};
+    let zIndexCounter = 10;
+    let soundEnabled = true;
+    let desktopIcons = {};
+    let artifacts = {
+      artwork1: {
+        title: 'Cyberpunk Street',
+        image: 'https://cdna.artstation.com/p/assets/images/images/065/180/622/large/malte-stoepke-cyberpunk-street.jpg?1690471608',
+        desc: 'Description: A cyberpunk street scene with neon signs and futuristic vehicles, created in Blender.'
+      },
+      artwork2: {
+        title: 'Fantasy Castle',
+        image: 'https://cdna.artstation.com/p/assets/images/images/065/180/626/large/malte-stoepke-fantasy-castle.jpg?1690471622',
+        desc: 'Description: A fantasy castle floating in the sky, created using Blender and Photoshop.'
+      },
+      about: {
+        bio: "Hi, I'm Malte Stoepke! I'm a passionate 3D artist specializing in character modeling and environment design using Blender, Maya, and ZBrush.",
+        contact: 'Contact: malte.stoepke@example.com',
+        social: 'Social: <a href="https://www.artstation.com/malte_stoepke">ArtStation</a> | <a href="#">Twitter</a>',
+        image: 'https://cdn.artstation.com/p/assets/images/images/065/180/622/large/malte-stoepke-cyberpunk-street.jpg?1690471608'
+      }
+    };
+    let currentTool = 'brush';
+    let currentColor = 'black';
+    let minesweeperBoard = [];
+    let minesweeperMines = [];
+    let minesweeperRevealed = [];
+    
+    function initialize() {
+      const savedPositions = localStorage.getItem('iconPositions');
+      if (savedPositions) {
+        desktopIcons = JSON.parse(savedPositions);
+      }
+      
+      const savedArtifacts = localStorage.getItem('artifacts');
+      if (savedArtifacts) {
+        artifacts = JSON.parse(savedArtifacts);
+      }
+      
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += 20;
+        document.getElementById('loading-progress').style.width = progress + '%';
+        if (progress >= 100) {
+          clearInterval(interval);
+          document.getElementById('loading-screen').style.display = 'none';
+          guestLogin();
+        }
+      }, 200);
+      
       updateTime();
       setInterval(updateTime, 60000);
-    };
-    
-    // Play sounds
-    function playSound(id) {
-      const sound = document.getElementById(id);
-      sound.currentTime = 0;
-      sound.play().catch(e => console.log("Sound play prevented by browser:", e));
+      
+      initPaint();
+      initDraggableIcons();
+      updateUI();
     }
     
-    // Window management
-    let zIndexCounter = 10;
-    let currentWindow = null;
-    let offsetX, offsetY;
-    let minimizedWindows = {};
+    function updateTime() {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString('en-US', { 
+        hour: '2-digit', minute: '2-digit'
+      });
+      document.getElementById('taskbar-time').textContent = timeString;
+    }
+    
+    function login() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      
+      if (username === "Malte Stoepke" && password === "Maus_123") {
+        playSound('start-sound');
+        currentUser = username;
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('current-user').textContent = username;
+        document.querySelector('.admin-only').style.display = 'block';
+        enableEditing();
+        initDraggableIcons();
+      } else {
+        alert('Invalid username or password.');
+      }
+    }
+    
+    function guestLogin() {
+      currentUser = 'Guest';
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('current-user').textContent = 'Guest';
+      document.querySelector('.admin-only').style.display = 'none';
+      disableEditing();
+      initDraggableIcons();
+    }
+    
+    function showLogin() {
+      document.getElementById('start-menu').classList.remove('active');
+      document.getElementById('login-screen').style.display = 'flex';
+    }
     
     function openWindow(windowId) {
       playSound('window-open-sound');
       const window = document.getElementById(windowId);
+      if (!window) {
+        console.error(`Window with ID ${windowId} not found`);
+        return;
+      }
       window.classList.add('active');
       bringToFront(windowId);
       document.getElementById('start-menu').classList.remove('active');
@@ -491,30 +811,39 @@
     function closeWindow(windowId) {
       playSound('window-close-sound');
       const window = document.getElementById(windowId);
-      window.classList.remove('active');
-      window.classList.remove('maximized');
-      removeFromTaskbar(windowId);
+      if (window) {
+        window.classList.remove('active');
+        window.classList.remove('maximized');
+        removeFromTaskbar(windowId);
+      }
     }
     
     function minimizeWindow(windowId) {
       playSound('click-sound');
       const window = document.getElementById(windowId);
-      window.classList.remove('active');
-      minimizedWindows[windowId] = true;
-      updateTaskbarButton(windowId);
+      if (window) {
+        window.classList.remove('active');
+        minimizedWindows[windowId] = true;
+        updateTaskbarButton(windowId);
+      }
     }
     
     function maximizeWindow(windowId) {
       playSound('click-sound');
       const window = document.getElementById(windowId);
-      window.classList.toggle('maximized');
+      if (window) {
+        window.classList.toggle('maximized');
+      }
     }
     
     function bringToFront(windowId) {
       zIndexCounter++;
-      document.getElementById(windowId).style.zIndex = zIndexCounter;
-      minimizedWindows[windowId] = false;
-      updateTaskbarButton(windowId);
+      const window = document.getElementById(windowId);
+      if (window) {
+        window.style.zIndex = zIndexCounter;
+        minimizedWindows[windowId] = false;
+        updateTaskbarButton(windowId);
+      }
     }
     
     function toggleStartMenu() {
@@ -527,50 +856,13 @@
       }
     }
     
-    function closeClippy() {
-      playSound('click-sound');
-      document.getElementById('clippy').classList.remove('active');
-    }
-    
-    // Drag functionality
-    function startDrag(e, windowId) {
-      if (document.getElementById(windowId).classList.contains('maximized')) return;
-      
-      playSound('click-sound');
-      currentWindow = document.getElementById(windowId);
-      bringToFront(windowId);
-      offsetX = e.clientX - parseInt(currentWindow.style.left || 0);
-      offsetY = e.clientY - parseInt(currentWindow.style.top || 0);
-      document.addEventListener('mousemove', dragWindow);
-      document.addEventListener('mouseup', stopDrag);
-    }
-    
-    function dragWindow(e) {
-      if (currentWindow) {
-        const maxX = window.innerWidth - currentWindow.offsetWidth;
-        const maxY = window.innerHeight - currentWindow.offsetHeight - 30;
-        let newX = e.clientX - offsetX;
-        let newY = e.clientY - offsetY;
-        newX = Math.max(0, Math.min(newX, maxX));
-        newY = Math.max(0, Math.min(newY, maxY));
-        currentWindow.style.left = newX + 'px';
-        currentWindow.style.top = newY + 'px';
-      }
-    }
-    
-    function stopDrag() {
-      currentWindow = null;
-      document.removeEventListener('mousemove', dragWindow);
-      document.removeEventListener('mouseup', stopDrag);
-    }
-    
-    // Taskbar functionality
     function addToTaskbar(windowId) {
       const taskbarApps = document.getElementById('taskbar-apps');
       const existingButton = document.querySelector(`.taskbar-app[data-window="${windowId}"]`);
       
       if (!existingButton) {
         const window = document.getElementById(windowId);
+        if (!window) return;
         const title = window.querySelector('.title-bar-text').textContent;
         
         const appButton = document.createElement('div');
@@ -604,175 +896,620 @@
       }
     }
     
-    // Time display
-    function updateTime() {
-      const now = new Date();
-      const timeString = now.toLocaleString('en-US', { 
-        month: 'short', day: 'numeric', year: 'numeric',
-        hour: '2-digit', minute: '2-digit'
+    function initDraggableIcons() {
+      const icons = document.querySelectorAll('.icon');
+      icons.forEach(icon => {
+        icon.classList.remove('draggable');
+        icon.onmousedown = null; // Clear previous listeners
+        if (currentUser === 'Malte Stoepke') {
+          icon.classList.add('draggable');
+          makeDraggable(icon);
+        }
+        const id = icon.dataset.id;
+        if (desktopIcons[id]) {
+          icon.style.left = desktopIcons[id].x + 'px';
+          icon.style.top = desktopIcons[id].y + 'px';
+        }
       });
-      document.getElementById('taskbar-time').textContent = timeString;
     }
     
-    // Paint program functionality
+    function makeDraggable(element) {
+      let isDragging = false;
+      let currentX = parseInt(element.style.left) || 0;
+      let currentY = parseInt(element.style.top) || 0;
+      let initialX, initialY;
+      
+      element.onmousedown = (e) => {
+        if (currentUser !== 'Malte Stoepke') return;
+        isDragging = true;
+        initialX = e.clientX - currentX;
+        initialY = e.clientY - currentY;
+        element.style.zIndex = zIndexCounter++;
+        e.preventDefault();
+      };
+      
+      document.onmousemove = (e) => {
+        if (!isDragging) return;
+        currentX = e.clientX - initialX;
+        currentY = e.clientY - initialY;
+        
+        currentX = Math.round(currentX / 10) * 10;
+        currentY = Math.round(currentY / 10) * 10;
+        
+        const desktop = document.getElementById('desktop');
+        currentX = Math.max(0, Math.min(currentX, desktop.offsetWidth - element.offsetWidth));
+        currentY = Math.max(0, Math.min(currentY, desktop.offsetHeight - element.offsetHeight));
+        
+        element.style.left = currentX + 'px';
+        element.style.top = currentY + 'px';
+        
+        desktopIcons[element.dataset.id] = { x: currentX, y: currentY };
+        try {
+          localStorage.setItem('iconPositions', JSON.stringify(desktopIcons));
+        } catch (e) {
+          console.error('Failed to save icon positions:', e);
+        }
+      };
+      
+      document.onmouseup = () => {
+        isDragging = false;
+      };
+    }
+    
+    function enableEditing() {
+      document.querySelectorAll('.editable-field').forEach(field => {
+        field.contentEditable = true;
+      });
+      document.querySelectorAll('.edit-controls').forEach(controls => {
+        controls.style.display = 'block';
+      });
+      
+      document.getElementById('artwork1-image-upload').onchange = (e) => handleImageUpload(e, 'artwork1');
+      document.getElementById('artwork2-image-upload').onchange = (e) => handleImageUpload(e, 'artwork2');
+      document.getElementById('about-image-upload').onchange = (e) => handleImageUpload(e, 'about');
+    }
+    
+    function disableEditing() {
+      document.querySelectorAll('.editable-field').forEach(field => {
+        field.contentEditable = false;
+      });
+      document.querySelectorAll('.edit-controls').forEach(controls => {
+        controls.style.display = 'none';
+      });
+    }
+    
+    function handleImageUpload(event, id) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const imageElement = document.getElementById(`${id}-image`);
+        if (imageElement) {
+          imageElement.src = e.target.result;
+          if (id === 'about') {
+            artifacts[id].image = e.target.result;
+          } else {
+            artifacts[id].image = e.target.result;
+            updatePortfolioGallery();
+          }
+          try {
+            localStorage.setItem('artifacts', JSON.stringify(artifacts));
+          } catch (e) {
+            console.error('Failed to save artifacts:', e);
+          }
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+    
+    function saveArtworkEdits(id) {
+      const descElement = document.getElementById(`${id}-desc`);
+      if (descElement) {
+        artifacts[id].desc = descElement.innerHTML;
+        try {
+          localStorage.setItem('artifacts', JSON.stringify(artifacts));
+          updatePortfolioGallery();
+          alert('Changes saved!');
+        } catch (e) {
+          console.error('Failed to save artwork edits:', e);
+          alert('Error saving changes.');
+        }
+      }
+    }
+    
+    function saveAboutEdits() {
+      const bio = document.getElementById('about-bio').innerHTML;
+      const contact = document.getElementById('about-contact').innerHTML;
+      const social = document.getElementById('about-social').innerHTML;
+      artifacts.about = { bio, contact, social, image: artifacts.about.image };
+      try {
+        localStorage.setItem('artifacts', JSON.stringify(artifacts));
+        alert('Changes saved!');
+      } catch (e) {
+        console.error('Failed to save about edits:', e);
+        alert('Error saving changes.');
+      }
+    }
+    
+    function addNewArtifact() {
+      if (currentUser !== 'Malte Stoepke') {
+        alert('You must be logged in as Malte Stoepke to add artifacts.');
+        return;
+      }
+      
+      const titleInput = document.getElementById('new-artifact-title');
+      const descInput = document.getElementById('new-artifact-desc');
+      const fileInput = document.getElementById('new-artifact-image');
+      
+      if (!titleInput || !fileInput) {
+        console.error('Required input elements not found');
+        alert('Error: Input elements not found.');
+        return;
+      }
+      
+      const title = titleInput.value.trim();
+      const desc = descInput.value.trim();
+      const file = fileInput.files[0];
+      
+      if (!title || !file) {
+        alert('Please provide a title and image.');
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const id = `artwork${Object.keys(artifacts).length + 1}`;
+        artifacts[id] = {
+          title,
+          image: e.target.result,
+          desc: desc || `Description: ${title}`
+        };
+        
+        const desktop = document.getElementById('desktop');
+        const icon = document.createElement('div');
+        icon.className = 'icon';
+        icon.dataset.id = id;
+        const yPos = Object.keys(desktopIcons).length * 80 + 10;
+        icon.style.left = '10px';
+        icon.style.top = `${yPos}px`;
+        icon.innerHTML = `
+          <img src="https://win98icons.alexmeub.com/icons/png/picture-2.png" alt="${title}">
+          <p>${title}</p>
+        `;
+        icon.onclick = () => openWindow(`${id}-window`);
+        desktop.appendChild(icon);
+        
+        const window = document.createElement('div');
+        window.className = 'window';
+        window.id = `${id}-window`;
+        window.innerHTML = `
+          <div class="title-bar" onmousedown="startDrag(event, '${id}-window'); bringToFront('${id}-window')">
+            <div class="title-bar-text">${title}</div>
+            <div class="title-bar-controls">
+              <button aria-label="Minimize" onclick="minimizeWindow('${id}-window')"></button>
+              <button aria-label="Maximize" onclick="maximizeWindow('${id}-window')"></button>
+              <button aria-label="Close" onclick="closeWindow('${id}-window')"></button>
+            </div>
+          </div>
+          <div class="window-body">
+            <img src="${e.target.result}" alt="${title}" id="${id}-image">
+            <p class="editable-field" contenteditable="false" id="${id}-desc">${desc || `Description: ${title}`}</p>
+            <div class="edit-controls" style="display: none;">
+              <button class="login-button" onclick="saveArtworkEdits('${id}')">Save</button>
+              <input type="file" accept="image/*" id="${id}-image-upload" style="display: none;">
+              <button class="login-button" onclick="document.getElementById('${id}-image-upload').click()">Change Image</button>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(window);
+        
+        const imageUpload = document.getElementById(`${id}-image-upload`);
+        if (imageUpload) {
+          imageUpload.onchange = (e) => handleImageUpload(e, id);
+        } else {
+          console.error(`Image upload input for ${id} not found`);
+        }
+        
+        desktopIcons[id] = { x: 10, y: yPos };
+        try {
+          localStorage.setItem('artifacts', JSON.stringify(artifacts));
+          localStorage.setItem('iconPositions', JSON.stringify(desktopIcons));
+        } catch (e) {
+          console.error('Failed to save new artifact:', e);
+          alert('Error saving new artifact.');
+          return;
+        }
+        
+        if (currentUser === 'Malte Stoepke') {
+          makeDraggable(icon);
+          const editControls = window.querySelector('.edit-controls');
+          if (editControls) editControls.style.display = 'block';
+          const descField = window.querySelector('.editable-field');
+          if (descField) descField.contentEditable = true;
+        }
+        
+        updatePortfolioGallery();
+        closeWindow('add-artifact-window');
+        alert('New artifact added!');
+      };
+      reader.onerror = () => {
+        console.error('Failed to read file');
+        alert('Error reading image file.');
+      };
+      reader.readAsDataURL(file);
+    }
+    
+    function updatePortfolioGallery() {
+      const gallery = document.getElementById('portfolio-gallery');
+      if (!gallery) return;
+      gallery.innerHTML = '';
+      Object.keys(artifacts).filter(id => id.startsWith('artwork')).forEach(id => {
+        const item = document.createElement('div');
+        item.className = 'artwork-item';
+        item.onclick = () => openWindow(`${id}-window`);
+        item.innerHTML = `
+          <img src="${artifacts[id].image}" alt="${artifacts[id].title}">
+          <p>${artifacts[id].title}</p>
+        `;
+        gallery.appendChild(item);
+      });
+      
+      const portfolioMenu = document.querySelector('.start-menu ul li:first-child ul');
+      if (portfolioMenu) {
+        portfolioMenu.innerHTML = '<li onclick="openWindow(\'portfolio-window\')">View All Artworks</li>';
+        Object.keys(artifacts).filter(id => id.startsWith('artwork')).forEach(id => {
+          const li = document.createElement('li');
+          li.onclick = () => openWindow(`${id}-window`);
+          li.textContent = artifacts[id].title;
+          portfolioMenu.appendChild(li);
+        });
+      }
+    }
+    
+    function updateUI() {
+      Object.keys(artifacts).filter(id => id.startsWith('artwork') || id === 'about').forEach(id => {
+        const icon = document.querySelector(`.icon[data-id="${id}"]`);
+        if (icon) {
+          icon.querySelector('p').textContent = id === 'about' ? 'About Me' : artifacts[id].title;
+        }
+      });
+      
+      Object.keys(artifacts).filter(id => id.startsWith('artwork')).forEach(id => {
+        const window = document.getElementById(`${id}-window`);
+        if (window) {
+          window.querySelector('.title-bar-text').textContent = artifacts[id].title;
+          const image = window.querySelector(`#${id}-image`);
+          if (image) image.src = artifacts[id].image;
+          const desc = window.querySelector(`#${id}-desc`);
+          if (desc) desc.innerHTML = artifacts[id].desc;
+        }
+      });
+      
+      const aboutWindow = document.getElementById('about-window');
+      if (aboutWindow) {
+        aboutWindow.querySelector('#about-bio').innerHTML = artifacts.about.bio;
+        aboutWindow.querySelector('#about-contact').innerHTML = artifacts.about.contact;
+        aboutWindow.querySelector('#about-social').innerHTML = artifacts.about.social;
+        aboutWindow.querySelector('#about-image').src = artifacts.about.image;
+      }
+      
+      updatePortfolioGallery();
+    }
+    
     function initPaint() {
       const canvas = document.getElementById('paintCanvas');
       const ctx = canvas.getContext('2d');
       let painting = false;
       
-      canvas.addEventListener('mousedown', (e) => {
+      ctx.fillStyle = 'white';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      canvas.onmousedown = (e) => {
         painting = true;
-        ctx.beginPath();
-        ctx.moveTo(e.offsetX, e.offsetY);
-      });
-      
-      canvas.addEventListener('mousemove', (e) => {
-        if (painting) {
-          ctx.lineTo(e.offsetX, e.offsetY);
-          ctx.strokeStyle = 'black';
-          ctx.lineWidth = 2;
-          ctx.stroke();
-        }
-      });
-      
-      canvas.addEventListener('mouseup', () => {
-        painting = false;
-        ctx.closePath();
-      });
-      
-      canvas.addEventListener('mouseleave', () => {
-        painting = false;
-        ctx.closePath();
-      });
-    }
-    
-    // PixelSweeper (Minesweeper) functionality
-    function initPixelSweeper() {
-      const grid = document.getElementById('pixelsweeper-grid');
-      const status = document.getElementById('pixelsweeper-status');
-      const size = 8;
-      const mineCount = 10;
-      let board = [];
-      let revealed = 0;
-      let flags = 0;
-      
-      function createBoard() {
-        board = Array(size * size).fill(null).map(() => ({
-          mine: false,
-          revealed: false,
-          flagged: false,
-          adjacent: 0
-        }));
-        
-        // Place mines
-        let minesPlaced = 0;
-        while (minesPlaced < mineCount) {
-          const index = Math.floor(Math.random() * size * size);
-          if (!board[index].mine) {
-            board[index].mine = true;
-            minesPlaced++;
+        if (currentTool === 'brush') {
+          ctx.beginPath();
+          ctx.moveTo(e.offsetX, e.offsetY);
+        } else if (currentTool === 'text') {
+          const text = prompt('Enter text:');
+          if (text) {
+            ctx.font = '16px MS Sans Serif';
+            ctx.fillStyle = currentColor;
+            ctx.fillText(text, e.offsetX, e.offsetY);
           }
         }
-        
-        // Calculate adjacent mines
-        for (let i = 0; i < size * size; i++) {
-          if (!board[i].mine) {
-            const x = i % size;
-            const y = Math.floor(i / size);
-            let count = 0;
-            for (let dy = -1; dy <= 1; dy++) {
-              for (let dx = -1; dx <= 1; dx++) {
-                const nx = x + dx;
-                const ny = y + dy;
-                if (nx >= 0 && nx < size && ny >= 0 && ny < size) {
-                  if (board[ny * size + nx].mine) count++;
-                }
-              }
-            }
-            board[i].adjacent = count;
-          }
-        }
-      }
-      
-      function renderBoard() {
-        grid.innerHTML = '';
-        board.forEach((cell, i) => {
-          const div = document.createElement('div');
-          div.className = 'minesweeper-cell';
-          if (cell.revealed) {
-            div.classList.add('revealed');
-            if (cell.mine) {
-              div.classList.add('mine');
-            } else if (cell.adjacent > 0) {
-              div.textContent = cell.adjacent;
-            }
-          } else if (cell.flagged) {
-            div.classList.add('flagged');
-          }
-          div.addEventListener('click', () => revealCell(i));
-          div.addEventListener('contextmenu', (e) => {
-            e.preventDefault();
-            flagCell(i);
-          });
-          grid.appendChild(div);
-        });
-        status.textContent = `Mines left: ${mineCount - flags}`;
-      }
-      
-      function revealCell(index) {
-        if (board[index].revealed || board[index].flagged) return;
-        playSound('click-sound');
-        board[index].revealed = true;
-        revealed++;
-        
-        if (board[index].mine) {
-          board.forEach((cell, i) => {
-            if (cell.mine) cell.revealed = true;
-          });
-          renderBoard();
-          alert('Game Over! You hit a mine. Try again!');
-          return;
-        }
-        
-        if (board[index].adjacent === 0) {
-          const x = index % size;
-          const y = Math.floor(index / size);
-          for (let dy = -1; dy <= 1; dy++) {
-            for (let dx = -1; dx <= 1; dx++) {
-              const nx = x + dx;
-              const ny = y + dy;
-              if (nx >= 0 && nx < size && ny >= 0 && ny < size) {
-                revealCell(ny * size + nx);
-              }
-            }
-          }
-        }
-        
-        renderBoard();
-        if (revealed === size * size - mineCount) {
-          alert('You Win! All mines found!');
-        }
-      }
-      
-      function flagCell(index) {
-        if (board[index].revealed) return;
-        playSound('click-sound');
-        board[index].flagged = !board[index].flagged;
-        flags += board[index].flagged ? 1 : -1;
-        renderBoard();
-      }
-      
-      window.resetPixelSweeper = function() {
-        playSound('click-sound');
-        revealed = 0;
-        flags = 0;
-        createBoard();
-        renderBoard();
       };
       
-      createBoard();
-      renderBoard();
+      canvas.onmousemove = (e) => {
+        if (painting && currentTool === 'brush') {
+          ctx.lineTo(e.offsetX, e.offsetY);
+          ctx.strokeStyle = currentColor;
+          ctx.lineWidth = 3;
+          ctx.stroke();
+        } else if (painting && currentTool === 'eraser') {
+          ctx.lineTo(e.offsetX, e.offsetY);
+          ctx.strokeStyle = 'white';
+          ctx.lineWidth = 10;
+          ctx.stroke();
+        }
+      };
+      
+      canvas.onmouseup = () => {
+        painting = false;
+        if (currentTool === 'brush' || currentTool === 'eraser') {
+          ctx.closePath();
+        }
+      };
+      
+      canvas.onmouseleave = () => {
+        painting = false;
+        if (currentTool === 'brush' || currentTool === 'eraser') {
+          ctx.closePath();
+        }
+      };
     }
+    
+    function setTool(tool) {
+      currentTool = tool;
+      document.querySelectorAll('.tool-button').forEach(button => {
+        button.classList.remove('active');
+      });
+      document.getElementById(`${tool}-tool`).classList.add('active');
+    }
+    
+    function setColor(color) {
+      currentColor = color;
+    }
+    
+    function clearCanvas() {
+      const canvas = document.getElementById('paintCanvas');
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = 'white';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+    
+    function saveArtwork() {
+      if (currentUser !== 'Malte Stoepke') {
+        const canvas = document.getElementById('paintCanvas');
+        const link = document.createElement('a');
+        link.download = 'artwork.png';
+        link.href = canvas.toDataURL('image/png');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        alert('Artwork saved as "artwork.png"!');
+        return;
+      }
+      
+      const canvas = document.getElementById('paintCanvas');
+      const dataURL = canvas.toDataURL('image/png');
+      const title = prompt('Enter artwork title:');
+      if (!title) return;
+      
+      const id = `artwork${Object.keys(artifacts).length + 1}`;
+      artifacts[id] = {
+        title,
+        image: dataURL,
+        desc: 'Description: Created in Portfolio OS Paint.'
+      };
+      
+      const desktop = document.getElementById('desktop');
+      const icon = document.createElement('div');
+      icon.className = 'icon';
+      icon.dataset.id = id;
+      const yPos = Object.keys(desktopIcons).length * 80 + 10;
+      icon.style.left = '10px';
+      icon.style.top = `${yPos}px`;
+      icon.innerHTML = `
+        <img src="https://win98icons.alexmeub.com/icons/png/picture-2.png" alt="${title}">
+        <p>${title}</p>
+      `;
+      icon.onclick = () => openWindow(`${id}-window`);
+      desktop.appendChild(icon);
+      
+      const window = document.createElement('div');
+      window.className = 'window';
+      window.id = `${id}-window`;
+      window.innerHTML = `
+        <div class="title-bar" onmousedown="startDrag(event, '${id}-window'); bringToFront('${id}-window')">
+          <div class="title-bar-text">${title}</div>
+          <div class="title-bar-controls">
+            <button aria-label="Minimize" onclick="minimizeWindow('${id}-window')"></button>
+            <button aria-label="Maximize" onclick="maximizeWindow('${id}-window')"></button>
+            <button aria-label="Close" onclick="closeWindow('${id}-window')"></button>
+          </div>
+        </div>
+        <div class="window-body">
+          <img src="${dataURL}" alt="${title}" id="${id}-image">
+          <p class="editable-field" contenteditable="false" id="${id}-desc">Description: Created in Portfolio OS Paint.</p>
+          <div class="edit-controls" style="display: none;">
+            <button class="login-button" onclick="saveArtworkEdits('${id}')">Save</button>
+            <input type="file" accept="image/*" id="${id}-image-upload" style="display: none;">
+            <button class="login-button" onclick="document.getElementById('${id}-image-upload').click()">Change Image</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(window);
+      
+      const imageUpload = document.getElementById(`${id}-image-upload`);
+      if (imageUpload) {
+        imageUpload.onchange = (e) => handleImageUpload(e, id);
+      }
+      
+      desktopIcons[id] = { x: 10, y: yPos };
+      try {
+        localStorage.setItem('artifacts', JSON.stringify(artifacts));
+        localStorage.setItem('iconPositions', JSON.stringify(desktopIcons));
+      } catch (e) {
+        console.error('Failed to save artwork:', e);
+        alert('Error saving artwork.');
+        return;
+      }
+      
+      if (currentUser === 'Malte Stoepke') {
+        makeDraggable(icon);
+        const editControls = window.querySelector('.edit-controls');
+        if (editControls) editControls.style.display = 'block';
+        const descField = window.querySelector('.editable-field');
+        if (descField) descField.contentEditable = true;
+      }
+      
+      updatePortfolioGallery();
+      alert('Artwork saved to desktop!');
+    }
+    
+    function startMinesweeper(width, height, mineCount) {
+      minesweeperBoard = [];
+      minesweeperMines = [];
+      minesweeperRevealed = [];
+      const board = document.getElementById('minesweeper-board');
+      board.style.gridTemplateColumns = `repeat(${width}, 20px)`;
+      board.innerHTML = '';
+      
+      for (let i = 0; i < height; i++) {
+        minesweeperBoard[i] = [];
+        minesweeperRevealed[i] = [];
+        for (let j = 0; j < width; j++) {
+          minesweeperBoard[i][j] = 0;
+          minesweeperRevealed[i][j] = false;
+        }
+      }
+      
+      let minesPlaced = 0;
+      while (minesPlaced < mineCount) {
+        const row = Math.floor(Math.random() * height);
+        const col = Math.floor(Math.random() * width);
+        if (!minesweeperMines.some(mine => mine.row === row && mine.col === col)) {
+          minesweeperMines.push({ row, col });
+          minesPlaced++;
+        }
+      }
+      
+      for (let mine of minesweeperMines) {
+        for (let i = -1; i <= 1; i++) {
+          for (let j = -1; j <= 1; j++) {
+            const newRow = mine.row + i;
+            const newCol = mine.col + j;
+            if (newRow >= 0 && newRow < height && newCol >= 0 && newCol < width) {
+              minesweeperBoard[newRow][newCol]++;
+            }
+          }
+        }
+      }
+      
+      for (let i = 0; i < height; i++) {
+        for (let j = 0; j < width; j++) {
+          const cell = document.createElement('div');
+          cell.className = 'minesweeper-cell';
+          cell.dataset.row = i;
+          cell.dataset.col = j;
+          cell.onclick = () => revealCell(i, j);
+          cell.oncontextmenu = (e) => {
+            e.preventDefault();
+            flagCell(i, j);
+          };
+          board.appendChild(cell);
+        }
+      }
+    }
+    
+    function revealCell(row, col) {
+      if (minesweeperRevealed[row][col]) return;
+      minesweeperRevealed[row][col] = true;
+      const cell = document.querySelector(`.minesweeper-cell[data-row="${row}"][data-col="${col}"]`);
+      cell.classList.add('revealed');
+      
+      if (minesweeperMines.some(mine => mine.row === row && mine.col === col)) {
+        cell.classList.add('mine');
+        alert('Game Over!');
+        startMinesweeper(8, 8, 10);
+        return;
+      }
+      
+      cell.textContent = minesweeperBoard[row][col] || '';
+      if (minesweeperBoard[row][col] === 0) {
+        for (let i = -1; i <= 1; i++) {
+          for (let j = -1; j <= 1; j++) {
+            const newRow = row + i;
+            const newCol = col + j;
+            if (newRow >= 0 && newRow < minesweeperBoard.length && newCol >= 0 && newCol < minesweeperBoard[0].length) {
+              revealCell(newRow, newCol);
+            }
+          }
+        }
+      }
+      
+      let revealedCount = 0;
+      for (let i = 0; i < minesweeperBoard.length; i++) {
+        for (let j = 0; j < minesweeperBoard[0].length; j++) {
+          if (minesweeperRevealed[i][j]) revealedCount++;
+        }
+      }
+      if (revealedCount === minesweeperBoard.length * minesweeperBoard[0].length - minesweeperMines.length) {
+        alert('You Win!');
+        startMinesweeper(8, 8, 10);
+      }
+    }
+    
+    function flagCell(row, col) {
+      const cell = document.querySelector(`.minesweeper-cell[data-row="${row}"][data-col="${col}"]`);
+      if (!minesweeperRevealed[row][col]) {
+        cell.textContent = cell.textContent === '🚩' ? '' : '🚩';
+      }
+    }
+    
+    function startDrag(e, windowId) {
+      const window = document.getElementById(windowId);
+      let isDragging = false;
+      let currentX = parseInt(window.style.left) || 50;
+      let currentY = parseInt(window.style.top) || 50;
+      let initialX, initialY;
+      
+      function startDragging(e) {
+        initialX = e.clientX - currentX;
+        initialY = e.clientY - currentY;
+        isDragging = true;
+        bringToFront(windowId);
+      }
+      
+      function drag(e) {
+        if (isDragging && !window.classList.contains('maximized')) {
+          e.preventDefault();
+          currentX = e.clientX - initialX;
+          currentY = e.clientY - initialY;
+          
+          currentX = Math.max(0, Math.min(currentX, window.parentElement.offsetWidth - window.offsetWidth));
+          currentY = Math.max(0, Math.min(currentY, window.parentElement.offsetHeight - window.offsetHeight - 30));
+          
+          window.style.left = currentX + 'px';
+          window.style.top = currentY + 'px';
+        }
+      }
+      
+      function stopDragging() {
+        isDragging = false;
+      }
+      
+      window.onmousedown = startDragging;
+      document.onmousemove = drag;
+      document.onmouseup = stopDragging;
+      
+      startDragging(e);
+    }
+    
+    function playSound(id) {
+      if (!soundEnabled) return;
+      const sound = document.getElementById(id);
+      sound.currentTime = 0;
+      sound.play().catch(e => console.log("Sound play prevented:", e));
+    }
+    
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      document.getElementById('sound-icon').className = soundEnabled ? 
+        'fas fa-volume-up' : 'fas fa-volume-mute';
+    }
+    
+    window.onload = initialize;
   </script>
 </body>
 </html>
