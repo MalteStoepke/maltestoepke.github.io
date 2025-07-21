@@ -45,21 +45,19 @@
       max-height: 80%;
       overflow: auto;
       cursor: move;
+      z-index: 10;
     }
     .window.active {
       display: block;
     }
-    .window img {
+    .window img, .window iframe {
       max-width: 100%;
       height: auto;
       display: block;
       margin: 10px auto;
     }
     .window iframe {
-      max-width: 100%;
       height: 400px;
-      display: block;
-      margin: 10px auto;
     }
     .taskbar {
       height: 30px;
@@ -90,6 +88,7 @@
       width: 200px;
       background: silver;
       border: 2px outset white;
+      z-index: 1000;
     }
     .start-menu.active {
       display: block;
@@ -131,7 +130,7 @@
       padding: 15px;
       max-width: 300px;
       display: none;
-      z-index: 1000;
+      z-index: 1001;
       box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.5);
     }
     .clippy.active {
@@ -150,6 +149,52 @@
       display: block;
       margin: 0 auto;
     }
+    .paint-canvas {
+      border: 1px solid black;
+      background: white;
+      cursor: crosshair;
+    }
+    .minesweeper-grid {
+      display: grid;
+      grid-template-columns: repeat(8, 30px);
+      gap: 2px;
+      background: silver;
+      padding: 5px;
+      margin: 10px auto;
+      width: fit-content;
+    }
+    .minesweeper-cell {
+      width: 30px;
+      height: 30px;
+      background: silver;
+      border: 2px outset white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .minesweeper-cell.revealed {
+      border: 1px solid gray;
+      background: #c0c0c0;
+    }
+    .minesweeper-cell.flagged {
+      background: url('https://win98icons.alexmeub.com/icons/png/minesweeper_flag.png') center no-repeat;
+      background-size: 20px;
+    }
+    .minesweeper-cell.mine {
+      background: url('https://win98icons.alexmeub.com/icons/png/minesweeper_mine.png') center no-repeat red;
+      background-size: 20px;
+    }
+    .animated-title {
+      display: inline-block;
+      animation: bounce 4s infinite;
+      color: navy;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
   </style>
 </head>
 <body>
@@ -160,11 +205,11 @@
     </div>
     <div class="icon" onclick="openWindow('artwork1-window')">
       <img src="https://win98icons.alexmeub.com/icons/png/paint_file-4.png" alt="Artwork 1">
-      <p>Sci-Fi Character</p>
+      <p>Neon Cyberpunk City</p>
     </div>
     <div class="icon" onclick="openWindow('artwork2-window')">
       <img src="https://win98icons.alexmeub.com/icons/png/paint_file-4.png" alt="Artwork 2">
-      <p>Fantasy Landscape</p>
+      <p>Fantasy Dragon</p>
     </div>
     <div class="icon" onclick="openWindow('about-window')">
       <img src="https://win98icons.alexmeub.com/icons/png/notepad_file-0.png" alt="About File">
@@ -174,98 +219,123 @@
       <img src="https://win98icons.alexmeub.com/icons/png/recycle_bin_empty-4.png" alt="Recycle Bin">
       <p>Recycle Bin</p>
     </div>
+    <div class="icon" onclick="openWindow('pixelsweeper-window')">
+      <img src="https://win98icons.alexmeub.com/icons/png/minesweeper-2.png" alt="PixelSweeper">
+      <p>PixelSweeper</p>
+    </div>
+    <div class="icon" onclick="openWindow('paint-window')">
+      <img src="https://win98icons.alexmeub.com/icons/png/paint-0.png" alt="Paint">
+      <p>Paint</p>
+    </div>
   </div>
   <div class="window" id="portfolio-window">
-    <div class="title-bar" onmousedown="startDrag(event, 'portfolio-window')">
+    <div class="title-bar" onmousedown="startDrag(event, 'portfolio-window'); bringToFront('portfolio-window')">
       <div class="title-bar-text">Malte Stoepke's 3D Art Portfolio</div>
       <div class="title-bar-controls">
         <button aria-label="Close" onclick="closeWindow('portfolio-window')"></button>
       </div>
     </div>
     <div class="window-body portfolio-content">
-      <h2>My 3D Artworks</h2>
-      <!-- Replace with your ArtStation images and descriptions -->
-      <img src="https://via.placeholder.com/300x200?text=Sci-Fi+Character" alt="Sci-Fi Character">
-      <p>Title: Sci-Fi Character - Description: A futuristic warrior modeled in Blender.</p>
-      <img src="https://via.placeholder.com/300x200?text=Fantasy+Landscape" alt="Fantasy Landscape">
-      <p>Title: Fantasy Landscape - Description: A magical forest environment created in Maya.</p>
+      <h2 class="animated-title">My 3D Artworks</h2>
+      <img src="https://via.placeholder.com/300x200?text=Neon+Cyberpunk+City" alt="Neon Cyberpunk City">
+      <p>Title: Neon Cyberpunk City - Description: A vibrant cityscape with neon lights, modeled in Blender for a sci-fi animation project.</p>
+      <img src="https://via.placeholder.com/300x200?text=Fantasy+Dragon" alt="Fantasy Dragon">
+      <p>Title: Fantasy Dragon - Description: A majestic dragon sculpted in ZBrush, designed for a fantasy game environment.</p>
+      <iframe src="https://player.vimeo.com/video/123456789" title="Placeholder 3D Animation" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
+      <p>Title: 3D Animation Demo - Description: A short animation showcasing a character in motion, rendered in Maya.</p>
     </div>
   </div>
   <div class="window" id="artwork1-window">
-    <div class="title-bar" onmousedown="startDrag(event, 'artwork1-window')">
-      <div class="title-bar-text">Sci-Fi Character</div>
+    <div class="title-bar" onmousedown="startDrag(event, 'artwork1-window'); bringToFront('artwork1-window')">
+      <div class="title-bar-text">Neon Cyberpunk City</div>
       <div class="title-bar-controls">
         <button aria-label="Close" onclick="closeWindow('artwork1-window')"></button>
       </div>
     </div>
     <div class="window-body portfolio-content">
-      <h2>Sci-Fi Character</h2>
-      <img src="https://via.placeholder.com/300x200?text=Sci-Fi+Character" alt="Sci-Fi Character">
-      <p>Description: A futuristic warrior modeled in Blender, designed for a sci-fi game.</p>
+      <h2 class="animated-title">Neon Cyberpunk City</h2>
+      <img src="https://via.placeholder.com/300x200?text=Neon+Cyberpunk+City" alt="Neon Cyberpunk City">
+      <p>Description: A vibrant cityscape with neon lights, modeled in Blender for a sci-fi animation project.</p>
     </div>
   </div>
   <div class="window" id="artwork2-window">
-    <div class="title-bar" onmousedown="startDrag(event, 'artwork2-window')">
-      <div class="title-bar-text">Fantasy Landscape</div>
+    <div class="title-bar" onmousedown="startDrag(event, 'artwork2-window'); bringToFront('artwork2-window')">
+      <div class="title-bar-text">Fantasy Dragon</div>
       <div class="title-bar-controls">
         <button aria-label="Close" onclick="closeWindow('artwork2-window')"></button>
       </div>
     </div>
     <div class="window-body portfolio-content">
-      <h2>Fantasy Landscape</h2>
-      <img src="https://via.placeholder.com/300x200?text=Fantasy+Landscape" alt="Fantasy Landscape">
-      <p>Description: A magical forest environment created in Maya.</p>
+      <h2 class="animated-title">Fantasy Dragon</h2>
+      <img src="https://via.placeholder.com/300x200?text=Fantasy+Dragon" alt="Fantasy Dragon">
+      <p>Description: A majestic dragon sculpted in ZBrush, designed for a fantasy game environment.</p>
     </div>
   </div>
   <div class="window" id="about-window">
-    <div class="title-bar" onmousedown="startDrag(event, 'about-window')">
+    <div class="title-bar" onmousedown="startDrag(event, 'about-window'); bringToFront('about-window')">
       <div class="title-bar-text">About Malte Stoepke</div>
       <div class="title-bar-controls">
         <button aria-label="Close" onclick="closeWindow('about-window')"></button>
       </div>
     </div>
     <div class="window-body portfolio-content">
-      <h2>About the Artist</h2>
-      <p>Hi, I'm Malte Stoepke! I'm a passionate 3D artist specializing in character modeling and environment design using Blender and Maya.</p>
+      <h2 class="animated-title">About the Artist</h2>
+      <p>Hi, I'm Malte Stoepke! I'm a passionate 3D artist specializing in character modeling and environment design using Blender, Maya, and ZBrush.</p>
       <p>Contact: malte.stoepke@example.com</p>
       <p>Social: <a href="https://www.artstation.com/malte_stoepke">ArtStation</a> | <a href="#">Twitter</a></p>
     </div>
   </div>
   <div class="window" id="recycle-window">
-    <div class="title-bar" onmousedown="startDrag(event, 'recycle-window')">
+    <div class="title-bar" onmousedown="startDrag(event, 'recycle-window'); bringToFront('recycle-window')">
       <div class="title-bar-text">Recycle Bin</div>
       <div class="title-bar-controls">
-        <button aria-label="Close" onclick="closeWindow('recycle-window')"></button>
+      <button aria-label="Close" onclick="closeWindow('recycle-window')"></button>
       </div>
     </div>
     <div class="window-body portfolio-content">
-      <h2>Easter Egg: Recycle Bin</h2>
+      <h2 class="animated-title">Easter Egg: Recycle Bin</h2>
       <p>Oops, looks like some polygons got trashed! Try my portfolio instead. 😄</p>
     </div>
   </div>
   <div class="window" id="paint-window">
-    <div class="title-bar" onmousedown="startDrag(event, 'paint-window')">
+    <div class="title-bar" onmousedown="startDrag(event, 'paint-window'); bringToFront('paint-window')">
       <div class="title-bar-text">Paint (Easter Egg)</div>
       <div class="title-bar-controls">
         <button aria-label="Close" onclick="closeWindow('paint-window')"></button>
       </div>
     </div>
     <div class="window-body portfolio-content">
-      <h2>MS Paint</h2>
-      <p>Welcome to my retro Paint app! Just kidding—this is an Easter egg. Check out my 3D art instead!</p>
+      <h2 class="animated-title">MS Paint</h2>
+      <canvas id="paintCanvas" class="paint-canvas" width="400" height="300"></canvas>
+      <p>Draw something fun! Use your mouse to sketch (black brush only).</p>
+    </div>
+  </div>
+  <div class="window" id="pixelsweeper-window">
+    <div class="title-bar" onmousedown="startDrag(event, 'pixelsweeper-window'); bringToFront('pixelsweeper-window')">
+      <div class="title-bar-text">PixelSweeper (Easter Egg)</div>
+      <div class="title-bar-controls">
+        <button aria-label="Close" onclick="closeWindow('pixelsweeper-window')"></button>
+      </div>
+    </div>
+    <div class="window-body portfolio-content">
+      <h2 class="animated-title">PixelSweeper</h2>
+      <p>Click to reveal tiles, right-click to flag mines. Find all 10 mines to win!</p>
+      <button onclick="resetPixelSweeper()">New Game</button>
+      <div id="pixelsweeper-grid" class="minesweeper-grid"></div>
+      <p id="pixelsweeper-status">Mines left: 10</p>
     </div>
   </div>
   <div class="taskbar">
     <button class="start-button" onclick="toggleStartMenu()">Start</button>
-    <div class="taskbar-time">Last updated: July 21, 2025</div>
+    <div class="taskbar-time">Last updated: July 21, 2025, 02:16 PM</div>
   </div>
   <div class="start-menu" id="start-menu">
     <ul>
       <li>Portfolio
         <ul class="submenu">
           <li onclick="openWindow('portfolio-window')">View All Artworks</li>
-          <li onclick="openWindow('artwork1-window')">Sci-Fi Character</li>
-          <li onclick="openWindow('artwork2-window')">Fantasy Landscape</li>
+          <li onclick="openWindow('artwork1-window')">Neon Cyberpunk City</li>
+          <li onclick="openWindow('artwork2-window')">Fantasy Dragon</li>
         </ul>
       </li>
       <li onclick="openWindow('about-window')">About Me</li>
@@ -276,6 +346,7 @@
         </ul>
       </li>
       <li onclick="openWindow('paint-window')">Paint (Easter Egg)</li>
+      <li onclick="openWindow('pixelsweeper-window')">PixelSweeper (Easter Egg)</li>
       <li onclick="alert('Windows 95 Portfolio OS\nVersion 1.0\nCreated by Malte Stoepke')">About Portfolio OS</li>
     </ul>
   </div>
@@ -285,19 +356,33 @@
     <button onclick="closeClippy()">OK</button>
   </div>
   <script>
-    // Show Clippy on page load
+    // Show Clippy and initialize games on page load
     window.onload = function() {
       document.getElementById('clippy').classList.add('active');
+      initPaint();
+      initPixelSweeper();
     };
+    let zIndexCounter = 10;
     function openWindow(windowId) {
-      document.getElementById(windowId).classList.add('active');
+      const window = document.getElementById(windowId);
+      window.classList.add('active');
+      bringToFront(windowId);
       document.getElementById('start-menu').classList.remove('active');
     }
     function closeWindow(windowId) {
       document.getElementById(windowId).classList.remove('active');
     }
+    function bringToFront(windowId) {
+      zIndexCounter++;
+      document.getElementById(windowId).style.zIndex = zIndexCounter;
+    }
     function toggleStartMenu() {
-      document.getElementById('start-menu').classList.toggle('active');
+      const startMenu = document.getElementById('start-menu');
+      startMenu.classList.toggle('active');
+      if (startMenu.classList.contains('active')) {
+        zIndexCounter++;
+        startMenu.style.zIndex = zIndexCounter;
+      }
     }
     function closeClippy() {
       document.getElementById('clippy').classList.remove('active');
@@ -307,6 +392,7 @@
     let offsetX, offsetY;
     function startDrag(e, windowId) {
       currentWindow = document.getElementById(windowId);
+      bringToFront(windowId);
       offsetX = e.clientX - parseInt(currentWindow.style.left || 0);
       offsetY = e.clientY - parseInt(currentWindow.style.top || 0);
       document.addEventListener('mousemove', dragWindow);
@@ -314,14 +400,160 @@
     }
     function dragWindow(e) {
       if (currentWindow) {
-        currentWindow.style.left = (e.clientX - offsetX) + 'px';
-        currentWindow.style.top = (e.clientY - offsetY) + 'px';
+        const maxX = window.innerWidth - currentWindow.offsetWidth;
+        const maxY = window.innerHeight - currentWindow.offsetHeight - 30; // Account for taskbar
+        let newX = e.clientX - offsetX;
+        let newY = e.clientY - offsetY;
+        newX = Math.max(0, Math.min(newX, maxX));
+        newY = Math.max(0, Math.min(newY, maxY));
+        currentWindow.style.left = newX + 'px';
+        currentWindow.style.top = newY + 'px';
       }
     }
     function stopDrag() {
       currentWindow = null;
       document.removeEventListener('mousemove', dragWindow);
       document.removeEventListener('mouseup', stopDrag);
+    }
+    // Paint program functionality
+    function initPaint() {
+      const canvas = document.getElementById('paintCanvas');
+      const ctx = canvas.getContext('2d');
+      let painting = false;
+      canvas.addEventListener('mousedown', (e) => {
+        painting = true;
+        ctx.beginPath();
+        ctx.moveTo(e.offsetX, e.offsetY);
+      });
+      canvas.addEventListener('mousemove', (e) => {
+        if (painting) {
+          ctx.lineTo(e.offsetX, e.offsetY);
+          ctx.strokeStyle = 'black';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        }
+      });
+      canvas.addEventListener('mouseup', () => {
+        painting = false;
+        ctx.closePath();
+      });
+      canvas.addEventListener('mouseleave', () => {
+        painting = false;
+        ctx.closePath();
+      });
+    }
+    // PixelSweeper (Minesweeper) functionality
+    function initPixelSweeper() {
+      const grid = document.getElementById('pixelsweeper-grid');
+      const status = document.getElementById('pixelsweeper-status');
+      const size = 8;
+      const mineCount = 10;
+      let board = [];
+      let revealed = 0;
+      let flags = 0;
+      function createBoard() {
+        board = Array(size * size).fill(null).map(() => ({
+          mine: false,
+          revealed: false,
+          flagged: false,
+          adjacent: 0
+        }));
+        // Place mines
+        let minesPlaced = 0;
+        while (minesPlaced < mineCount) {
+          const index = Math.floor(Math.random() * size * size);
+          if (!board[index].mine) {
+            board[index].mine = true;
+            minesPlaced++;
+          }
+        }
+        // Calculate adjacent mines
+        for (let i = 0; i < size * size; i++) {
+          if (!board[i].mine) {
+            const x = i % size;
+            const y = Math.floor(i / size);
+            let count = 0;
+            for (let dy = -1; dy <= 1; dy++) {
+              for (let dx = -1; dx <= 1; dx++) {
+                const nx = x + dx;
+                const ny = y + dy;
+                if (nx >= 0 && nx < size && ny >= 0 && ny < size) {
+                  if (board[ny * size + nx].mine) count++;
+                }
+              }
+            }
+            board[i].adjacent = count;
+          }
+        }
+      }
+      function renderBoard() {
+        grid.innerHTML = '';
+        board.forEach((cell, i) => {
+          const div = document.createElement('div');
+          div.className = 'minesweeper-cell';
+          if (cell.revealed) {
+            div.classList.add('revealed');
+            if (cell.mine) {
+              div.classList.add('mine');
+            } else if (cell.adjacent > 0) {
+              div.textContent = cell.adjacent;
+            }
+          } else if (cell.flagged) {
+            div.classList.add('flagged');
+          }
+          div.addEventListener('click', () => revealCell(i));
+          div.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            flagCell(i);
+          });
+          grid.appendChild(div);
+        });
+        status.textContent = `Mines left: ${mineCount - flags}`;
+      }
+      function revealCell(index) {
+        if (board[index].revealed || board[index].flagged) return;
+        board[index].revealed = true;
+        revealed++;
+        if (board[index].mine) {
+          board.forEach((cell, i) => {
+            if (cell.mine) cell.revealed = true;
+          });
+          renderBoard();
+          alert('Game Over! You hit a mine. Try again!');
+          return;
+        }
+        if (board[index].adjacent === 0) {
+          const x = index % size;
+          const y = Math.floor(index / size);
+          for (let dy = -1; dy <= 1; dy++) {
+            for (let dx = -1; dx <= 1; dx++) {
+              const nx = x + dx;
+              const ny = y + dy;
+              if (nx >= 0 && nx < size && ny >= 0 && ny < size) {
+                revealCell(ny * size + nx);
+              }
+            }
+          }
+        }
+        renderBoard();
+        if (revealed === size * size - mineCount) {
+          alert('You Win! All mines found!');
+        }
+      }
+      function flagCell(index) {
+        if (board[index].revealed) return;
+        board[index].flagged = !board[index].flagged;
+        flags += board[index].flagged ? 1 : -1;
+        renderBoard();
+      }
+      window.resetPixelSweeper = function() {
+        revealed = 0;
+        flags = 0;
+        createBoard();
+        renderBoard();
+      };
+      createBoard();
+      renderBoard();
     }
   </script>
 </body>
