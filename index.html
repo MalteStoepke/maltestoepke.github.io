@@ -102,7 +102,7 @@
             height: 22px;
             padding: 2px 4px;
             cursor: move;
-            background: linear-gradient(to right, #000080, #1084d0); /* Windows 95 blue gradient */
+            background: linear-gradient(to right, #000080, #1084d0);
             color: white;
             font-size: 12px;
             line-height: 18px;
@@ -134,10 +134,10 @@
         }
 
         .window-body {
-            margin-top: 22px; /* Ensure content starts below title bar */
+            margin-top: 22px;
             padding: 8px;
             background: #dfdfdf;
-            height: calc(100% - 22px); /* Adjust height to account for title bar */
+            height: calc(100% - 22px);
             overflow: auto;
             font-size: 12px;
         }
@@ -270,19 +270,6 @@
             background: #808080;
             border-bottom: 1px solid #fff;
             margin: 4px 0;
-        }
-
-        #login-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #008080;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 10000;
         }
 
         .login-box {
@@ -692,7 +679,7 @@
             <img src="https://win98icons.alexmeub.com/icons/png/notepad_file-1.png" alt="About">
             <p>About Me.txt</p>
         </div>
-        <div class="icon" data-id="paint" style="left: 20px; top: 340px;" ondblclick="openWindow('paint-window')">
+        <div class="icon" data-id="paint" style="left: 20px; top: 340px;" ondblclick="openPaint()">
             <img src="https://win98icons.alexmeub.com/icons/png/paint-0.png" alt="Paint">
             <p>Paint</p>
         </div>
@@ -704,7 +691,6 @@
             <img src="https://win98icons.alexmeub.com/icons/png/recycle_full-2.png" alt="Recycle Bin">
             <p>Recycle Bin</p>
         </div>
-        <!-- Dynamic icons for artworks will be added here -->
     </div>
     
     <div class="window" id="my-computer-window" style="width: 400px; height: 300px;">
@@ -718,7 +704,7 @@
         </div>
         <div class="window-body">
             <div class="icon" ondblclick="openWindow('portfolio-window')">
-                <img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png" alt="Portfolio">
+                <img src="https://win88icons.alexmeub.com/icons/png/directory_closed-4.png" alt="Portfolio">
                 <p>My 3D Art</p>
             </div>
         </div>
@@ -736,7 +722,6 @@
         <div class="window-body" id="portfolio-content">
             <h2>My 3D Artworks</h2>
             <div class="artwork-gallery" id="portfolio-gallery">
-                <!-- Artwork gallery will be populated here -->
             </div>
         </div>
     </div>
@@ -762,7 +747,6 @@
             <input type="text" value="C:\My Documents\Blog.htm" readonly>
         </div>
         <div class="ie-content" id="blog-content">
-            <!-- Blog content will be populated here -->
         </div>
     </div>
     
@@ -860,7 +844,6 @@
             <ul>
                 <li>Project 1: Incomplete 3D model</li>
                 <li>Project 2: Draft blog post</li>
-                <!-- Add more as needed -->
             </ul>
         </div>
     </div>
@@ -922,7 +905,7 @@
             <li onclick="openWindow('about-window')"><img src="https://win98icons.alexmeub.com/icons/png/notepad_file-1.png">About Me</li>
             <li id="add-artifact-menu" onclick="openWindow('add-artifact-window')" style="display: none;"><img src="https://win98icons.alexmeub.com/icons/png/paint_file-0.png">Add New Artifact</li>
             <li class="start-menu-separator"></li>
-            <li onclick="openWindow('paint-window')"><img src="https://win98icons.alexmeub.com/icons/png/paint-0.png">Paint</li>
+            <li onclick="openPaint()"><img src="https://win98icons.alexmeub.com/icons/png/paint-0.png">Paint</li>
             <li onclick="openWindow('pixelsweeper-window')"><img src="https://win98icons.alexmeub.com/icons/png/minesweeper-2.png">PixelSweeper</li>
             <li class="start-menu-separator"></li>
             <li id="login-logout-button" onclick="logout()"><img src="https://win98icons.alexmeub.com/icons/png/keys-4.png">Log Out</li>
@@ -943,6 +926,7 @@
     let openWindows = {};
     let highestZIndex = 10;
     let soundEnabled = true;
+    let paintScriptLoaded = false;
     
     const correctUsername = "Malte Stoepke";
     const correctPassword = "Maus_123";
@@ -985,7 +969,6 @@
         initDB();
         updateClock();
         setupEventListeners();
-        initPaint();
         startMinesweeper(8, 8, 10);
     }
 
@@ -1215,6 +1198,25 @@
         }
     }
     
+    function openPaint() {
+        if (!paintScriptLoaded) {
+            const script = document.createElement('script');
+            script.src = 'paint.js';
+            script.onload = () => {
+                paintScriptLoaded = true;
+                initPaint();
+                openWindow('paint-window');
+            };
+            script.onerror = () => {
+                playSound('error-sound');
+                alert('Failed to load Paint application.');
+            };
+            document.body.appendChild(script);
+        } else {
+            openWindow('paint-window');
+        }
+    }
+    
     function closeWindow(winId) {
         const win = document.getElementById(winId);
         if (win) {
@@ -1350,8 +1352,12 @@
             
             // Add double click listener
             newIcon.addEventListener('dblclick', () => {
-                const windowId = newIcon.dataset.windowId || `${newIcon.dataset.id}-window`;
-                openWindow(windowId);
+                const windowId = newIcon.dataset.id === 'paint' ? null : (newIcon.dataset.windowId || `${newIcon.dataset.id}-window`);
+                if (newIcon.dataset.id === 'paint') {
+                    openPaint();
+                } else {
+                    openWindow(windowId);
+                }
             });
 
             // Single click for selection style
@@ -1550,7 +1556,7 @@
         icon.className = 'icon';
         icon.dataset.id = art.id;
         icon.dataset.windowId = `artwork-window-${art.id}`;
-        icon.dataset.type = 'artwork'; // Custom data attribute for identification
+        icon.dataset.type = 'artwork';
         icon.style.left = `${Math.random() * 400 + 120}px`;
         icon.style.top = `${Math.random() * 300 + 20}px`;
 
@@ -1614,100 +1620,6 @@
     }
     
     // --- Applications ---
-    function initPaint() {
-        const canvas = document.getElementById('paint-canvas');
-        const ctx = canvas.getContext('2d');
-        let painting = false;
-        let currentTool = 'brush';
-        let currentColor = 'black';
-        
-        // Fill canvas with white
-        ctx.fillStyle = 'white';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        function startPosition(e) {
-            painting = true;
-            draw(e);
-        }
-        
-        function endPosition() {
-            painting = false;
-            ctx.beginPath();
-        }
-        
-        function draw(e) {
-            if (!painting) return;
-            
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            
-            ctx.lineWidth = 5;
-            ctx.lineCap = 'round';
-            
-            if (currentTool === 'brush') {
-                ctx.strokeStyle = currentColor;
-                ctx.lineTo(x, y);
-                ctx.stroke();
-                ctx.beginPath();
-                ctx.moveTo(x, y);
-            } else if (currentTool === 'eraser') {
-                ctx.strokeStyle = 'white';
-                ctx.lineTo(x, y);
-                ctx.stroke();
-                ctx.beginPath();
-                ctx.moveTo(x, y);
-            }
-        }
-        
-        canvas.addEventListener('mousedown', startPosition);
-        canvas.addEventListener('mouseup', endPosition);
-        canvas.addEventListener('mousemove', draw);
-        
-        // Expose these to global scope for UI controls
-        window.setTool = function(tool) {
-            currentTool = tool;
-            document.querySelectorAll('.tool-button').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            document.getElementById(`${tool}-tool`).classList.add('active');
-        };
-        
-        window.setColor = function(color) {
-            currentColor = color;
-        };
-        
-        window.clearCanvas = function() {
-            ctx.fillStyle = 'white';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-        };
-    }
-    
-    function saveArtwork() {
-        const canvas = document.getElementById('paint-canvas');
-        const title = prompt('Enter a title for your artwork:');
-        
-        if (!title) return;
-        
-        const dataURL = canvas.toDataURL('image/png');
-        const artwork = { 
-            title, 
-            description: 'Created with Portfolio OS Paint', 
-            image: dataURL, 
-            date: new Date() 
-        };
-        
-        const transaction = db.transaction(['artworks'], 'readwrite');
-        const store = transaction.objectStore('artworks');
-        store.add(artwork);
-
-        transaction.oncomplete = () => {
-            playSound('click-sound');
-            alert('Artwork saved to your portfolio!');
-            loadArtworks();
-        };
-    }
-    
     function startMinesweeper(width, height, mineCount) {
         const boardEl = document.getElementById('minesweeper-board');
         boardEl.innerHTML = '';
