@@ -1,0 +1,169 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D Art Portfolio</title>
+  <link rel="stylesheet" href="https://unpkg.com/98.css">
+  <style>
+    body {
+      background: teal;
+      font-family: "Windows95", sans-serif;
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .desktop {
+      flex-grow: 1;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 10px;
+    }
+    .icon {
+      text-align: center;
+      cursor: pointer;
+    }
+    .icon img {
+      width: 48px;
+      height: 48px;
+    }
+    .icon p {
+      color: white;
+      text-shadow: 1px 1px black;
+      margin: 5px 0 0;
+      font-size: 12px;
+    }
+    .window {
+      display: none;
+      position: absolute;
+      top: 10%;
+      left: 10%;
+      width: 80%;
+      max-height: 80%;
+      overflow: auto;
+    }
+    .window.active {
+      display: block;
+    }
+    .window img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 10px auto;
+    }
+    .taskbar {
+      height: 30px;
+      background: silver;
+      border-top: 2px solid white;
+      border-left: 2px solid white;
+      border-right: 2px solid black;
+      border-bottom: 2px solid black;
+      display: flex;
+      align-items: center;
+      padding: 0 5px;
+    }
+    .start-button {
+      margin-right: 10px;
+    }
+    .portfolio-content {
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="desktop">
+    <div class="icon" onclick="openWindow('portfolio-window')">
+      <img src="https://win98icons.alexmeub.com/icons/png/folder_closed-4.png" alt="Portfolio Folder">
+      <p>My 3D Art</p>
+    </div>
+    <div class="icon" onclick="openWindow('about-window')">
+      <img src="https://win98icons.alexmeub.com/icons/png/notepad_file-0.png" alt="About File">
+      <p>About Me</p>
+    </div>
+  </div>
+  <div class="window" id="portfolio-window">
+    <div class="title-bar">
+      <div class="title-bar-text">3D Art Portfolio</div>
+      <div class="title-bar-controls">
+        <button aria-label="Close" onclick="closeWindow('portfolio-window')"></button>
+      </div>
+    </div>
+    <div class="window-body portfolio-content">
+      <h2>My 3D Artworks</h2>
+      <!-- Replace these with your actual image URLs -->
+      <img src="https://via.placeholder.com/300x200?text=3D+Art+1" alt="3D Art 1">
+      <p>Artwork 1 Description: A futuristic cityscape created in Blender.</p>
+      <img src="https://via.placeholder.com/300x200?text=3D+Art+2" alt="3D Art 2">
+      <p>Artwork 2 Description: A character model designed for a sci-fi game.</p>
+    </div>
+  </div>
+  <div class="window" id="about-window">
+    <div class="title-bar">
+      <div class="title-bar-text">About Me</div>
+      <div class="title-bar-controls">
+        <button aria-label="Close" onclick="closeWindow('about-window')"></button>
+      </div>
+    </div>
+    <div class="window-body portfolio-content">
+      <h2>About the Artist</h2>
+      <p>Hi, I'm [Your Name]! I'm a passionate 3D artist specializing in creating immersive digital worlds. I use tools like Blender and Maya to bring my ideas to life.</p>
+      <p>Contact: [your.email@example.com]</p>
+      <p>Social: [Your social media links]</p>
+    </div>
+  </div>
+  <div class="taskbar">
+    <button class="start-button">Start</button>
+  </div>
+  <script>
+    function openWindow(windowId) {
+      document.querySelectorAll('.window').forEach(window => window.classList.remove('active'));
+      document.getElementById(windowId).classList.add('active');
+    }
+    function closeWindow(windowId) {
+      document.getElementById(windowId).classList.remove('active');
+    }
+  </script>
+</body>
+</html>
