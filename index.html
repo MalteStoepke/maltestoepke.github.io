@@ -1,1783 +1,1440 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Malte Stoepke's Portfolio OS</title>
-    <link rel="stylesheet" href="https://unpkg.com/98.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" type="text/css" href="https://gitcdn.xyz/repo/pi0/clippyjs/master/assets/clippy.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "MS Sans Serif", "Tahoma", Arial, sans-serif;
-        }
-
-        body {
-            background: #008080 url('https://static.wikitide.net/windowswallpaperwiki/2/24/Clouds_%28Windows_95%29.png') no-repeat center center fixed;
-            background-size: cover;
-            height: 100vh;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-
-        .desktop {
-            flex-grow: 1;
-            padding: 10px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .icon {
-            position: absolute;
-            text-align: center;
-            cursor: pointer;
-            padding: 8px;
-            width: 90px;
-            border: 1px solid transparent;
-            user-select: none;
-        }
-        
-        .icon.draggable:hover {
-            background: rgba(0, 0, 128, 0.5);
-            border: 1px dotted white;
-        }
-
-        .icon img {
-            width: 32px;
-            height: 32px;
-            object-fit: contain;
-        }
-
-        .icon p {
-            color: white;
-            text-shadow: 1px 1px black;
-            font-size: 11px;
-            padding: 2px;
-            word-wrap: break-word;
-            background: #008080;
-        }
-        
-        .icon.selected p {
-            background-color: #000080;
-        }
-
-        .window {
-            display: none;
-            position: absolute;
-            top: 10%;
-            left: 10%;
-            width: 600px;
-            min-width: 250px;
-            min-height: 150px;
-            max-height: 80%;
-            overflow: hidden;
-            cursor: default;
-            z-index: 10;
-            resize: both;
-            border: 2px solid #c0c0c0;
-            box-shadow: 2px 2px 0px #000000, -2px -2px 0px #ffffff;
-            background: #c0c0c0;
-        }
-
-        .window.maximized {
-            width: 100% !important;
-            height: calc(100vh - 30px) !important;
-            top: 0 !important;
-            left: 0 !important;
-            max-height: none;
-            resize: none;
-        }
-
-        .window.active {
-            display: block;
-        }
-        
-        .title-bar {
-            position: relative;
-            height: 22px;
-            padding: 2px 4px;
-            cursor: move;
-            background: linear-gradient(to right, #000080, #1084d0);
-            color: white;
-            font-size: 12px;
-            line-height: 18px;
-        }
-
-        .title-bar-text {
-            display: inline-block;
-            padding-left: 4px;
-        }
-
-        .title-bar-controls {
-            position: absolute;
-            right: 4px;
-            top: 3px;
-            display: flex;
-            gap: 2px;
-        }
-
-        .title-bar-controls button {
-            width: 16px;
-            height: 16px;
-            padding: 0;
-            margin: 0;
-            background: #c0c0c0;
-            border: 1px solid #000;
-            border-top-color: #fff;
-            border-left-color: #fff;
-            cursor: pointer;
-        }
-
-        .window-body {
-            margin-top: 22px;
-            padding: 8px;
-            background: #dfdfdf;
-            height: calc(100% - 22px);
-            overflow: auto;
-            font-size: 12px;
-        }
-
-        .window-body img.artwork-image {
-            max-width: 100%;
-            height: auto;
-            display: block;
-            margin: 8px auto;
-            border: 2px inset #ffffff;
-        }
-        
-        .taskbar {
-            height: 30px;
-            background: #c0c0c0;
-            border-top: 2px solid #ffffff;
-            display: flex;
-            align-items: center;
-            padding: 0 2px;
-            position: relative;
-            z-index: 100;
-            flex-shrink: 0;
-        }
-
-        .start-button {
-            font-weight: bold;
-            padding: 2px 6px;
-            height: 26px;
-            display: flex;
-            align-items: center;
-            background: #c0c0c0;
-            border: 2px outset #ffffff;
-        }
-
-        .start-button img {
-            width: 20px;
-            height: 20px;
-            margin-right: 4px;
-        }
-        
-        .taskbar-time {
-            font-size: 11px;
-            padding: 2px 4px;
-            border: 1px solid #808080;
-            border-right: 2px solid #fff;
-            border-bottom: 2px solid #fff;
-            min-width: 80px;
-            text-align: center;
-            margin-left: 4px;
-        }
-        
-        .taskbar-user {
-             font-size: 11px;
-             padding: 2px 6px;
-             border: 1px solid #808080;
-             margin: 0 2px;
-        }
-
-        .taskbar-apps {
-            display: flex;
-            flex-grow: 1;
-            margin: 0 4px;
-            gap: 2px;
-            overflow: hidden;
-        }
-
-        .taskbar-app {
-            padding: 2px 6px;
-            font-size: 12px;
-            cursor: pointer;
-            max-width: 150px;
-            min-width: 80px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            flex-shrink: 1;
-            background: #c0c0c0;
-            border: 2px outset #ffffff;
-        }
-        
-        .taskbar-app.active {
-            border: 2px inset #c0c0c0;
-        }
-        
-        .start-menu {
-            display: none;
-            position: absolute;
-            bottom: 30px;
-            left: 0;
-            width: 200px;
-            background: #c0c0c0;
-            border-top: 2px solid #ffffff;
-            border-left: 2px solid #ffffff;
-            border-right: 2px solid #000;
-            border-bottom: 2px solid #000;
-            z-index: 1000;
-        }
-
-        .start-menu.active {
-            display: block;
-        }
-
-        .start-menu ul {
-            list-style: none;
-            padding: 2px;
-            margin: 0;
-        }
-
-        .start-menu li {
-            padding: 4px 8px;
-            cursor: pointer;
-            font-size: 12px;
-            display: flex;
-            align-items: center;
-        }
-
-        .start-menu li img {
-            width: 22px;
-            height: 22px;
-            margin-right: 8px;
-        }
-
-        .start-menu li:hover {
-            background: #000080;
-            color: white;
-        }
-        
-        .start-menu-separator {
-            height: 1px;
-            background: #808080;
-            border-bottom: 1px solid #fff;
-            margin: 4px 0;
-        }
-
-        .login-box {
-            background: #c0c0c0;
-            padding: 20px;
-            width: 320px;
-            text-align: center;
-            border: 2px outset #ffffff;
-        }
-        
-        .login-title {
-            background: #000080;
-            color: white;
-            padding: 4px;
-            margin: -20px -20px 20px -20px;
-            font-weight: bold;
-            font-size: 12px;
-        }
-        
-        .login-field {
-            margin: 12px 0;
-            text-align: left;
-        }
-        
-        .login-field label {
-            display: block;
-            margin-bottom: 4px;
-            font-size: 12px;
-        }
-
-        .login-field input {
-             width: 100%;
-             padding: 4px;
-        }
-        
-        .login-buttons {
-            display: flex;
-            justify-content: space-around;
-            margin-top: 20px;
-        }
-
-        .paint-canvas {
-            border: 1px solid black;
-            background: white;
-            cursor: crosshair;
-            display: block;
-            margin: 0 auto;
-        }
-        
-        .minesweeper-board {
-            display: grid;
-            gap: 1px;
-            background: #808080;
-            padding: 8px;
-            border: 2px inset #fff;
-            margin: 0 auto;
-        }
-
-        .minesweeper-cell {
-            width: 20px;
-            height: 20px;
-            background: #c0c0c0;
-            border: 2px outset #fff;
-            text-align: center;
-            line-height: 16px;
-            font-size: 12px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        
-        .minesweeper-cell.revealed {
-            border: 1px solid #808080;
-        }
-        
-        .minesweeper-cell.mine {
-            background-color: red;
-        }
-        
-        .color-1 { color: blue; }
-        .color-2 { color: green; }
-        .color-3 { color: red; }
-        .color-4 { color: navy; }
-        .color-5 { color: maroon; }
-        .color-6 { color: teal; }
-        .color-7 { color: black; }
-        .color-8 { color: gray; }
-
-        .context-menu {
-            position: absolute;
-            background: #c0c0c0;
-            border-top: 2px solid #ffffff;
-            border-left: 2px solid #ffffff;
-            border-right: 2px solid #000;
-            border-bottom: 2px solid #000;
-            z-index: 10000;
-            font-size: 12px;
-            padding: 2px;
-            display: none;
-        }
-
-        .context-menu ul {
-            list-style: none;
-        }
-
-        .context-menu li {
-            padding: 4px 18px;
-            cursor: pointer;
-        }
-
-        .context-menu li:hover {
-            background: #000080;
-            color: white;
-        }
-
-        .ie-toolbar {
-            background: #c0c0c0;
-            border-bottom: 1px solid #808080;
-            padding: 4px;
-            display: flex;
-            gap: 4px;
-            align-items: center;
-        }
-
-        .ie-address-bar {
-            display: flex;
-            align-items: center;
-            margin: 4px;
-            background: #c0c0c0;
-            border-bottom: 1px solid #808080;
-            padding: 2px;
-        }
-
-        .ie-address-bar label {
-            margin-right: 4px;
-            font-size: 12px;
-            color: #808080;
-        }
-
-        .ie-address-bar input {
-            flex-grow: 1;
-            background: white;
-            padding: 4px;
-        }
-        
-        .ie-content {
-            background: white;
-            padding: 8px;
-            height: 100%;
-            overflow: auto;
-        }
-        
-        .blog-post {
-            border-bottom: 1px solid #c0c0c0;
-            padding-bottom: 10px;
-            margin-bottom: 10px;
-        }
-        
-        .blog-post h3 {
-            margin: 0 0 5px;
-            font-size: 16px;
-        }
-        
-        .blog-post .date {
-            font-size: 11px;
-            color: #808080;
-            margin-bottom: 5px;
-        }
-        
-        .artwork-gallery {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 15px;
-        }
-        
-        .artwork-item {
-            width: 120px;
-            text-align: center;
-            cursor: pointer;
-        }
-        
-        .artwork-item img {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            border: 2px outset #ffffff;
-        }
-        
-        .artwork-item p {
-            margin-top: 5px;
-            font-size: 11px;
-        }
-        
-        .editable-field {
-            border: 2px inset #c0c0c0;
-            padding: 4px;
-            margin: 4px 0;
-            background: white;
-        }
-        
-        .edit-controls {
-            display: none;
-            margin-top: 10px;
-        }
-        
-        .paint-tools {
-            display: flex;
-            gap: 4px;
-            margin-bottom: 8px;
-            background: #c0c0c0;
-            padding: 4px;
-            border: 2px inset #ffffff;
-        }
-        
-        .tool-button {
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 2px outset #ffffff;
-            background: #c0c0c0;
-            cursor: pointer;
-        }
-        
-        .tool-button.active {
-            border: 2px inset #c0c0c0;
-        }
-        
-        .color-picker {
-            display: flex;
-            gap: 3px;
-            margin-top: 8px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        
-        .color-option {
-            width: 16px;
-            height: 16px;
-            border: 1px solid black;
-            cursor: pointer;
-        }
-        
-        .minesweeper-controls {
-            margin-bottom: 8px;
-            display: flex;
-            gap: 4px;
-        }
-        
-        #loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 20000;
-            color: white;
-        }
-        
-        #loading-screen p {
-            margin-top: 10px;
-        }
-        
-        .loading-bar {
-            width: 200px;
-            height: 16px;
-            border: 2px inset #ffffff;
-            margin-top: 12px;
-            background: #000080;
-            overflow: hidden;
-        }
-        
-        .loading-progress {
-            height: 100%;
-            width: 0%;
-            background: #c0c0c0;
-            transition: width 0.5s;
-        }
-        
-        .audio-control {
-            position: fixed;
-            top: 4px;
-            right: 4px;
-            z-index: 100;
-            background: #c0c0c0;
-            border: 2px outset #ffffff;
-            padding: 2px 6px;
-            cursor: pointer;
-        }
-        
-        @media (max-width: 768px) {
-            .window {
-                width: 95%;
-                left: 2.5%;
-            }
-            
-            .icon {
-                width: 70px;
-            }
-            
-            .icon img {
-                width: 24px;
-                height: 24px;
-            }
-        }
-
-        @media screen and (max-width: 600px), screen and (orientation: portrait) {
-            .window {
-                width: 100% !important;
-                height: calc(100vh - 40px) !important;
-                top: 0 !important;
-                left: 0 !important;
-                position: fixed;
-                resize: none;
-            }
-
-            .desktop {
-                display: flex;
-                flex-wrap: wrap;
-                justify-content: flex-start;
-                align-content: flex-start;
-            }
-
-            .icon {
-                position: relative;
-                margin: 10px;
-                width: 80px;
-            }
-
-            .taskbar {
-                height: 40px;
-            }
-
-            .start-button {
-                height: 36px;
-            }
-
-            .start-menu {
-                width: 100%;
-                bottom: 40px;
-                left: 0;
-            }
-
-            .taskbar-time {
-                min-width: 120px;
-            }
-        }
-    </style>
-</head>
-<body>
-
-    <audio id="startup-sound" src="https://orangefreesounds.com/wp-content/uploads/2022/05/Windows-95-startup-sound.mp3" preload="auto"></audio>
-    <audio id="error-sound" src="https://orangefreesounds.com/wp-content/uploads/2020/09/Windows-95-error-sound.mp3" preload="auto"></audio>
-    <audio id="window-open-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3"></audio>
-    <audio id="window-close-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-quick-jump-arcade-game-239.mp3"></audio>
-    <audio id="click-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-mouse-click-close-1113.mp3"></audio>
-    
-    <div id="loading-screen">
-        <img src="https://win98icons.alexmeub.com/icons/png/windows-0.png" alt="Windows 95" width="48" height="48">
-        <h2>Portfolio OS</h2>
-        <p>Starting...</p>
-        <p>Made by Malte Stoepke</p>
-        <div class="loading-bar">
-            <div class="loading-progress" id="loading-progress"></div>
-        </div>
-    </div>
-
-    <div id="login-screen" style="display: none;">
-        <div class="login-box">
-            <div class="login-title">Portfolio OS Login</div>
-            <img src="https://win98icons.alexmeub.com/icons/png/keys-4.png" alt="Keys" width="48" height="48" style="margin-bottom: 10px;">
-            <div class="login-field">
-                <label for="username"><u>U</u>ser name:</label>
-                <input type="text" id="username" value="Malte Stoepke">
-            </div>
-            <div class="login-field">
-                <label for="password"><u>P</u>assword:</label>
-                <input type="password" id="password" value="Maus_123">
-            </div>
-            <div class="login-buttons field-row" style="justify-content: center;">
-                <button onclick="login()"><img src="https://win98icons.alexmeub.com/icons/png/key-2.png" style="width:16px; height:16px; margin-right: 5px;">Log On</button>
-                <button onclick="guestLogin()">Guest</button>
-            </div>
-        </div>
-    </div>
-    
-    <div class="desktop" id="desktop" style="display: none;">
-        <div class="icon" data-id="my-computer" style="left: 20px; top: 20px;" ondblclick="openWindow('my-computer-window')">
-            <img src="https://win98icons.alexmeub.com/icons/png/computer-4.png" alt="My Computer">
-            <p>My Computer</p>
-        </div>
-        <div class="icon" data-id="portfolio" style="left: 20px; top: 100px;" ondblclick="openWindow('portfolio-window')">
-            <img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png" alt="Portfolio">
-            <p>My 3D Art</p>
-        </div>
-        <div class="icon" data-id="ie" style="left: 20px; top: 180px;" ondblclick="openWindow('ie-window')">
-            <img src="https://win98icons.alexmeub.com/icons/png/msie2-0.png" alt="Internet Explorer">
-            <p>Blog</p>
-        </div>
-        <div class="icon" data-id="about" style="left: 20px; top: 260px;" ondblclick="openWindow('about-window')">
-            <img src="https://win98icons.alexmeub.com/icons/png/notepad_file-1.png" alt="About">
-            <p>About Me.txt</p>
-        </div>
-        <div class="icon" data-id="paint" style="left: 20px; top: 340px;" ondblclick="openPaint()">
-            <img src="https://win98icons.alexmeub.com/icons/png/paint-0.png" alt="Paint">
-            <p>Paint</p>
-        </div>
-        <div class="icon" data-id="pixelsweeper" style="left: 20px; top: 420px;" ondblclick="openWindow('pixelsweeper-window')">
-            <img src="https://win98icons.alexmeub.com/icons/png/minesweeper-2.png" alt="PixelSweeper">
-            <p>PixelSweeper</p>
-        </div>
-        <div class="icon" data-id="recycle" style="left: 20px; top: 500px;" ondblclick="openWindow('recycle-window')">
-            <img src="https://win98icons.alexmeub.com/icons/png/recycle_full-2.png" alt="Recycle Bin">
-            <p>Recycle Bin</p>
-        </div>
-    </div>
-    
-    <div class="window" id="my-computer-window" style="width: 400px; height: 300px;">
-        <div class="title-bar">
-            <div class="title-bar-text">My Computer</div>
-            <div class="title-bar-controls">
-                <button aria-label="Minimize" onclick="minimizeWindow('my-computer-window')"></button>
-                <button aria-label="Maximize" onclick="maximizeWindow('my-computer-window')"></button>
-                <button aria-label="Close" onclick="closeWindow('my-computer-window')"></button>
-            </div>
-        </div>
-        <div class="window-body">
-            <div class="icon" ondblclick="openWindow('portfolio-window')">
-                <img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png" alt="Portfolio">
-                <p>My 3D Art</p>
-            </div>
-        </div>
-    </div>
-    
-    <div class="window" id="portfolio-window" style="width: 500px; height: 400px;">
-        <div class="title-bar">
-            <div class="title-bar-text">My 3D Art</div>
-            <div class="title-bar-controls">
-                <button aria-label="Minimize" onclick="minimizeWindow('portfolio-window')"></button>
-                <button aria-label="Maximize" onclick="maximizeWindow('portfolio-window')"></button>
-                <button aria-label="Close" onclick="closeWindow('portfolio-window')"></button>
-            </div>
-        </div>
-        <div class="window-body" id="portfolio-content">
-            <h2>My 3D Artworks</h2>
-            <div class="artwork-gallery" id="portfolio-gallery">
-            </div>
-        </div>
-    </div>
-    
-    <div class="window" id="ie-window" style="width: 700px; height: 500px;">
-        <div class="title-bar">
-            <div class="title-bar-text">My Personal Blog - Internet Explorer</div>
-            <div class="title-bar-controls">
-                <button aria-label="Minimize" onclick="minimizeWindow('ie-window')"></button>
-                <button aria-label="Maximize" onclick="maximizeWindow('ie-window')"></button>
-                <button aria-label="Close" onclick="closeWindow('ie-window')"></button>
-            </div>
-        </div>
-        <div class="ie-toolbar">
-            <button disabled>Back</button>
-            <button disabled>Forward</button>
-            <button onclick="document.getElementById('error-sound').play()">Stop</button>
-            <button onclick="loadBlogPosts()">Refresh</button>
-            <button onclick="document.getElementById('error-sound').play()">Home</button>
-        </div>
-        <div class="ie-address-bar">
-            <label>Address:</label>
-            <input type="text" value="C:\My Documents\Blog.htm" readonly>
-        </div>
-        <div class="ie-content" id="blog-content">
-        </div>
-    </div>
-    
-    <div class="window" id="about-window" style="width: 400px; height: 250px;">
-        <div class="title-bar">
-            <div class="title-bar-text">About Me.txt - Notepad</div>
-            <div class="title-bar-controls">
-                <button aria-label="Minimize" onclick="minimizeWindow('about-window')"></button>
-                <button aria-label="Maximize" onclick="maximizeWindow('about-window')"></button>
-                <button aria-label="Close" onclick="closeWindow('about-window')"></button>
-            </div>
-        </div>
-        <div class="window-body" style="background: white; font-family: 'Lucida Console', monospace;">
-            <p class="editable-field" contenteditable="false" id="about-bio"><strong>Malte Stoepke - 3D Artist</strong></p>
-            <br>
-            <p class="editable-field" contenteditable="false" id="about-desc">Welcome to my interactive portfolio! This project combines my passion for 3D art with a love for retro computing aesthetics. All artworks displayed here are my own creations.</p>
-            <br>
-            <p class="editable-field" contenteditable="false" id="about-contact">Log in with the provided credentials to add new artworks or write a blog post.</p>
-            <div class="edit-controls">
-                <button onclick="saveAboutEdits()">Save Changes</button>
-            </div>
-        </div>
-    </div>
-    
-    <div class="window" id="paint-window" style="width: 500px; height: 400px;">
-        <div class="title-bar">
-            <div class="title-bar-text">untitled - Paint</div>
-            <div class="title-bar-controls">
-                <button aria-label="Minimize" onclick="minimizeWindow('paint-window')"></button>
-                <button aria-label="Maximize" onclick="maximizeWindow('paint-window')"></button>
-                <button aria-label="Close" onclick="closeWindow('paint-window')"></button>
-            </div>
-        </div>
-        <div class="window-body">
-            <div class="paint-tools">
-                <div class="tool-button active" id="brush-tool" onclick="setTool('brush')">
-                    <i class="fas fa-paint-brush"></i>
-                </div>
-                <div class="tool-button" id="text-tool" onclick="setTool('text')">
-                    <i class="fas fa-font"></i>
-                </div>
-                <div class="tool-button" id="eraser-tool" onclick="setTool('eraser')">
-                    <i class="fas fa-eraser"></i>
-                </div>
-                <div class="tool-button" onclick="clearCanvas()">
-                    <i class="fas fa-trash"></i>
-                </div>
-                <button class="login-button" onclick="saveArtwork()" style="margin-left: 10px;">
-                    <i class="fas fa-save"></i> Save to Desktop
-                </button>
-            </div>
-            <canvas id="paint-canvas" class="paint-canvas" width="480" height="320"></canvas>
-            <div class="color-picker">
-                <div class="color-option" style="background: black;" onclick="setColor('black')"></div>
-                <div class="color-option" style="background: red;" onclick="setColor('red')"></div>
-                <div class="color-option" style="background: green;" onclick="setColor('green')"></div>
-                <div class="color-option" style="background: blue;" onclick="setColor('blue')"></div>
-                <div class="color-option" style="background: yellow;" onclick="setColor('yellow')"></div>
-                <div class="color-option" style="background: purple;" onclick="setColor('purple')"></div>
-                <div class="color-option" style="background: orange;" onclick="setColor('orange')"></div>
-                <div class="color-option" style="background: pink;" onclick="setColor('pink')"></div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="window" id="pixelsweeper-window" style="width: auto; height: auto;">
-        <div class="title-bar">
-            <div class="title-bar-text">PixelSweeper</div>
-            <div class="title-bar-controls">
-                <button aria-label="Minimize" onclick="minimizeWindow('pixelsweeper-window')"></button>
-                <button aria-label="Close" onclick="closeWindow('pixelsweeper-window')"></button>
-            </div>
-        </div>
-        <div class="window-body">
-            <div class="minesweeper-controls">
-                <button onclick="startMinesweeper(8, 8, 10)">Beginner</button>
-                <button onclick="startMinesweeper(16, 16, 40)">Intermediate</button>
-                <button onclick="startMinesweeper(30, 16, 99)">Expert</button>
-            </div>
-            <div id="minesweeper-board" class="minesweeper-board"></div>
-        </div>
-    </div>
-
-    <div class="window" id="recycle-window" style="width: 400px; height: 300px;">
-        <div class="title-bar">
-            <div class="title-bar-text">Recycle Bin</div>
-            <div class="title-bar-controls">
-                <button aria-label="Minimize" onclick="minimizeWindow('recycle-window')"></button>
-                <button aria-label="Maximize" onclick="maximizeWindow('recycle-window')"></button>
-                <button aria-label="Close" onclick="closeWindow('recycle-window')"></button>
-            </div>
-        </div>
-        <div class="window-body">
-            <p>Unfinished work:</p>
-            <ul>
-                <li>Project 1: Incomplete 3D model</li>
-                <li>Project 2: Draft blog post</li>
-            </ul>
-        </div>
-    </div>
-
-    <div class="window" id="add-artifact-window" style="width: 400px; height: 350px;">
-        <div class="title-bar">
-            <div class="title-bar-text">Add New Artifact</div>
-            <div class="title-bar-controls">
-                 <button aria-label="Close" onclick="closeWindow('add-artifact-window')"></button>
-            </div>
-        </div>
-        <div class="window-body" style="display:flex; flex-direction: column; gap: 10px;">
-             <label for="artifact-title">Title:</label>
-             <input type="text" id="artifact-title">
-             <label for="artifact-desc">Description:</label>
-             <textarea id="artifact-desc" rows="4"></textarea>
-             <label for="artifact-image">Image:</label>
-             <input type="file" id="artifact-image" accept="image/*">
-             <button onclick="addArtwork()">Add Artifact</button>
-        </div>
-    </div>
-    
-    <div class="window" id="add-post-window" style="width: 500px; height: 400px;">
-        <div class="title-bar">
-            <div class="title-bar-text">Add New Blog Post</div>
-            <div class="title-bar-controls">
-                 <button aria-label="Close" onclick="closeWindow('add-post-window')"></button>
-            </div>
-        </div>
-        <div class="window-body" style="display:flex; flex-direction: column; gap: 10px;">
-             <label for="post-title">Title:</label>
-             <input type="text" id="post-title">
-             <label for="post-content">Content:</label>
-             <textarea id="post-content" rows="8"></textarea>
-             <button onclick="addBlogPost()">Publish Post</button>
-        </div>
-    </div>
-    
-    <div class="context-menu" id="context-menu">
-        <ul>
-            <li id="context-delete">Delete</li>
-        </ul>
-    </div>
-    
-    <div class="taskbar" style="display: none;">
-        <button class="start-button" id="start-button">
-            <img src="https://win98icons.alexmeub.com/icons/png/windows-0.png" alt="Start">
-            <span>Start</span>
-        </button>
-        <div class="taskbar-apps" id="taskbar-apps"></div>
-        <div class="taskbar-user" id="taskbar-user">Guest</div>
-        <div class="taskbar-time" id="taskbar-time"></div>
-    </div>
-    
-    <div class="start-menu" id="start-menu">
-        <ul>
-            <li onclick="openWindow('portfolio-window')"><img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png">All Artifacts</li>
-            <li onclick="openWindow('ie-window')"><img src="https://win98icons.alexmeub.com/icons/png/msie2-0.png">Blog</li>
-            <li onclick="openWindow('about-window')"><img src="https://win98icons.alexmeub.com/icons/png/notepad_file-1.png">About Me</li>
-            <li id="add-artifact-menu" onclick="openWindow('add-artifact-window')" style="display: none;"><img src="https://win98icons.alexmeub.com/icons/png/paint_file-0.png">Add New Artifact</li>
-            <li class="start-menu-separator"></li>
-            <li onclick="openPaint()"><img src="https://win98icons.alexmeub.com/icons/png/paint-0.png">Paint</li>
-            <li onclick="openWindow('pixelsweeper-window')"><img src="https://win98icons.alexmeub.com/icons/png/minesweeper-2.png">PixelSweeper</li>
-            <li class="start-menu-separator"></li>
-            <li id="login-logout-button" onclick="logout()"><img src="https://win98icons.alexmeub.com/icons/png/keys-4.png">Log Out</li>
-        </ul>
-    </div>
-    
-    <div class="audio-control" onclick="toggleSound()">
-        <i class="fas fa-volume-up" id="sound-icon"></i>
-    </div>
-    
-    <script src="https://unpkg.com/jquery@3.2.1"></script>
-    <script src="https://unpkg.com/clippyjs@latest"></script>
-    <script src="portfolio.js"></script>
-    <script>
-    // --- State & Config ---
-    let db;
-    let currentUser = 'Guest';
-    let activeWindow = null;
-    let openWindows = {};
-    let highestZIndex = 10;
-    let soundEnabled = true;
-    let paintScriptLoaded = false;
-    
-    const correctUsername = "Malte Stoepke";
-    const correctPassword = "Maus_123";
-
-    // --- DOM Elements ---
-    const desktop = document.getElementById('desktop');
-    const taskbar = document.querySelector('.taskbar');
-    const taskbarApps = document.getElementById('taskbar-apps');
-    const startMenu = document.getElementById('start-menu');
-    const loginScreen = document.getElementById('login-screen');
-    const loadingScreen = document.getElementById('loading-screen');
-    const contextMenu = document.getElementById('context-menu');
-    
-    // --- Initialization ---
-    document.addEventListener('DOMContentLoaded', () => {
-        // Simulate loading progress
-        let progress = 0;
-        const interval = setInterval(() => {
-            progress += 20;
-            document.getElementById('loading-progress').style.width = progress + '%';
-            
-            if (progress >= 100) {
-                clearInterval(interval);
-                setTimeout(() => {
-                    loadingScreen.style.display = 'none';
-                    document.getElementById('startup-sound').play().catch(e => console.log("Audio autoplay blocked."));
-                    
-                    // Initialize the OS after loading screen disappears
-                    initOS();
-                }, 500);
-            }
-        }, 200);
-    });
-
-    function initOS() {
-        // Auto login as guest
-        guestLogin();
-        
-        // Initialize components
-        initDB();
-        updateClock();
-        setupEventListeners();
-        startMinesweeper(8, 8, 10);
-        fetchPortfolioProjects(); // Call function from portfolio.js
-    }
-
-    function initDB() {
-        const request = indexedDB.open('PortfolioOSDB', 1);
-
-        request.onerror = (event) => {
-            console.error("Database error: ", event.target.errorCode);
-            // Proceed even if DB fails
-            guestLogin();
-        };
-        
-        request.onsuccess = (event) => {
-            db = event.target.result;
-            console.log("Database opened successfully.");
-            loadArtworks();
-            loadBlogPosts();
-            // Load Clippy after DB is ready
-            clippy.load('Clippy', function(agent) {
-                window.clippyAgent = agent;
-                agent.show();
-                agent.speak('Hi! I\'m Clippy. Welcome to Malte Stoepke\'s Portfolio OS. This is a Windows 95 styled website showcasing my 3D art. Double-click on icons to explore!');
-            });
-        };
-        
-        request.onupgradeneeded = (event) => {
-            let db = event.target.result;
-            const artworkStore = db.createObjectStore('artworks', { keyPath: 'id', autoIncrement: true });
-            artworkStore.createIndex('title', 'title', { unique: false });
-            
-            const postStore = db.createObjectStore('blogPosts', { keyPath: 'id', autoIncrement: true });
-            postStore.createIndex('date', 'date', { unique: false });
-            
-            // Add sample blog post
-            const samplePost = { 
-                title: "Welcome to my Portfolio OS!", 
-                content: "This is my interactive portfolio in Windows 95 style. Feel free to explore my artworks and blog posts.",
-                date: new Date().toISOString()
-            };
-            postStore.add(samplePost);
-        };
-    }
-    
-    function setupEventListeners() {
-        // Start Menu
-        document.getElementById('start-button').addEventListener('click', (e) => {
-            e.stopPropagation();
-            startMenu.classList.toggle('active');
-            playSound('click-sound');
-        });
-
-        document.addEventListener('click', () => {
-            startMenu.classList.remove('active');
-            contextMenu.style.display = 'none';
-        });
-        
-        // Window Controls
-        document.querySelectorAll('.window').forEach(win => {
-            const winId = win.id;
-            const titleBar = win.querySelector('.title-bar');
-            
-            // Dragging
-            if (titleBar) {
-                titleBar.addEventListener('mousedown', (e) => {
-                    if (e.target.closest('.title-bar-controls')) return;
-                    startDrag(e, win);
-                    bringToFront(winId);
-                });
-            }
-
-            // Close, Maximize, Minimize
-            const controls = win.querySelector('.title-bar-controls');
-            if (controls) {
-                controls.querySelector('[aria-label="Close"]')?.addEventListener('click', () => closeWindow(winId));
-                controls.querySelector('[aria-label="Maximize"]')?.addEventListener('click', () => maximizeWindow(winId));
-                controls.querySelector('[aria-label="Minimize"]')?.addEventListener('click', () => minimizeWindow(winId));
-            }
-
-            win.addEventListener('mousedown', () => bringToFront(winId));
-        });
-        
-        // Desktop Icon Context Menu
-        desktop.addEventListener('contextmenu', (e) => {
-            e.preventDefault();
-            const icon = e.target.closest('.icon');
-            if (currentUser === correctUsername && icon && icon.dataset.type === 'artwork') {
-                 showContextMenu(e.clientX, e.clientY, icon.dataset.id);
-            }
-        });
-        contextMenu.addEventListener('click', e => e.stopPropagation());
-    }
-
-    // --- Authentication ---
-    function login() {
-        const user = document.getElementById('username').value;
-        const pass = document.getElementById('password').value;
-
-        if (user === correctUsername && pass === correctPassword) {
-            currentUser = correctUsername;
-            loginScreen.style.display = 'none';
-            updateUIAfterLogin();
-            playSound('start-sound');
-            if (window.clippyAgent) {
-                window.clippyAgent.speak('Logged in as admin. You can now edit and add content.');
-            }
-        } else {
-            playSound('error-sound');
-            alert("Incorrect username or password.");
-        }
-    }
-
-    function guestLogin() {
-        currentUser = 'Guest';
-        loginScreen.style.display = 'none';
-        updateUIAfterLogin();
-        playSound('click-sound');
-    }
-    
-    function logout() {
-        currentUser = 'Guest';
-        loginScreen.style.display = 'flex';
-        updateUIAfterLogin();
-        playSound('click-sound');
-        // Close all windows on logout
-        Object.keys(openWindows).forEach(id => closeWindow(id));
-    }
-    
-    function updateUIAfterLogin() {
-        // Show desktop and taskbar
-        desktop.style.display = 'block';
-        taskbar.style.display = 'flex';
-        
-        document.getElementById('taskbar-user').textContent = currentUser;
-        const addArtifactMenu = document.getElementById('add-artifact-menu');
-        
-        if (currentUser === correctUsername) {
-            addArtifactMenu.style.display = 'flex';
-            document.getElementById('login-logout-button').innerHTML = `<img src="https://win98icons.alexmeub.com/icons/png/keys-4.png">Log Out`;
-            document.getElementById('login-logout-button').onclick = logout;
-            
-            // Enable editing
-            document.querySelectorAll('.editable-field').forEach(field => {
-                field.contentEditable = true;
-            });
-            document.querySelectorAll('.edit-controls').forEach(controls => {
-                controls.style.display = 'block';
-            });
-        } else {
-            addArtifactMenu.style.display = 'none';
-            document.getElementById('login-logout-button').innerHTML = `<img src="https://win98icons.alexmeub.com/icons/png/keys-4.png">Log In`;
-            document.getElementById('login-logout-button').onclick = () => { loginScreen.style.display = 'flex'; };
-            
-            // Disable editing
-            document.querySelectorAll('.editable-field').forEach(field => {
-                field.contentEditable = false;
-            });
-            document.querySelectorAll('.edit-controls').forEach(controls => {
-                controls.style.display = 'none';
-            });
-        }
-        
-        // Re-apply draggable status to icons
-        setupIconInteraction();
-    }
-    
-    // --- Clock ---
-    function updateClock() {
-        document.getElementById('taskbar-time').textContent = 'Last Update: 07/22/2025';
-    }
-    
-    // --- Window Management ---
-    function openWindow(winId) {
-        const win = document.getElementById(winId);
-        if (!win) return;
-        
-        win.style.display = 'block';
-        bringToFront(winId);
-        playSound('window-open-sound');
-
-        if (!openWindows[winId]) {
-             createTaskbarApp(winId);
-        }
-        openWindows[winId] = { minimized: false };
-        updateTaskbar();
-        startMenu.classList.remove('active');
-
-        // Clippy explanation
-        if (window.clippyAgent) {
-            let explanation = '';
-            switch (winId) {
-                case 'my-computer-window':
-                    explanation = 'This is My Computer. It contains access to my portfolio.';
-                    break;
-                case 'portfolio-window':
-                    explanation = 'Here is my 3D Art gallery. Click on items to view details.';
-                    break;
-                case 'ie-window':
-                    explanation = 'This is my personal blog, styled as Internet Explorer.';
-                    break;
-                case 'about-window':
-                    explanation = 'Read about me in this Notepad file.';
-                    break;
-                case 'paint-window':
-                    explanation = 'Use Paint to create your own artwork and save it to the desktop.';
-                    break;
-                case 'pixelsweeper-window':
-                    explanation = 'Play PixelSweeper, a Minesweeper clone.';
-                    break;
-                case 'add-artifact-window':
-                    explanation = 'Add a new artwork to your portfolio here.';
-                    break;
-                case 'add-post-window':
-                    explanation = 'Write and publish a new blog post.';
-                    break;
-                case 'recycle-window':
-                    explanation = 'This is the Recycle Bin, containing unfinished work.';
-                    break;
-                default:
-                    if (winId.startsWith('artwork-window-')) {
-                        explanation = 'Viewing a specific artwork. You can edit the description if logged in.';
-                    }
-                    break;
-            }
-            if (explanation) {
-                window.clippyAgent.speak(explanation);
-            }
-        }
-    }
-    
-    function openPaint() {
-        if (!paintScriptLoaded) {
-            const script = document.createElement('script');
-            script.src = 'paint.js';
-            script.onload = () => {
-                paintScriptLoaded = true;
-                initPaint();
-                openWindow('paint-window');
-            };
-            script.onerror = () => {
-                playSound('error-sound');
-                alert('Failed to load Paint application.');
-            };
-            document.body.appendChild(script);
-        } else {
-            openWindow('paint-window');
-        }
-    }
-    
-    function closeWindow(winId) {
-        const win = document.getElementById(winId);
-        if (win) {
-            win.style.display = 'none';
-            playSound('window-close-sound');
-        }
-        
-        delete openWindows[winId];
-        if (activeWindow === winId) activeWindow = null;
-        updateTaskbar();
-    }
-
-    function minimizeWindow(winId) {
-        const win = document.getElementById(winId);
-        if (win) {
-            win.style.display = 'none';
-            playSound('click-sound');
-        }
-
-        if (openWindows[winId]) {
-            openWindows[winId].minimized = true;
-        }
-        if (activeWindow === winId) activeWindow = null;
-        updateTaskbar();
-    }
-    
-    function maximizeWindow(winId) {
-        const win = document.getElementById(winId);
-        if (win) {
-            win.classList.toggle('maximized');
-            playSound('click-sound');
-            // If maximizing, remove inline styles that conflict
-            if (win.classList.contains('maximized')) {
-                 win.style.top = '';
-                 win.style.left = '';
-                 win.style.width = '';
-                 win.style.height = '';
-            }
-        }
-    }
-    
-    function bringToFront(winId) {
-        if (activeWindow === winId) return;
-        
-        highestZIndex++;
-        const win = document.getElementById(winId);
-        if (win) {
-            win.style.zIndex = highestZIndex;
-            
-            // If window was minimized, un-minimize it
-            if (openWindows[winId] && openWindows[winId].minimized) {
-                openWindows[winId].minimized = false;
-                win.style.display = 'block';
-            }
-        }
-        
-        activeWindow = winId;
-        updateTaskbar();
-    }
-    
-    function startDrag(e, element) {
-        let offsetX = e.clientX - element.offsetLeft;
-        let offsetY = e.clientY - element.offsetTop;
-
-        function drag(e) {
-            if (element.classList.contains('maximized')) return;
-            element.style.left = `${e.clientX - offsetX}px`;
-            element.style.top = `${e.clientY - offsetY}px`;
-        }
-
-        function stopDrag() {
-            document.removeEventListener('mousemove', drag);
-            document.removeEventListener('mouseup', stopDrag);
-        }
-
-        document.addEventListener('mousemove', drag);
-        document.addEventListener('mouseup', stopDrag);
-    }
-    
-    // --- Taskbar ---
-    function createTaskbarApp(winId) {
-        const win = document.getElementById(winId);
-        const title = win.querySelector('.title-bar-text').textContent;
-        
-        const app = document.createElement('button');
-        app.className = 'taskbar-app';
-        app.textContent = title;
-        app.dataset.winId = winId;
-        app.onclick = () => {
-            bringToFront(winId);
-        };
-        taskbarApps.appendChild(app);
-    }
-    
-    function updateTaskbar() {
-        const apps = taskbarApps.querySelectorAll('.taskbar-app');
-        apps.forEach(app => {
-            const winId = app.dataset.winId;
-            if (!openWindows[winId]) {
-                app.remove();
-                return;
-            }
-            
-            if (winId === activeWindow && !openWindows[winId].minimized) {
-                app.classList.add('active');
-            } else {
-                app.classList.remove('active');
-            }
-        });
-    }
-
-    // --- Desktop Icons ---
-    function setupIconInteraction() {
-        document.querySelectorAll('.icon').forEach(icon => {
-            // Remove previous listeners to avoid duplicates
-            const newIcon = icon.cloneNode(true);
-            icon.parentNode.replaceChild(newIcon, icon);
-
-            // Load position from localStorage
-            const savedPos = localStorage.getItem(`iconpos_${newIcon.dataset.id}`);
-            if (savedPos) {
-                const { top, left } = JSON.parse(savedPos);
-                newIcon.style.top = top;
-                newIcon.style.left = left;
-            }
-
-            if (currentUser === correctUsername) {
-                newIcon.classList.add('draggable');
-                makeIconDraggable(newIcon);
-            } else {
-                newIcon.classList.remove('draggable');
-            }
-            
-            // Add double click listener
-            newIcon.addEventListener('dblclick', () => {
-                const windowId = newIcon.dataset.id === 'paint' ? null : (newIcon.dataset.windowId || `${newIcon.dataset.id}-window`);
-                if (newIcon.dataset.id === 'paint') {
-                    openPaint();
-                } else {
-                    openWindow(windowId);
-                }
-            });
-
-            // Single click for selection style
-            newIcon.addEventListener('click', (e) => {
-                 e.stopPropagation();
-                 document.querySelectorAll('.icon.selected').forEach(i => i.classList.remove('selected'));
-                 newIcon.classList.add('selected');
-            });
-        });
-        
-        desktop.addEventListener('click', () => {
-            document.querySelectorAll('.icon.selected').forEach(i => i.classList.remove('selected'));
-        });
-    }
-
-    function makeIconDraggable(icon) {
-        icon.addEventListener('mousedown', e => {
-            e.preventDefault();
-            e.stopPropagation();
-
-            let offsetX = e.clientX - icon.offsetLeft;
-            let offsetY = e.clientY - icon.offsetTop;
-
-            function drag(e) {
-                icon.style.left = `${e.clientX - offsetX}px`;
-                icon.style.top = `${e.clientY - offsetY}px`;
-            }
-
-            function stopDrag() {
-                localStorage.setItem(`iconpos_${icon.dataset.id}`, JSON.stringify({ top: icon.style.top, left: icon.style.left }));
-                document.removeEventListener('mousemove', drag);
-                document.removeEventListener('mouseup', stopDrag);
-            }
-            
-            document.addEventListener('mousemove', drag);
-            document.addEventListener('mouseup', stopDrag);
-        });
-    }
-
-    // --- Context Menu ---
-    function showContextMenu(x, y, artworkId) {
-        contextMenu.style.top = `${y}px`;
-        contextMenu.style.left = `${x}px`;
-        contextMenu.style.display = 'block';
-
-        const deleteBtn = document.getElementById('context-delete');
-        deleteBtn.onclick = () => {
-            if (confirm("Are you sure you want to delete this artwork?")) {
-                deleteArtwork(artworkId);
-            }
-            contextMenu.style.display = 'none';
-        };
-    }
-
-    // --- IndexedDB: Artworks ---
-    function addArtwork() {
-        const title = document.getElementById('artifact-title').value;
-        const description = document.getElementById('artifact-desc').value;
-        const imageFile = document.getElementById('artifact-image').files[0];
-        
-        if (!title || !description || !imageFile) {
-            playSound('error-sound');
-            alert('Please fill all fields.');
-            return;
-        }
-
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            const artwork = { title, description, image: reader.result, date: new Date() };
-            const transaction = db.transaction(['artworks'], 'readwrite');
-            const store = transaction.objectStore('artworks');
-            store.add(artwork);
-
-            transaction.oncomplete = () => {
-                playSound('click-sound');
-                alert('Artifact added!');
-                closeWindow('add-artifact-window');
-                loadArtworks();
-            };
-            transaction.onerror = (e) => console.error('Error adding artwork:', e);
-        };
-        reader.readAsDataURL(imageFile);
-    }
-    
-    function updateArtwork(id) {
-        const win = document.getElementById(`artwork-window-${id}`);
-        const description = win.querySelector('.editable-field').innerHTML;
-        
-        const transaction = db.transaction(['artworks'], 'readwrite');
-        const store = transaction.objectStore('artworks');
-        store.get(id).onsuccess = (e) => {
-            const artwork = e.target.result;
-            if (artwork) {
-                artwork.description = description;
-                store.put(artwork);
-                transaction.oncomplete = () => {
-                    playSound('click-sound');
-                    alert('Artwork updated!');
-                    loadArtworks();
-                };
-            }
-        };
-    }
-    
-    function loadArtworks() {
-        // Clear existing dynamic icons and windows
-        document.querySelectorAll('.icon[data-type="artwork"], .window[data-type="artwork"]').forEach(el => el.remove());
-        document.getElementById('portfolio-gallery').innerHTML = '';
-        
-        const transaction = db.transaction(['artworks'], 'readonly');
-        const store = transaction.objectStore('artworks');
-        store.getAll().onsuccess = (e) => {
-            const artworks = e.target.result;
-            let offset = 120; // Start placing icons with an offset to avoid overlap with static icons
-            artworks.forEach(art => {
-                createArtworkIcon(art, offset);
-                createArtworkWindow(art);
-                createPortfolioGalleryEntry(art);
-                offset += 100; // Increment offset for next icon
-            });
-            // Re-apply draggable status after adding new icons
-            setupIconInteraction();
-        };
-    }
-
-    function deleteArtwork(id) {
-        const transaction = db.transaction(['artworks'], 'readwrite');
-        const store = transaction.objectStore('artworks');
-        store.delete(id);
-        transaction.oncomplete = () => {
-            playSound('click-sound');
-            loadArtworks();
-        };
-    }
-    
-    function saveAboutEdits() {
-        const bio = document.getElementById('about-bio').innerHTML;
-        const desc = document.getElementById('about-desc').innerHTML;
-        const contact = document.getElementById('about-contact').innerHTML;
-        
-        const aboutData = { bio, desc, contact };
-        localStorage.setItem('aboutData', JSON.stringify(aboutData));
-        
-        playSound('click-sound');
-        alert('About information updated!');
-    }
-
-    // --- IndexedDB: Blog ---
-    function addBlogPost() {
-         const title = document.getElementById('post-title').value;
-         const content = document.getElementById('post-content').value;
-         if (!title || !content) {
-            playSound('error-sound');
-            return;
+     <html lang="en">
+     <head>
+         <meta charset="UTF-8">
+         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+         <title>Malte Stoepke's Portfolio OS</title>
+         <link rel="stylesheet" href="https://unpkg.com/98.css">
+         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+         <link rel="stylesheet" type="text/css" href="https://gitcdn.xyz/repo/pi0/clippyjs/master/assets/clippy.css">
+         <style>
+             * {
+                 margin: 0;
+                 padding: 0;
+                 box-sizing: border-box;
+                 font-family: "MS Sans Serif", "Tahoma", Arial, sans-serif;
+             }
+
+             body {
+                 background: #008080 url('https://static.wikitide.net/windowswallpaperwiki/2/24/Clouds_%28Windows_95%29.png') no-repeat center center fixed;
+                 background-size: cover;
+                 height: 100vh;
+                 overflow: hidden;
+                 display: flex;
+                 flex-direction: column;
+                 position: relative;
+             }
+
+             .desktop {
+                 flex-grow: 1;
+                 padding: 10px;
+                 position: relative;
+                 z-index: 1;
+             }
+
+             .icon {
+                 position: absolute;
+                 text-align: center;
+                 cursor: pointer;
+                 padding: 8px;
+                 width: 90px;
+                 border: 1px solid transparent;
+                 user-select: none;
+             }
+             
+             .icon.draggable:hover {
+                 background: rgba(0, 0, 128, 0.5);
+                 border: 1px dotted white;
+             }
+
+             .icon img {
+                 width: 32px;
+                 height: 32px;
+                 object-fit: contain;
+             }
+
+             .icon p {
+                 color: white;
+                 text-shadow: 1px 1px black;
+                 font-size: 11px;
+                 padding: 2px;
+                 word-wrap: break-word;
+                 background: #008080;
+             }
+             
+             .icon.selected p {
+                 background-color: #000080;
+             }
+
+             .window {
+                 display: none;
+                 position: absolute;
+                 top: 10%;
+                 left: 10%;
+                 width: 600px;
+                 min-width: 250px;
+                 min-height: 150px;
+                 max-height: 80%;
+                 overflow: hidden;
+                 cursor: default;
+                 z-index: 10;
+                 resize: both;
+                 border: 2px solid #c0c0c0;
+                 box-shadow: 2px 2px 0px #000000, -2px -2px 0px #ffffff;
+                 background: #c0c0c0;
+             }
+
+             .window.maximized {
+                 width: 100% !important;
+                 height: calc(100vh - 30px) !important;
+                 top: 0 !important;
+                 left: 0 !important;
+                 max-height: none;
+                 resize: none;
+             }
+
+             .window.active {
+                 display: block;
+             }
+             
+             .title-bar {
+                 position: relative;
+                 height: 22px;
+                 padding: 2px 4px;
+                 cursor: move;
+                 background: linear-gradient(to right, #000080, #1084d0);
+                 color: white;
+                 font-size: 12px;
+                 line-height: 18px;
+             }
+
+             .title-bar-text {
+                 display: inline-block;
+                 padding-left: 4px;
+             }
+
+             .title-bar-controls {
+                 position: absolute;
+                 right: 4px;
+                 top: 3px;
+                 display: flex;
+                 gap: 2px;
+             }
+
+             .title-bar-controls button {
+                 width: 16px;
+                 height: 16px;
+                 padding: 0;
+                 margin: 0;
+                 background: #c0c0c0;
+                 border: 1px solid #000;
+                 border-top-color: #fff;
+                 border-left-color: #fff;
+                 cursor: pointer;
+             }
+
+             .window-body {
+                 margin-top: 22px;
+                 padding: 8px;
+                 background: #dfdfdf;
+                 height: calc(100% - 22px);
+                 overflow: auto;
+                 font-size: 12px;
+             }
+
+             .window-body iframe {
+                 width: 100%;
+                 height: 80%;
+                 border: 2px inset #ffffff;
+             }
+
+             .window-body .fallback-content {
+                 display: none;
+             }
+
+             .window-body.fallback .fallback-content {
+                 display: block;
+             }
+
+             .window-body.fallback iframe {
+                 display: none;
+             }
+
+             .window-body img.artwork-image {
+                 max-width: 100%;
+                 height: auto;
+                 display: block;
+                 margin: 8px auto;
+                 border: 2px inset #ffffff;
+             }
+
+             .artwork-gallery {
+                 display: flex;
+                 flex-wrap: wrap;
+                 gap: 10px;
+             }
+
+             .artwork-gallery img {
+                 width: 150px;
+                 height: 150px;
+                 object-fit: cover;
+                 border: 2px outset #ffffff;
+                 cursor: pointer;
+             }
+
+             .ie-toolbar {
+                 background: #c0c0c0;
+                 border-bottom: 1px solid #808080;
+                 padding: 4px;
+                 display: flex;
+                 gap: 4px;
+                 align-items: center;
+             }
+
+             .ie-address-bar {
+                 display: flex;
+                 align-items: center;
+                 margin: 4px;
+                 background: #c0c0c0;
+                 border-bottom: 1px solid #808080;
+                 padding: 2px;
+             }
+
+             .ie-address-bar label {
+                 margin-right: 4px;
+                 font-size: 12px;
+                 color: #808080;
+             }
+
+             .ie-address-bar input {
+                 flex-grow: 1;
+                 background: white;
+                 padding: 4px;
+             }
+
+             .ie-content {
+                 background: white;
+                 padding: 8px;
+                 height: 100%;
+                 overflow: auto;
+             }
+
+             .taskbar {
+                 height: 30px;
+                 background: #c0c0c0;
+                 border-top: 2px solid #ffffff;
+                 display: flex;
+                 align-items: center;
+                 padding: 0 2px;
+                 position: relative;
+                 z-index: 100;
+                 flex-shrink: 0;
+             }
+
+             .start-button {
+                 font-weight: bold;
+                 padding: 2px 6px;
+                 height: 26px;
+                 display: flex;
+                 align-items: center;
+                 background: #c0c0c0;
+                 border: 2px outset #ffffff;
+             }
+
+             .start-button img {
+                 width: 20px;
+                 height: 20px;
+                 margin-right: 4px;
+             }
+             
+             .taskbar-time {
+                 font-size: 11px;
+                 padding: 2px 4px;
+                 border: 1px solid #808080;
+                 border-right: 2px solid #fff;
+                 border-bottom: 2px solid #fff;
+                 min-width: 80px;
+                 text-align: center;
+                 margin-left: 4px;
+             }
+             
+             .taskbar-user {
+                 font-size: 11px;
+                 padding: 2px 6px;
+                 border: 1px solid #808080;
+                 margin: 0 2px;
+             }
+
+             .taskbar-apps {
+                 display: flex;
+                 flex-grow: 1;
+                 margin: 0 4px;
+                 gap: 2px;
+                 overflow: hidden;
+             }
+
+             .taskbar-app {
+                 padding: 2px 6px;
+                 font-size: 12px;
+                 cursor: pointer;
+                 max-width: 150px;
+                 min-width: 80px;
+                 overflow: hidden;
+                 text-overflow: ellipsis;
+                 white-space: nowrap;
+                 flex-shrink: 1;
+                 background: #c0c0c0;
+                 border: 2px outset #ffffff;
+             }
+             
+             .taskbar-app.active {
+                 border: 2px inset #c0c0c0;
+             }
+             
+             .start-menu {
+                 display: none;
+                 position: absolute;
+                 bottom: 30px;
+                 left: 0;
+                 width: 200px;
+                 background: #c0c0c0;
+                 border-top: 2px solid #ffffff;
+                 border-left: 2px solid #ffffff;
+                 border-right: 2px solid #000;
+                 border-bottom: 2px solid #000;
+                 z-index: 1000;
+             }
+
+             .start-menu.active {
+                 display: block;
+             }
+
+             .start-menu ul {
+                 list-style: none;
+                 padding: 2px;
+                 margin: 0;
+             }
+
+             .start-menu li {
+                 padding: 4px 8px;
+                 cursor: pointer;
+                 font-size: 12px;
+                 display: flex;
+                 align-items: center;
+             }
+
+             .start-menu li img {
+                 width: 22px;
+                 height: 22px;
+                 margin-right: 8px;
+             }
+
+             .start-menu li:hover {
+                 background: #000080;
+                 color: white;
+             }
+             
+             .start-menu-separator {
+                 height: 1px;
+                 background: #808080;
+                 border-bottom: 1px solid #fff;
+                 margin: 4px 0;
+             }
+
+             .login-box {
+                 background: #c0c0c0;
+                 padding: 20px;
+                 width: 320px;
+                 text-align: center;
+                 border: 2px outset #ffffff;
+             }
+             
+             .login-title {
+                 background: #000080;
+                 color: white;
+                 padding: 4px;
+                 margin: -20px -20px 20px -20px;
+                 font-weight: bold;
+                 font-size: 12px;
+             }
+             
+             .login-field {
+                 margin: 12px 0;
+                 text-align: left;
+             }
+             
+             .login-field label {
+                 display: block;
+                 margin-bottom: 4px;
+                 font-size: 12px;
+             }
+
+             .login-field input, .login-field textarea {
+                 width: 100%;
+                 padding: 4px;
+             }
+             
+             .login-buttons {
+                 display: flex;
+                 justify-content: space-around;
+                 margin-top: 20px;
+             }
+
+             .paint-canvas {
+                 border: 1px solid black;
+                 background: white;
+                 cursor: crosshair;
+                 display: block;
+                 margin: 0 auto;
+             }
+             
+             .minesweeper-board {
+                 display: grid;
+                 gap: 1px;
+                 background: #808080;
+                 padding: 8px;
+                 border: 2px inset #fff;
+                 margin: 0 auto;
+             }
+
+             .minesweeper-cell {
+                 width: 20px;
+                 height: 20px;
+                 background: #c0c0c0;
+                 border: 2px outset #fff;
+                 text-align: center;
+                 line-height: 16px;
+                 font-size: 12px;
+                 font-weight: bold;
+                 cursor: pointer;
+             }
+             
+             .minesweeper-cell.revealed {
+                 border: 1px solid #808080;
+             }
+             
+             .minesweeper-cell.mine {
+                 background-color: red;
+             }
+             
+             .color-1 { color: blue; }
+             .color-2 { color: green; }
+             .color-3 { color: red; }
+             .color-4 { color: navy; }
+             .color-5 { color: maroon; }
+             .color-6 { color: teal; }
+             .color-7 { color: black; }
+             .color-8 { color: gray; }
+
+             .context-menu {
+                 position: absolute;
+                 background: #c0c0c0;
+                 border-top: 2px solid #ffffff;
+                 border-left: 2px solid #ffffff;
+                 border-right: 2px solid #000;
+                 border-bottom: 2px solid #000;
+                 z-index: 10000;
+                 font-size: 12px;
+                 padding: 2px;
+                 display: none;
+             }
+
+             .context-menu ul {
+                 list-style: none;
+             }
+
+             .context-menu li {
+                 padding: 4px 18px;
+                 cursor: pointer;
+             }
+
+             .context-menu li:hover {
+                 background: #000080;
+                 color: white;
+             }
+
+             .artwork-gallery img {
+                 width: 150px;
+                 height: 150px;
+                 object-fit: cover;
+                 border: 2px outset #ffffff;
+                 cursor: pointer;
+             }
+             
+             @media (max-width: 768px) {
+                 .window {
+                     width: 95%;
+                     left: 2.5%;
+                 }
+                 
+                 .icon {
+                     width: 70px;
+                 }
+                 
+                 .icon img {
+                     width: 24px;
+                     height: 24px;
+                 }
+             }
+
+             @media screen and (max-width: 600px), screen and (orientation: portrait) {
+                 .window {
+                     width: 100% !important;
+                     height: calc(100vh - 40px) !important;
+                     top: 0 !important;
+                     left: 0 !important;
+                     position: fixed;
+                     resize: none;
+                 }
+
+                 .desktop {
+                     display: flex;
+                     flex-wrap: wrap;
+                     justify-content: flex-start;
+                     align-content: flex-start;
+                 }
+
+                 .icon {
+                     position: relative;
+                     margin: 10px;
+                     width: 80px;
+                 }
+
+                 .taskbar {
+                     height: 40px;
+                 }
+
+                 .start-button {
+                     height: 36px;
+                 }
+
+                 .start-menu {
+                     width: 100%;
+                     bottom: 40px;
+                     left: 0;
+                 }
+
+                 .taskbar-time {
+                     min-width: 120px;
+                 }
+             }
+         </style>
+     </head>
+     <body>
+         <audio id="startup-sound" src="https://orangefreesounds.com/wp-content/uploads/2022/05/Windows-95-startup-sound.mp3" preload="auto"></audio>
+         <audio id="error-sound" src="https://orangefreesounds.com/wp-content/uploads/2020/09/Windows-95-error-sound.mp3" preload="auto"></audio>
+         <audio id="window-open-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3"></audio>
+         <audio id="window-close-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-quick-jump-arcade-game-239.mp3"></audio>
+         <audio id="click-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-mouse-click-close-1113.mp3"></audio>
+         
+         <div id="loading-screen">
+             <img src="https://win98icons.alexmeub.com/icons/png/windows-0.png" alt="Windows 95" width="48" height="48">
+             <h2>Portfolio OS</h2>
+             <p>Starting...</p>
+             <p>Made by Malte Stoepke</p>
+             <div class="loading-bar">
+                 <div class="loading-progress" id="loading-progress"></div>
+             </div>
+         </div>
+
+         <div id="login-screen" style="display: none;">
+             <div class="login-box">
+                 <div class="login-title">Portfolio OS Login</div>
+                 <img src="https://win98icons.alexmeub.com/icons/png/keys-4.png" alt="Keys" width="48" height="48" style="margin-bottom: 10px;">
+                 <div class="login-field">
+                     <label for="username"><u>U</u>ser name:</label>
+                     <input type="text" id="username" value="Malte Stoepke">
+                 </div>
+                 <div class="login-field">
+                     <label for="password"><u>P</u>assword:</label>
+                     <input type="password" id="password" value="Maus_123">
+                 </div>
+                 <div class="login-buttons field-row" style="justify-content: center;">
+                     <button onclick="login()"><img src="https://win98icons.alexmeub.com/icons/png/key-2.png" style="width:16px; height:16px; margin-right: 5px;">Log On</button>
+                     <button onclick="guestLogin()">Guest</button>
+                 </div>
+             </div>
+         </div>
+         
+         <div class="desktop" id="desktop" style="display: none;">
+             <div class="icon" data-id="my-computer" style="left: 20px; top: 20px;" ondblclick="openWindow('my-computer-window')">
+                 <img src="https://win98icons.alexmeub.com/icons/png/computer-4.png" alt="My Computer">
+                 <p>My Computer</p>
+             </div>
+             <div class="icon" data-id="portfolio" style="left: 20px; top: 100px;" ondblclick="openWindow('portfolio-window')">
+                 <img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png" alt="Portfolio">
+                 <p>My 3D Art</p>
+             </div>
+             <div class="icon" data-id="ie" style="left: 20px; top: 180px;" ondblclick="openInternetExplorer()">
+                 <img src="https://win98icons.alexmeub.com/icons/png/msie2-0.png" alt="Internet Explorer">
+                 <p>ArtStation Browser</p>
+             </div>
+             <div class="icon" data-id="about" style="left: 20px; top: 260px;" ondblclick="openWindow('about-window')">
+                 <img src="https://win98icons.alexmeub.com/icons/png/notepad_file-1.png" alt="About">
+                 <p>About Me.txt</p>
+             </div>
+             <div class="icon" data-id="paint" style="left: 20px; top: 340px;" ondblclick="openPaint()">
+                 <img src="https://win98icons.alexmeub.com/icons/png/paint-0.png" alt="Paint">
+                 <p>Paint</p>
+             </div>
+             <div class="icon" data-id="pixelsweeper" style="left: 20px; top: 420px;" ondblclick="openWindow('pixelsweeper-window')">
+                 <img src="https://win98icons.alexmeub.com/icons/png/minesweeper-2.png" alt="PixelSweeper">
+                 <p>PixelSweeper</p>
+             </div>
+             <div class="icon" data-id="recycle" style="left: 20px; top: 500px;" ondblclick="openWindow('recycle-window')">
+                 <img src="https://win98icons.alexmeub.com/icons/png/recycle_full-2.png" alt="Recycle Bin">
+                 <p>Recycle Bin</p>
+             </div>
+         </div>
+         
+         <div class="window" id="my-computer-window" style="width: 400px; height: 300px;">
+             <div class="title-bar">
+                 <div class="title-bar-text">My Computer</div>
+                 <div class="title-bar-controls">
+                     <button aria-label="Minimize" onclick="minimizeWindow('my-computer-window')"></button>
+                     <button aria-label="Maximize" onclick="maximizeWindow('my-computer-window')"></button>
+                     <button aria-label="Close" onclick="closeWindow('my-computer-window')"></button>
+                 </div>
+             </div>
+             <div class="window-body">
+                 <div class="icon" ondblclick="openWindow('portfolio-window')">
+                     <img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png" alt="Portfolio">
+                     <p>My 3D Art</p>
+                 </div>
+             </div>
+         </div>
+         
+         <div class="window" id="portfolio-window" style="width: 500px; height: 400px;">
+             <div class="title-bar">
+                 <div class="title-bar-text">My 3D Art</div>
+                 <div class="title-bar-controls">
+                     <button aria-label="Minimize" onclick="minimizeWindow('portfolio-window')"></button>
+                     <button aria-label="Maximize" onclick="maximizeWindow('portfolio-window')"></button>
+                     <button aria-label="Close" onclick="closeWindow('portfolio-window')"></button>
+                 </div>
+             </div>
+             <div class="window-body" id="portfolio-content">
+                 <h2>My 3D Artworks</h2>
+                 <p>Open the ArtStation Browser to view my projects.</p>
+             </div>
+         </div>
+         
+         <div class="window" id="ie-window" style="width: 700px; height: 500px;">
+             <div class="title-bar">
+                 <div class="title-bar-text">ArtStation Browser - Internet Explorer</div>
+                 <div class="title-bar-controls">
+                     <button aria-label="Minimize" onclick="minimizeWindow('ie-window')"></button>
+                     <button aria-label="Maximize" onclick="maximizeWindow('ie-window')"></button>
+                     <button aria-label="Close" onclick="closeWindow('ie-window')"></button>
+                 </div>
+             </div>
+             <div class="ie-toolbar">
+                 <button onclick="goBack()">Back</button>
+                 <button onclick="goForward()">Forward</button>
+                 <button onclick="stopLoading()">Stop</button>
+                 <button onclick="refreshBrowser()">Refresh</button>
+                 <button onclick="showHome()">Home</button>
+             </div>
+             <div class="ie-address-bar">
+                 <label>Address:</label>
+                 <input type="text" id="browser-url" placeholder="Enter URL (e.g., https://malte_stoepke.artstation.com/projects/1NWEre)">
+                 <button onclick="loadUrl()">Go</button>
+             </div>
+             <div class="ie-content" id="browser-content"></div>
+         </div>
+         
+         <div class="window" id="about-window" style="width: 400px; height: 250px;">
+             <div class="title-bar">
+                 <div class="title-bar-text">About Me.txt - Notepad</div>
+                 <div class="title-bar-controls">
+                     <button aria-label="Minimize" onclick="minimizeWindow('about-window')"></button>
+                     <button aria-label="Maximize" onclick="maximizeWindow('about-window')"></button>
+                     <button aria-label="Close" onclick="closeWindow('about-window')"></button>
+                 </div>
+             </div>
+             <div class="window-body" style="background: white; font-family: 'Lucida Console', monospace;">
+                 <p class="editable-field" contenteditable="false" id="about-bio"><strong>Malte Stoepke - 3D Artist</strong></p>
+                 <br>
+                 <p class="editable-field" contenteditable="false" id="about-desc">Welcome to my interactive portfolio! This project combines my passion for 3D art with a love for retro computing aesthetics. All artworks are displayed in the ArtStation Browser.</p>
+                 <br>
+                 <p class="editable-field" contenteditable="false" id="about-contact">Log in with the provided credentials to edit this page.</p>
+                 <div class="edit-controls">
+                     <button onclick="saveAboutEdits()">Save Changes</button>
+                 </div>
+             </div>
+         </div>
+         
+         <div class="window" id="paint-window" style="width: 500px; height: 400px;">
+             <div class="title-bar">
+                 <div class="title-bar-text">untitled - Paint</div>
+                 <div class="title-bar-controls">
+                     <button aria-label="Minimize" onclick="minimizeWindow('paint-window')"></button>
+                     <button aria-label="Maximize" onclick="maximizeWindow('paint-window')"></button>
+                     <button aria-label="Close" onclick="closeWindow('paint-window')"></button>
+                 </div>
+             </div>
+             <div class="window-body">
+                 <div class="paint-tools">
+                     <div class="tool-button active" id="brush-tool" onclick="setTool('brush')">
+                         <i class="fas fa-paint-brush"></i>
+                     </div>
+                     <div class="tool-button" id="text-tool" onclick="setTool('text')">
+                         <i class="fas fa-font"></i>
+                     </div>
+                     <div class="tool-button" id="eraser-tool" onclick="setTool('eraser')">
+                         <i class="fas fa-eraser"></i>
+                     </div>
+                     <div class="tool-button" onclick="clearCanvas()">
+                         <i class="fas fa-trash"></i>
+                     </div>
+                     <button class="login-button" onclick="saveArtwork()" style="margin-left: 10px;">
+                         <i class="fas fa-save"></i> Save to Desktop
+                     </button>
+                 </div>
+                 <canvas id="paint-canvas" class="paint-canvas" width="480" height="320"></canvas>
+                 <div class="color-picker">
+                     <div class="color-option" style="background: black;" onclick="setColor('black')"></div>
+                     <div class="color-option" style="background: red;" onclick="setColor('red')"></div>
+                     <div class="color-option" style="background: green;" onclick="setColor('green')"></div>
+                     <div class="color-option" style="background: blue;" onclick="setColor('blue')"></div>
+                     <div class="color-option" style="background: yellow;" onclick="setColor('yellow')"></div>
+                     <div class="color-option" style="background: purple;" onclick="setColor('purple')"></div>
+                     <div class="color-option" style="background: orange;" onclick="setColor('orange')"></div>
+                     <div class="color-option" style="background: pink;" onclick="setColor('pink')"></div>
+                 </div>
+             </div>
+         </div>
+         
+         <div class="window" id="pixelsweeper-window" style="width: auto; height: auto;">
+             <div class="title-bar">
+                 <div class="title-bar-text">PixelSweeper</div>
+                 <div class="title-bar-controls">
+                     <button aria-label="Minimize" onclick="minimizeWindow('pixelsweeper-window')"></button>
+                     <button aria-label="Close" onclick="closeWindow('pixelsweeper-window')"></button>
+                 </div>
+             </div>
+             <div class="window-body">
+                 <div class="minesweeper-controls">
+                     <button onclick="startMinesweeper(8, 8, 10)">Beginner</button>
+                     <button onclick="startMinesweeper(16, 16, 40)">Intermediate</button>
+                     <button onclick="startMinesweeper(30, 16, 99)">Expert</button>
+                 </div>
+                 <div id="minesweeper-board" class="minesweeper-board"></div>
+             </div>
+         </div>
+
+         <div class="window" id="recycle-window" style="width: 400px; height: 300px;">
+             <div class="title-bar">
+                 <div class="title-bar-text">Recycle Bin</div>
+                 <div class="title-bar-controls">
+                     <button aria-label="Minimize" onclick="minimizeWindow('recycle-window')"></button>
+                     <button aria-label="Maximize" onclick="maximizeWindow('recycle-window')"></button>
+                     <button aria-label="Close" onclick="closeWindow('recycle-window')"></button>
+                 </div>
+             </div>
+             <div class="window-body">
+                 <p>Unfinished work:</p>
+                 <ul>
+                     <li>Project 1: Incomplete 3D model</li>
+                     <li>Project 2: Draft blog post</li>
+                 </ul>
+             </div>
+         </div>
+         
+         <div class="context-menu" id="context-menu">
+             <ul>
+                 <li id="context-delete">Delete</li>
+             </ul>
+         </div>
+         
+         <div class="taskbar" style="display: none;">
+             <button class="start-button" id="start-button">
+                 <img src="https://win98icons.alexmeub.com/icons/png/windows-0.png" alt="Start">
+                 <span>Start</span>
+             </button>
+             <div class="taskbar-apps" id="taskbar-apps"></div>
+             <div class="taskbar-user" id="taskbar-user">Guest</div>
+             <div class="taskbar-time" id="taskbar-time"></div>
+         </div>
+         
+         <div class="start-menu" id="start-menu">
+             <ul>
+                 <li onclick="openWindow('portfolio-window')"><img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png">Portfolio</li>
+                 <li onclick="openInternetExplorer()"><img src="https://win98icons.alexmeub.com/icons/png/msie2-0.png">ArtStation Browser</li>
+                 <li onclick="openWindow('about-window')"><img src="https://win98icons.alexmeub.com/icons/png/notepad_file-1.png">About Me</li>
+                 <li class="start-menu-separator"></li>
+                 <li onclick="openPaint()"><img src="https://win98icons.alexmeub.com/icons/png/paint-0.png">Paint</li>
+                 <li onclick="openWindow('pixelsweeper-window')"><img src="https://win98icons.alexmeub.com/icons/png/minesweeper-2.png">PixelSweeper</li>
+                 <li class="start-menu-separator"></li>
+                 <li id="login-logout-button" onclick="logout()"><img src="https://win98icons.alexmeub.com/icons/png/keys-4.png">Log Out</li>
+             </ul>
+         </div>
+         
+         <div class="audio-control" onclick="toggleSound()">
+             <i class="fas fa-volume-up" id="sound-icon"></i>
+         </div>
+         
+         <script src="https://unpkg.com/jquery@3.2.1"></script>
+         <script src="https://unpkg.com/clippyjs@latest"></script>
+         <script src="internetExplorer.js"></script>
+         <script>
+         // --- State & Config ---
+         let db;
+         let currentUser = 'Guest';
+         let activeWindow = null;
+         let openWindows = {};
+         let highestZIndex = 10;
+         let soundEnabled = true;
+         let paintScriptLoaded = false;
+         let ieScriptLoaded = false;
+         
+         const correctUsername = "Malte Stoepke";
+         const correctPassword = "Maus_123";
+
+         // --- DOM Elements ---
+         const desktop = document.getElementById('desktop');
+         const taskbar = document.querySelector('.taskbar');
+         const taskbarApps = document.getElementById('taskbar-apps');
+         const startMenu = document.getElementById('start-menu');
+         const loginScreen = document.getElementById('login-screen');
+         const loadingScreen = document.getElementById('loading-screen');
+         const contextMenu = document.getElementById('context-menu');
+         
+         // --- Initialization ---
+         document.addEventListener('DOMContentLoaded', () => {
+             // Simulate loading progress
+             let progress = 0;
+             const interval = setInterval(() => {
+                 progress += 20;
+                 document.getElementById('loading-progress').style.width = progress + '%';
+                 
+                 if (progress >= 100) {
+                     clearInterval(interval);
+                     setTimeout(() => {
+                         loadingScreen.style.display = 'none';
+                         document.getElementById('startup-sound').play().catch(e => console.log("Audio autoplay blocked."));
+                         
+                         // Initialize the OS after loading screen disappears
+                         initOS();
+                     }, 500);
+                 }
+             }, 200);
+         });
+
+         function initOS() {
+             // Auto login as guest
+             guestLogin();
+             
+             // Initialize components
+             initDB();
+             updateClock();
+             setupEventListeners();
+             startMinesweeper(8, 8, 10);
+         }
+
+         function initDB() {
+             const request = indexedDB.open('PortfolioOSDB', 1);
+
+             request.onerror = (event) => {
+                 console.error("Database error: ", event.target.errorCode);
+                 // Proceed even if DB fails
+                 guestLogin();
+             };
+             
+             request.onsuccess = (event) => {
+                 db = event.target.result;
+                 console.log("Database opened successfully.");
+                 // Load Clippy after DB is ready
+                 clippy.load('Clippy', function(agent) {
+                     window.clippyAgent = agent;
+                     agent.show();
+                     agent.speak('Hi! I\'m Clippy. Welcome to Malte Stoepke\'s Portfolio OS. Double-click the ArtStation Browser to view my projects!');
+                 });
+             };
+             
+             request.onupgradeneeded = (event) => {
+                 let db = event.target.result;
+                 db.createObjectStore('artworks', { keyPath: 'id' });
+             };
          }
          
-         const post = { title, content, date: new Date().toISOString() };
-         const transaction = db.transaction(['blogPosts'], 'readwrite');
-         const store = transaction.objectStore('blogPosts');
-         store.add(post);
+         function setupEventListeners() {
+             // Start Menu
+             document.getElementById('start-button').addEventListener('click', (e) => {
+                 e.stopPropagation();
+                 startMenu.classList.toggle('active');
+                 playSound('click-sound');
+             });
+
+             document.addEventListener('click', () => {
+                 startMenu.classList.remove('active');
+                 contextMenu.style.display = 'none';
+             });
+             
+             // Window Controls
+             document.querySelectorAll('.window').forEach(win => {
+                 const winId = win.id;
+                 const titleBar = win.querySelector('.title-bar');
+                 
+                 // Dragging
+                 if (titleBar) {
+                     titleBar.addEventListener('mousedown', (e) => {
+                         if (e.target.closest('.title-bar-controls')) return;
+                         startDrag(e, win);
+                         bringToFront(winId);
+                     });
+                 }
+
+                 // Close, Maximize, Minimize
+                 const controls = win.querySelector('.title-bar-controls');
+                 if (controls) {
+                     controls.querySelector('[aria-label="Close"]')?.addEventListener('click', () => closeWindow(winId));
+                     controls.querySelector('[aria-label="Maximize"]')?.addEventListener('click', () => maximizeWindow(winId));
+                     controls.querySelector('[aria-label="Minimize"]')?.addEventListener('click', () => minimizeWindow(winId));
+                 }
+
+                 win.addEventListener('mousedown', () => bringToFront(winId));
+             });
+             
+             // Desktop Icon Context Menu
+             desktop.addEventListener('contextmenu', (e) => {
+                 e.preventDefault();
+                 const icon = e.target.closest('.icon');
+                 if (currentUser === correctUsername && icon && icon.dataset.type === 'artwork') {
+                     showContextMenu(e.clientX, e.clientY, icon.dataset.id);
+                 }
+             });
+             contextMenu.addEventListener('click', e => e.stopPropagation());
+         }
+
+         // --- Authentication ---
+         function login() {
+             const user = document.getElementById('username').value;
+             const pass = document.getElementById('password').value;
+
+             if (user === correctUsername && pass === correctPassword) {
+                 currentUser = correctUsername;
+                 loginScreen.style.display = 'none';
+                 updateUIAfterLogin();
+                 playSound('start-sound');
+                 if (window.clippyAgent) {
+                     window.clippyAgent.speak('Logged in as admin. You can now edit content.');
+                 }
+             } else {
+                 playSound('error-sound');
+                 alert("Incorrect username or password.");
+             }
+         }
+
+         function guestLogin() {
+             currentUser = 'Guest';
+             loginScreen.style.display = 'none';
+             updateUIAfterLogin();
+             playSound('click-sound');
+         }
          
-         transaction.oncomplete = () => {
+         function logout() {
+             currentUser = 'Guest';
+             loginScreen.style.display = 'flex';
+             updateUIAfterLogin();
              playSound('click-sound');
-             alert('Post published!');
-             closeWindow('add-post-window');
-             loadBlogPosts();
-         };
-    }
-    
-    function loadBlogPosts() {
-        const contentDiv = document.getElementById('blog-content');
-        contentDiv.innerHTML = '';
-        
-        // Add "New Post" button for admin
-        if (currentUser === correctUsername) {
-            contentDiv.innerHTML += `<button onclick="openWindow('add-post-window')" style="margin-bottom: 15px;"><img src="https://win98icons.alexmeub.com/icons/png/notepad_file-1.png" style="width:16px; height:16px; margin-right: 5px;">Add New Post</button><hr>`;
-        }
-        
-        const transaction = db.transaction(['blogPosts'], 'readonly');
-        const store = transaction.objectStore('blogPosts');
-        store.getAll().onsuccess = (e) => {
-            const posts = e.target.result.reverse(); // Show newest first
-            posts.forEach(post => {
-                const postEl = document.createElement('div');
-                postEl.className = 'blog-post';
-                
-                let deleteBtnHTML = '';
-                if (currentUser === correctUsername) {
-                     deleteBtnHTML = `<button style="float: right;" onclick="deleteBlogPost(${post.id})">Delete</button>`;
-                }
-                
-                postEl.innerHTML = `
-                    ${deleteBtnHTML}
-                    <h3>${post.title}</h3>
-                    <p class="date">${new Date(post.date).toLocaleDateString()}</p>
-                    <p>${post.content.replace(/\n/g, '<br>')}</p>
-                `;
-                contentDiv.appendChild(postEl);
-            });
-        };
-    }
-    
-    function deleteBlogPost(id) {
-        if (!confirm('Are you sure you want to delete this post?')) return;
+             // Close all windows on logout
+             Object.keys(openWindows).forEach(id => closeWindow(id));
+         }
+         
+         function updateUIAfterLogin() {
+             // Show desktop and taskbar
+             desktop.style.display = 'block';
+             taskbar.style.display = 'flex';
+             
+             document.getElementById('taskbar-user').textContent = currentUser;
+             const editControls = document.querySelectorAll('.edit-controls');
+             
+             if (currentUser === correctUsername) {
+                 document.getElementById('login-logout-button').innerHTML = `<img src="https://win98icons.alexmeub.com/icons/png/keys-4.png">Log Out`;
+                 document.getElementById('login-logout-button').onclick = logout;
+                 
+                 // Enable editing
+                 document.querySelectorAll('.editable-field').forEach(field => {
+                     field.contentEditable = true;
+                 });
+                 editControls.forEach(controls => {
+                     controls.style.display = 'block';
+                 });
+             } else {
+                 document.getElementById('login-logout-button').innerHTML = `<img src="https://win98icons.alexmeub.com/icons/png/keys-4.png">Log In`;
+                 document.getElementById('login-logout-button').onclick = () => { loginScreen.style.display = 'flex'; };
+                 
+                 // Disable editing
+                 document.querySelectorAll('.editable-field').forEach(field => {
+                     field.contentEditable = false;
+                 });
+                 editControls.forEach(controls => {
+                     controls.style.display = 'none';
+                 });
+             }
+             
+             // Re-apply draggable status to icons
+             setupIconInteraction();
+         }
+         
+         // --- Clock ---
+         function updateClock() {
+             document.getElementById('taskbar-time').textContent = 'Last Update: 07/22/2025';
+         }
+         
+         // --- Window Management ---
+         function openWindow(winId) {
+             const win = document.getElementById(winId);
+             if (!win) return;
+             
+             win.style.display = 'block';
+             bringToFront(winId);
+             playSound('window-open-sound');
 
-        const transaction = db.transaction(['blogPosts'], 'readwrite');
-        const store = transaction.objectStore('blogPosts');
-        store.delete(id);
-        transaction.oncomplete = () => {
+             if (!openWindows[winId]) {
+                 createTaskbarApp(winId);
+             }
+             openWindows[winId] = { minimized: false };
+             updateTaskbar();
+             startMenu.classList.remove('active');
+
+             // Clippy explanation
+             if (window.clippyAgent) {
+                 let explanation = '';
+                 switch (winId) {
+                     case 'my-computer-window':
+                         explanation = 'This is My Computer. It contains access to my portfolio.';
+                         break;
+                     case 'portfolio-window':
+                         explanation = 'This is my portfolio. Open the ArtStation Browser to view my projects.';
+                         break;
+                     case 'ie-window':
+                         explanation = 'This is the ArtStation Browser. Enter a URL or select a project to view it.';
+                         break;
+                     case 'about-window':
+                         explanation = 'Read about me in this Notepad file.';
+                         break;
+                     case 'paint-window':
+                         explanation = 'Use Paint to create your own artwork and save it to the desktop.';
+                         break;
+                     case 'pixelsweeper-window':
+                         explanation = 'Play PixelSweeper, a Minesweeper clone.';
+                         break;
+                     case 'recycle-window':
+                         explanation = 'This is the Recycle Bin, containing unfinished work.';
+                         break;
+                 }
+                 if (explanation) {
+                     window.clippyAgent.speak(explanation);
+                 }
+             }
+         }
+         
+         function openPaint() {
+             if (!paintScriptLoaded) {
+                 const script = document.createElement('script');
+                 script.src = 'paint.js';
+                 script.onload = () => {
+                     paintScriptLoaded = true;
+                     initPaint();
+                     openWindow('paint-window');
+                 };
+                 script.onerror = () => {
+                     playSound('error-sound');
+                     alert('Failed to load Paint application.');
+                 };
+                 document.body.appendChild(script);
+             } else {
+                 openWindow('paint-window');
+             }
+         }
+         
+         function openInternetExplorer() {
+             if (!ieScriptLoaded) {
+                 const script = document.createElement('script');
+                 script.src = 'internetExplorer.js';
+                 script.onload = () => {
+                     ieScriptLoaded = true;
+                     initInternetExplorer();
+                     openWindow('ie-window');
+                 };
+                 script.onerror = () => {
+                     playSound('error-sound');
+                     alert('Failed to load Internet Explorer application.');
+                 };
+                 document.body.appendChild(script);
+             } else {
+                 openWindow('ie-window');
+             }
+         }
+         
+         function closeWindow(winId) {
+             const win = document.getElementById(winId);
+             if (win) {
+                 win.style.display = 'none';
+                 playSound('window-close-sound');
+             }
+             
+             delete openWindows[winId];
+             if (activeWindow === winId) activeWindow = null;
+             updateTaskbar();
+         }
+
+         function minimizeWindow(winId) {
+             const win = document.getElementById(winId);
+             if (win) {
+                 win.style.display = 'none';
+                 playSound('click-sound');
+             }
+
+             if (openWindows[winId]) {
+                 openWindows[winId].minimized = true;
+             }
+             if (activeWindow === winId) activeWindow = null;
+             updateTaskbar();
+         }
+         
+         function maximizeWindow(winId) {
+             const win = document.getElementById(winId);
+             if (win) {
+                 win.classList.toggle('maximized');
+                 playSound('click-sound');
+                 // If maximizing, remove inline styles that conflict
+                 if (win.classList.contains('maximized')) {
+                     win.style.top = '';
+                     win.style.left = '';
+                     win.style.width = '';
+                     win.style.height = '';
+                 }
+             }
+         }
+         
+         function bringToFront(winId) {
+             if (activeWindow === winId) return;
+             
+             highestZIndex++;
+             const win = document.getElementById(winId);
+             if (win) {
+                 win.style.zIndex = highestZIndex;
+                 
+                 // If window was minimized, un-minimize it
+                 if (openWindows[winId] && openWindows[winId].minimized) {
+                     openWindows[winId].minimized = false;
+                     win.style.display = 'block';
+                 }
+             }
+             
+             activeWindow = winId;
+             updateTaskbar();
+         }
+         
+         function startDrag(e, element) {
+             let offsetX = e.clientX - element.offsetLeft;
+             let offsetY = e.clientY - element.offsetTop;
+
+             function drag(e) {
+                 if (element.classList.contains('maximized')) return;
+                 element.style.left = `${e.clientX - offsetX}px`;
+                 element.style.top = `${e.clientY - offsetY}px`;
+             }
+
+             function stopDrag() {
+                 document.removeEventListener('mousemove', drag);
+                 document.removeEventListener('mouseup', stopDrag);
+             }
+
+             document.addEventListener('mousemove', drag);
+             document.addEventListener('mouseup', stopDrag);
+         }
+         
+         // --- Taskbar ---
+         function createTaskbarApp(winId) {
+             const win = document.getElementById(winId);
+             const title = win.querySelector('.title-bar-text').textContent;
+             
+             const app = document.createElement('button');
+             app.className = 'taskbar-app';
+             app.textContent = title;
+             app.dataset.winId = winId;
+             app.onclick = () => {
+                 bringToFront(winId);
+             };
+             taskbarApps.appendChild(app);
+         }
+         
+         function updateTaskbar() {
+             const apps = taskbarApps.querySelectorAll('.taskbar-app');
+             apps.forEach(app => {
+                 const winId = app.dataset.winId;
+                 if (!openWindows[winId]) {
+                     app.remove();
+                     return;
+                 }
+                 
+                 if (winId === activeWindow && !openWindows[winId].minimized) {
+                     app.classList.add('active');
+                 } else {
+                     app.classList.remove('active');
+                 }
+             });
+         }
+
+         // --- Desktop Icons ---
+         function setupIconInteraction() {
+             document.querySelectorAll('.icon').forEach(icon => {
+                 // Remove previous listeners to avoid duplicates
+                 const newIcon = icon.cloneNode(true);
+                 icon.parentNode.replaceChild(newIcon, icon);
+
+                 // Load position from localStorage
+                 const savedPos = localStorage.getItem(`iconpos_${newIcon.dataset.id}`);
+                 if (savedPos) {
+                     const { top, left } = JSON.parse(savedPos);
+                     newIcon.style.top = top;
+                     newIcon.style.left = left;
+                 }
+
+                 if (currentUser === correctUsername) {
+                     newIcon.classList.add('draggable');
+                     makeIconDraggable(newIcon);
+                 } else {
+                     newIcon.classList.remove('draggable');
+                 }
+                 
+                 // Add double click listener
+                 newIcon.addEventListener('dblclick', () => {
+                     const windowId = newIcon.dataset.id === 'paint' ? null : newIcon.dataset.id === 'ie' ? null : `${newIcon.dataset.id}-window`;
+                     if (newIcon.dataset.id === 'paint') {
+                         openPaint();
+                     } else if (newIcon.dataset.id === 'ie') {
+                         openInternetExplorer();
+                     } else {
+                         openWindow(windowId);
+                     }
+                 });
+
+                 // Single click for selection style
+                 newIcon.addEventListener('click', (e) => {
+                     e.stopPropagation();
+                     document.querySelectorAll('.icon.selected').forEach(i => i.classList.remove('selected'));
+                     newIcon.classList.add('selected');
+                 });
+             });
+             
+             desktop.addEventListener('click', () => {
+                 document.querySelectorAll('.icon.selected').forEach(i => i.classList.remove('selected'));
+             });
+         }
+
+         function makeIconDraggable(icon) {
+             icon.addEventListener('mousedown', e => {
+                 e.preventDefault();
+                 e.stopPropagation();
+
+                 let offsetX = e.clientX - icon.offsetLeft;
+                 let offsetY = e.clientY - icon.offsetTop;
+
+                 function drag(e) {
+                     icon.style.left = `${e.clientX - offsetX}px`;
+                     icon.style.top = `${e.clientY - offsetY}px`;
+                 }
+
+                 function stopDrag() {
+                     localStorage.setItem(`iconpos_${icon.dataset.id}`, JSON.stringify({ top: icon.style.top, left: icon.style.left }));
+                     document.removeEventListener('mousemove', drag);
+                     document.removeEventListener('mouseup', stopDrag);
+                 }
+                 
+                 document.addEventListener('mousemove', drag);
+                 document.addEventListener('mouseup', stopDrag);
+             });
+         }
+
+         // --- Context Menu ---
+         function showContextMenu(x, y, artworkId) {
+             contextMenu.style.top = `${y}px`;
+             contextMenu.style.left = `${x}px`;
+             contextMenu.style.display = 'block';
+
+             const deleteBtn = document.getElementById('context-delete');
+             deleteBtn.onclick = () => {
+                 if (confirm("Are you sure you want to delete this item?")) {
+                     deleteArtwork(artworkId);
+                 }
+                 contextMenu.style.display = 'none';
+             };
+         }
+
+         // --- IndexedDB: Artworks ---
+         function addArtwork(artwork) {
+             const transaction = db.transaction(['artworks'], 'readwrite');
+             const store = transaction.objectStore('artworks');
+             store.add(artwork);
+
+             transaction.oncomplete = () => {
+                 playSound('click-sound');
+                 alert('Artwork added!');
+             };
+             transaction.onerror = (e) => console.error('Error adding artwork:', e);
+         }
+
+         function deleteArtwork(id) {
+             const transaction = db.transaction(['artworks'], 'readwrite');
+             const store = transaction.objectStore('artworks');
+             store.delete(id);
+             transaction.oncomplete = () => {
+                 playSound('click-sound');
+             };
+         }
+         
+         function saveAboutEdits() {
+             const bio = document.getElementById('about-bio').innerHTML;
+             const desc = document.getElementById('about-desc').innerHTML;
+             const contact = document.getElementById('about-contact').innerHTML;
+             
+             const aboutData = { bio, desc, contact };
+             localStorage.setItem('aboutData', JSON.stringify(aboutData));
+             
              playSound('click-sound');
-             loadBlogPosts();
-        };
-    }
+             alert('About information updated!');
+         }
 
-    // --- Dynamic Element Creation ---
-    function createArtworkIcon(art, offset = 120) {
-        const icon = document.createElement('div');
-        icon.className = 'icon';
-        icon.dataset.id = art.id;
-        icon.dataset.windowId = `artwork-window-${art.id}`;
-        icon.dataset.type = 'artwork';
-        icon.style.left = `${offset}px`;
-        icon.style.top = `${Math.random() * 300 + 20}px`;
-
-        icon.innerHTML = `
-            <img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png" alt="Artwork">
-            <p>${art.title}</p>
-        `;
-        desktop.appendChild(icon);
-    }
-    
-    function createArtworkWindow(art) {
-        const win = document.createElement('div');
-        win.id = `artwork-window-${art.id}`;
-        win.className = 'window';
-        win.dataset.type = 'artwork';
-        win.style.width = '600px';
-        win.style.height = '450px';
-
-        win.innerHTML = `
-            <div class="title-bar">
-                <div class="title-bar-text">${art.title}</div>
-                <div class="title-bar-controls">
-                    <button aria-label="Minimize"></button>
-                    <button aria-label="Maximize"></button>
-                    <button aria-label="Close"></button>
-                </div>
-            </div>
-            <div class="window-body">
-                <img src="${art.image}" class="artwork-image" alt="${art.title}">
-                <p class="editable-field" contenteditable="false">${art.description}</p>
-                <div class="edit-controls" style="display: none;">
-                    <button onclick="updateArtwork('${art.id}')">Save Changes</button>
-                </div>
-            </div>
-        `;
-        document.body.appendChild(win);
-        
-        // Add event listeners to the new window's controls
-        const controls = win.querySelector('.title-bar-controls');
-        controls.querySelector('[aria-label="Close"]').addEventListener('click', () => closeWindow(win.id));
-        controls.querySelector('[aria-label="Maximize"]').addEventListener('click', () => maximizeWindow(win.id));
-        controls.querySelector('[aria-label="Minimize"]').addEventListener('click', () => minimizeWindow(win.id));
-        win.querySelector('.title-bar').addEventListener('mousedown', (e) => {
-            if (e.target.closest('.title-bar-controls')) return;
-            startDrag(e, win);
-            bringToFront(win.id);
-        });
-        win.addEventListener('mousedown', () => bringToFront(win.id));
-    }
-    
-    function createPortfolioGalleryEntry(art) {
-        const entry = document.createElement('div');
-        entry.className = 'artwork-item';
-        entry.onclick = () => openWindow(`artwork-window-${art.id}`);
-        
-        entry.innerHTML = `
-            <img src="${art.image}" alt="${art.title}">
-            <p>${art.title}</p>
-        `;
-        document.getElementById('portfolio-gallery').appendChild(entry);
-    }
-    
-    // --- Applications ---
-    function startMinesweeper(width, height, mineCount) {
-        const boardEl = document.getElementById('minesweeper-board');
-        boardEl.innerHTML = '';
-        boardEl.style.gridTemplateColumns = `repeat(${width}, 20px)`;
-        
-        let board = [];
-        let mines = [];
-        let revealed = [];
-        
-        // Initialize board
-        for (let r = 0; r < height; r++) {
-            board[r] = [];
-            revealed[r] = [];
-            for (let c = 0; c < width; c++) {
-                board[r][c] = 0;
-                revealed[r][c] = false;
-                
-                const cell = document.createElement('div');
-                cell.className = 'minesweeper-cell';
-                cell.dataset.row = r;
-                cell.dataset.col = c;
-                boardEl.appendChild(cell);
-            }
-        }
-        
-        // Place mines
-        let minesPlaced = 0;
-        while (minesPlaced < mineCount) {
-            const r = Math.floor(Math.random() * height);
-            const c = Math.floor(Math.random() * width);
-            if (!board[r][c].mine) {
-                mines.push({r, c});
-                board[r][c] = 'X';
-                minesPlaced++;
-                
-                // Update neighbor counts
-                for (let i = -1; i <= 1; i++) {
-                    for (let j = -1; j <= 1; j++) {
-                        if (i === 0 && j === 0) continue;
-                        const nr = r + i, nc = c + j;
-                        if (nr >= 0 && nr < height && nc >= 0 && nc < width && board[nr][nc] !== 'X') {
-                            board[nr][nc]++;
-                        }
-                    }
-                }
-            }
-        }
-        
-        // Add event listeners
-        boardEl.addEventListener('click', (e) => {
-            const cell = e.target.closest('.minesweeper-cell');
-            if (!cell) return;
-            
-            const r = parseInt(cell.dataset.row);
-            const c = parseInt(cell.dataset.col);
-            
-            if (board[r][c] === 'X') {
-                // Mine hit
-                cell.classList.add('mine');
-                cell.innerHTML = '💣';
-                playSound('error-sound');
-                alert('Game Over!');
-                startMinesweeper(8, 8, 10);
-            } else {
-                // Reveal cell
-                revealed[r][c] = true;
-                cell.classList.add('revealed');
-                cell.textContent = board[r][c] > 0 ? board[r][c] : '';
-                if (board[r][c] > 0) {
-                    cell.classList.add(`color-${board[r][c]}`);
-                }
-                
-                // Auto-reveal empty areas
-                if (board[r][c] === 0) {
-                    revealAdjacent(r, c, board, revealed);
-                }
-                
-                // Check for win
-                if (checkWin(board, revealed, mines.length)) {
-                    playSound('click-sound');
-                    alert('Congratulations! You won!');
-                    startMinesweeper(8, 8, 10);
-                }
-            }
-        });
-        
-        function revealAdjacent(r, c, board, revealed) {
-            for (let i = -1; i <= 1; i++) {
-                for (let j = -1; j <= 1; j++) {
-                    if (i === 0 && j === 0) continue;
-                    const nr = r + i, nc = c + j;
-                    if (nr >= 0 && nr < height && nc >= 0 && nc < width && !revealed[nr][nc]) {
-                        revealed[nr][nc] = true;
-                        const cell = document.querySelector(`.minesweeper-cell[data-row="${nr}"][data-col="${nc}"]`);
-                        cell.classList.add('revealed');
-                        cell.textContent = board[nr][nc] > 0 ? board[nr][nc] : '';
-                        if (board[nr][nc] > 0) {
-                            cell.classList.add(`color-${board[nr][nc]}`);
-                        }
-                        if (board[nr][nc] === 0) {
-                            revealAdjacent(nr, nc, board, revealed);
-                        }
-                    }
-                }
-            }
-        }
-        
-        function checkWin(board, revealed, mineCount) {
-            let safeRevealed = 0;
-            for (let r = 0; r < height; r++) {
-                for (let c = 0; c < width; c++) {
-                    if (board[r][c] !== 'X' && revealed[r][c]) {
-                        safeRevealed++;
-                    }
-                }
-            }
-            return safeRevealed === (width * height - mineCount);
-        }
-    }
-    
-    // --- Audio Control ---
-    function playSound(id) {
-        if (!soundEnabled) return;
-        const sound = document.getElementById(id);
-        sound.currentTime = 0;
-        sound.play().catch(e => console.log("Sound play prevented:", e));
-    }
-    
-    function toggleSound() {
-        soundEnabled = !soundEnabled;
-        document.getElementById('sound-icon').className = soundEnabled ? 
-            'fas fa-volume-up' : 'fas fa-volume-mute';
-        playSound('click-sound');
-    }
-    </script>
-</body>
-</html>
+         // --- Applications ---
+         function startMinesweeper(width, height, mineCount) {
+             const boardEl = document.getElementById('minesweeper-board');
+             boardEl.innerHTML = '';
+             boardEl.style.gridTemplateColumns = `repeat(${width}, 20px)`;
+             
+             let board = [];
+             let mines = [];
+             let revealed = [];
+             
+             // Initialize board
+             for (let r = 0; r < height; r++) {
+                 board[r] = [];
+                 revealed[r] = [];
+                 for (let c = 0; c < width; c++) {
+                     board[r][c] = 0;
+                     revealed[r][c] = false;
+                     
+                     const cell = document.createElement('div');
+                     cell.className = 'minesweeper-cell';
+                     cell.dataset.row = r;
+                     cell.dataset.col = c;
+                     boardEl.appendChild(cell);
+                 }
+             }
+             
+             // Place mines
+             let minesPlaced = 0;
+             while (minesPlaced < mineCount) {
+                 const r = Math.floor(Math.random() * height);
+                 const c = Math.floor(Math.random() * width);
+                 if (!board[r][c].mine) {
+                     mines.push({r, c});
+                     board[r][c] = 'X';
+                     minesPlaced++;
+                     
+                     // Update neighbor counts
+                     for (let i = -1; i <= 1; i++) {
+                         for (let j = -1; j <= 1; j++) {
+                             if (i === 0 && j === 0) continue;
+                             const nr = r + i, nc = c + j;
+                             if (nr >= 0 && nr < height && nc >= 0 && nc < width && board[nr][nc] !== 'X') {
+                                 board[nr][nc]++;
+                             }
+                         }
+                     }
+                 }
+             }
+             
+             // Add event listeners
+             boardEl.addEventListener('click', (e) => {
+                 const cell = e.target.closest('.minesweeper-cell');
+                 if (!cell) return;
+                 
+                 const r = parseInt(cell.dataset.row);
+                 const c = parseInt(cell.dataset.col);
+                 
+                 if (board[r][c] === 'X') {
+                     // Mine hit
+                     cell.classList.add('mine');
+                     cell.innerHTML = '💣';
+                     playSound('error-sound');
+                     alert('Game Over!');
+                     startMinesweeper(8, 8, 10);
+                 } else {
+                     // Reveal cell
+                     revealed[r][c] = true;
+                     cell.classList.add('revealed');
+                     cell.textContent = board[r][c] > 0 ? board[r][c] : '';
+                     if (board[r][c] > 0) {
+                         cell.classList.add(`color-${board[r][c]}`);
+                     }
+                     
+                     // Auto-reveal empty areas
+                     if (board[r][c] === 0) {
+                         revealAdjacent(r, c, board, revealed);
+                     }
+                     
+                     // Check for win
+                     if (checkWin(board, revealed, mines.length)) {
+                         playSound('click-sound');
+                         alert('Congratulations! You won!');
+                         startMinesweeper(8, 8, 10);
+                     }
+                 }
+             });
+             
+             function revealAdjacent(r, c, board, revealed) {
+                 for (let i = -1; i <= 1; i++) {
+                     for (let j = -1; j <= 1; j++) {
+                         if (i === 0 && j === 0) continue;
+                         const nr = r + i, nc = c + j;
+                         if (nr >= 0 && nr < height && nc >= 0 && nc < width && !revealed[nr][nc]) {
+                             revealed[nr][nc] = true;
+                             const cell = document.querySelector(`.minesweeper-cell[data-row="${nr}"][data-col="${nc}"]`);
+                             cell.classList.add('revealed');
+                             cell.textContent = board[nr][nc] > 0 ? board[nr][nc] : '';
+                             if (board[nr][nc] > 0) {
+                                 cell.classList.add(`color-${board[nr][nc]}`);
+                             }
+                             if (board[nr][nc] === 0) {
+                                 revealAdjacent(nr, nc, board, revealed);
+                             }
+                         }
+                     }
+                 }
+             }
+             
+             function checkWin(board, revealed, mineCount) {
+                 let safeRevealed = 0;
+                 for (let r = 0; r < height; r++) {
+                     for (let c = 0; c < width; c++) {
+                         if (board[r][c] !== 'X' && revealed[r][c]) {
+                             safeRevealed++;
+                         }
+                     }
+                 }
+                 return safeRevealed === (width * height - mineCount);
+             }
+         }
+         
+         // --- Audio Control ---
+         function playSound(id) {
+             if (!soundEnabled) return;
+             const sound = document.getElementById(id);
+             sound.currentTime = 0;
+             sound.play().catch(e => console.log("Sound play prevented:", e));
+         }
+         
+         function toggleSound() {
+             soundEnabled = !soundEnabled;
+             document.getElementById('sound-icon').className = soundEnabled ? 
+                 'fas fa-volume-up' : 'fas fa-volume-mute';
+             playSound('click-sound');
+         }
+         </script>
+     </body>
+     </html>
