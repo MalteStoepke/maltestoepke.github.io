@@ -2,6 +2,7 @@ function initPaint() {
     const canvas = document.getElementById('paint-canvas');
     const ctx = canvas.getContext('2d');
     let painting = false;
+    let currentTool = 'brush';
     let currentColor = 'black';
 
     // Initialize canvas with white background
@@ -22,8 +23,7 @@ function initPaint() {
     function draw(e) {
         if (!painting) return;
 
-        // Prevent default to avoid issues with touch/pointer events
-        e.preventDefault();
+        e.preventDefault(); // Prevent default to avoid issues
 
         const rect = canvas.getBoundingClientRect();
         const x = e.clientX - rect.left;
@@ -31,14 +31,23 @@ function initPaint() {
 
         ctx.lineWidth = 5;
         ctx.lineCap = 'round';
-        ctx.strokeStyle = currentColor; // Ensure currentColor is used
-        ctx.lineTo(x, y);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(x, y);
+
+        if (currentTool === 'brush') {
+            ctx.strokeStyle = currentColor;
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+        } else if (currentTool === 'eraser') {
+            ctx.strokeStyle = 'white';
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+        }
     }
 
-    // Remove any existing listeners to prevent duplicates
+    // Remove existing listeners to prevent duplicates
     canvas.removeEventListener('mousedown', startPosition);
     canvas.removeEventListener('mouseup', endPosition);
     canvas.removeEventListener('mousemove', draw);
@@ -50,13 +59,28 @@ function initPaint() {
     canvas.addEventListener('mousemove', draw);
     canvas.addEventListener('mouseleave', endPosition);
 
-    // Color selection
+    // Tool and color controls
+    window.setTool = function(tool) {
+        if (tool === 'brush' || tool === 'eraser') {
+            currentTool = tool;
+            document.querySelectorAll('.tool-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById(`${tool}-tool`).classList.add('active');
+        }
+        // Text tool is ignored (no functionality)
+    };
+
     window.setColor = function(color) {
         currentColor = color;
         ctx.strokeStyle = color; // Update context immediately
     };
 
-    // Save as PNG
+    window.clearCanvas = function() {
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    };
+
     window.saveArtwork = function() {
         const title = prompt('Enter a title for your artwork:');
         if (!title) return;
