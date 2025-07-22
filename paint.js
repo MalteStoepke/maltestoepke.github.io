@@ -1,16 +1,34 @@
 function initPaint() {
+    // Get canvas and context
     const canvas = document.getElementById('paint-canvas');
+    if (!canvas) {
+        console.error('Canvas with id "paint-canvas" not found.');
+        return;
+    }
     const ctx = canvas.getContext('2d');
+
+    // State variables
     let painting = false;
     let currentTool = 'brush';
     let currentColor = 'black';
+    let textInputActive = false;
+    let textX, textY;
 
-    // Initialize canvas with white background
+    // Initialize canvas
     ctx.fillStyle = 'white';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Drawing logic
     function startPosition(e) {
+        e.preventDefault();
+        if (currentTool === 'text') {
+            const rect = canvas.getBoundingClientRect();
+            textX = e.clientX - rect.left;
+            textY = e.clientY - rect.top;
+            textInputActive = true;
+            promptForText();
+            return;
+        }
         painting = true;
         draw(e);
     }
@@ -21,9 +39,9 @@ function initPaint() {
     }
 
     function draw(e) {
-        if (!painting) return;
+        if (!painting || currentTool === 'text') return;
 
-        e.preventDefault(); // Prevent default to avoid issues
+        e.preventDefault();
 
         const rect = canvas.getBoundingClientRect();
         const x = e.clientX - rect.left;
@@ -31,23 +49,26 @@ function initPaint() {
 
         ctx.lineWidth = 5;
         ctx.lineCap = 'round';
+        ctx.strokeStyle = currentTool === 'eraser' ? 'white' : currentColor;
 
-        if (currentTool === 'brush') {
-            ctx.strokeStyle = currentColor;
-            ctx.lineTo(x, y);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(x, y);
-        } else if (currentTool === 'eraser') {
-            ctx.strokeStyle = 'white';
-            ctx.lineTo(x, y);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(x, y);
+        ctx.lineTo(x, y);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+    }
+
+    // Text input
+    function promptForText() {
+        const text = prompt('Enter text to add:');
+        if (text && textInputActive) {
+            ctx.font = '16px "MS Sans Serif", Arial, sans-serif';
+            ctx.fillStyle = currentColor;
+            ctx.fillText(text, textX, textY);
+            textInputActive = false;
         }
     }
 
-    // Remove existing listeners to prevent duplicates
+    // Clear existing listeners to prevent duplicates
     canvas.removeEventListener('mousedown', startPosition);
     canvas.removeEventListener('mouseup', endPosition);
     canvas.removeEventListener('mousemove', draw);
@@ -61,19 +82,23 @@ function initPaint() {
 
     // Tool and color controls
     window.setTool = function(tool) {
-        if (tool === 'brush' || tool === 'eraser') {
+        if (['brush', 'eraser', 'text'].includes(tool)) {
             currentTool = tool;
+            textInputActive = false;
             document.querySelectorAll('.tool-button').forEach(btn => {
                 btn.classList.remove('active');
             });
-            document.getElementById(`${tool}-tool`).classList.add('active');
+            const toolButton = document.getElementById(`${tool}-tool`);
+            if (toolButton) {
+                toolButton.classList.add('active');
+            }
         }
-        // Text tool is ignored (no functionality)
     };
 
     window.setColor = function(color) {
         currentColor = color;
-        ctx.strokeStyle = color; // Update context immediately
+        ctx.strokeStyle = color; // Update stroke for brush/eraser
+        ctx.fillStyle = color;   // Update fill for text
     };
 
     window.clearCanvas = function() {
@@ -91,4 +116,7 @@ function initPaint() {
         link.href = dataURL;
         link.click();
     };
+
+    // Initialize tool state
+    window.setTool('brush'); // Set brush as default
 }
