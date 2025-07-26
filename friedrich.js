@@ -75,11 +75,11 @@ function openFriedrich() {
                     }
                     .content-card h2 {
                         color: #000080;
-                        font-size: 18px;
+                        font-size: 36px;
                         text-align: center;
                         margin-bottom: 10px;
-                        text-shadow: 1px 1px 2px #ffffff, 0 0 8px #ff4040;
-                        animation: titleBounce 3s infinite ease-in-out;
+                        text-shadow: 1px 1px 2px #ffffff, 0 0 14px #ff4040;
+                        animation: titleBounce 1.5s infinite ease-in-out;
                         font-family: "MS Sans Serif", Arial, sans-serif;
                         background: linear-gradient(to right, #000080, #1084d0);
                         -webkit-background-clip: text;
@@ -87,31 +87,22 @@ function openFriedrich() {
                     }
                     @keyframes titleBounce {
                         0% { transform: translateY(0); }
-                        50% { transform: translateY(-3px); }
+                        50% { transform: translateY(-5px); }
                         100% { transform: translateY(0); }
                     }
-                    .content-card p {
+                    .content-card .description p {
                         font-size: 12px;
-                        line-height: 1.5;
+                        line-height: 1.6;
                         color: #000;
                         font-family: "MS Sans Serif", Arial, sans-serif;
-                        background: linear-gradient(to right, #000, #444);
+                        background: linear-gradient(to right, black, #444);
                         -webkit-background-clip: text;
                         -webkit-text-fill-color: transparent;
+                        margin: 5px 0;
+                        display: none;
                     }
-                    .typewriter p:first-child {
-                        display: inline-block;
-                        overflow: hidden;
-                        white-space: nowrap;
-                        border-right: 2px solid #000;
-                        animation: typing 4s steps(60) 1s 1 normal both, blink 0.75s step-end infinite;
-                    }
-                    @keyframes typing {
-                        from { width: 0; }
-                        to { width: 100%; }
-                    }
-                    @keyframes blink {
-                        50% { border-color: transparent; }
+                    .content-card .description p.visible {
+                        display: block;
                     }
                     @keyframes fadeIn {
                         from { opacity: 0; transform: translateY(10px); }
@@ -184,6 +175,14 @@ function openFriedrich() {
                         background: #e0e0e0;
                         border: 2px inset #c0c0c0;
                     }
+                    .typewriter-cursor::after {
+                        content: '|';
+                        animation: blink 0.75s step-end infinite;
+                        margin-left: 2px;
+                    }
+                    @keyframes blink {
+                        50% { opacity: 0; }
+                    }
                 </style>
                 <div class="title-bar">
                     <div class="title-bar-text y2k">Friedrich - Internet Explorer</div>
@@ -207,11 +206,11 @@ function openFriedrich() {
                 <div class="ie-content y2k" id="friedrich-content">
                     <div class="content-card">
                         <h2>Friedrich</h2>
-                        <div class="typewriter">
+                        <div class="description" id="friedrich-description">
                             <p>Years on the streets have left their mark—his face weathered by the cold harbor wind, beard unkempt, eyes tired yet sharp. His posture is strong but weary, shaped by a life of labor and loss. St. Pauli’s raw, unfiltered energy defines him; he's a product of its harsh realities but also its deep camaraderie—a man still clinging to the salt and spirit of the sea.</p>
+                            <p>This project began as an assignment for my Character Design class. I developed a complete concept for this character, starting with several iterations of 2D concept sketches before sculpting him in ZBrush. Later, I retopologized the character in Autodesk Maya, textured it using Substance 3D Painter, and created blendshapes to showcase various emotions. Additionally, I built an interactive scene in Unreal Engine 5.5, allowing viewers to switch between his emotions at the press of a button.</p>
+                            <p>Overall, this was an incredibly exciting project through which I learned many new skills.</p>
                         </div>
-                        <p>This project began as an assignment for my Character Design class. I developed a complete concept for this character, starting with several iterations of 2D concept sketches before sculpting him in ZBrush. Later, I retopologized the character in Autodesk Maya, textured it using Substance 3D Painter, and created blendshapes to showcase various emotions. Additionally, I built an interactive scene in Unreal Engine 5.5, allowing viewers to switch between his emotions at the press of a button.</p>
-                        <p>Overall, this was an incredibly exciting project through which I learned many new skills.</p>
                     </div>
                     <div class="artwork-gallery y2k" id="friedrich-gallery"></div>
                 </div>
@@ -227,6 +226,51 @@ function openFriedrich() {
                 }
             });
             windowDiv.addEventListener('mousedown', () => window.bringToFront('friedrich-window'));
+
+            // Typewriter animation for description
+            const descriptionDiv = document.getElementById('friedrich-description');
+            const paragraphs = descriptionDiv.querySelectorAll('p');
+            paragraphs.forEach(p => p.style.display = 'none'); // Hide initially
+            let currentParaIndex = 0;
+            let currentCharIndex = 0;
+            let isTyping = false;
+
+            function typeNextCharacter() {
+                if (currentParaIndex >= paragraphs.length) {
+                    // Remove cursor after typing is complete
+                    const lastPara = paragraphs[paragraphs.length - 1];
+                    if (lastPara) lastPara.classList.remove('typewriter-cursor');
+                    return;
+                }
+
+                const currentPara = paragraphs[currentParaIndex];
+                if (!currentPara.classList.contains('visible')) {
+                    currentPara.style.display = 'block';
+                    currentPara.classList.add('visible');
+                }
+
+                if (!isTyping) {
+                    currentPara.classList.add('typewriter-cursor');
+                    isTyping = true;
+                }
+
+                const fullText = currentPara.textContent;
+                if (currentCharIndex < fullText.length) {
+                    currentPara.textContent = fullText.slice(0, currentCharIndex + 1);
+                    currentCharIndex++;
+                    setTimeout(typeNextCharacter, 30);
+                } else {
+                    currentPara.classList.remove('typewriter-cursor');
+                    currentPara.textContent = fullText;
+                    currentParaIndex++;
+                    currentCharIndex = 0;
+                    isTyping = false;
+                    setTimeout(typeNextCharacter, 500); // Pause before next paragraph
+                }
+            }
+
+            // Start typing after a short delay
+            setTimeout(typeNextCharacter, 1000);
 
             // Add images to gallery
             const gallery = document.getElementById('friedrich-gallery');
@@ -300,7 +344,7 @@ function openFriedrich() {
             console.log('Friedrich window created. Checking animations...');
             const contentTitle = windowDiv.querySelector('.content-card h2');
             if (contentTitle) {
-                console.log('Content title found, applying titleBounce animation');
+                console.log('Content title found, applying titleBounce animation with font-size: 36px');
             } else {
                 console.warn('Content title not found in .content-card');
             }
