@@ -42,27 +42,102 @@ function openFriedrich() {
             windowDiv.style.left = '10%';
             windowDiv.innerHTML = `
                 <style>
-                    .title-bar-text.animated {
-                        animation: colorCycle 6s infinite;
+                    .title-bar-text.y2k {
+                        display: inline-block;
+                        font-weight: bold;
+                        text-shadow: 2px 2px 4px #000, 0 0 10px #ff4040;
+                        animation: y2kPulse 2s infinite ease-in-out;
                     }
-                    @keyframes colorCycle {
-                        0% { color: white; }
-                        33% { color: #ff4040; }
-                        66% { color: #40c040; }
-                        100% { color: white; }
+                    @keyframes y2kPulse {
+                        0% { transform: scale(1); color: #ffffff; text-shadow: 2px 2px 4px #000, 0 0 10px #ff4040; }
+                        50% { transform: scale(1.05); color: #40c0ff; text-shadow: 2px 2px 4px #000, 0 0 15px #40c0ff; }
+                        100% { transform: scale(1); color: #ffffff; text-shadow: 2px 2px 4px #000, 0 0 10px #ff4040; }
                     }
                     .ie-toolbar button:hover {
                         background: #e0e0e0;
                         border: 1px inset #c0c0c0;
                     }
-                    .ie-content.playful {
+                    .ie-content.y2k {
+                        background: linear-gradient(135deg, #e0e0e0, #ffffff);
                         border: 2px inset #ffffff;
                         box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+                        padding: 10px;
+                        overflow-y: auto;
+                        height: calc(100% - 60px);
+                    }
+                    .content-card {
+                        background: #f0f0f0;
+                        border: 2px outset #c0c0c0;
+                        padding: 10px;
+                        margin-bottom: 10px;
+                        border-radius: 4px;
+                        animation: fadeIn 1s ease-out;
+                    }
+                    .content-card h2 {
+                        color: #000080;
+                        font-size: 16px;
+                        text-align: center;
+                        margin-bottom: 10px;
+                        text-shadow: 1px 1px 2px #ffffff;
+                    }
+                    .content-card p {
+                        font-size: 12px;
+                        line-height: 1.5;
+                        color: #000;
+                    }
+                    .typewriter p:first-child {
+                        display: inline-block;
+                        overflow: hidden;
+                        white-space: nowrap;
+                        border-right: 2px solid #000;
+                        animation: typing 4s steps(60) 1s 1 normal both, blink 0.75s step-end infinite;
+                    }
+                    @keyframes typing {
+                        from { width: 0; }
+                        to { width: 100%; }
+                    }
+                    @keyframes blink {
+                        50% { border-color: transparent; }
+                    }
+                    @keyframes fadeIn {
+                        from { opacity: 0; transform: translateY(10px); }
+                        to { opacity: 1; transform: translateY(0); }
+                    }
+                    .artwork-gallery.y2k {
+                        display: grid;
+                        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                        gap: 10px;
+                        margin-top: 10px;
+                    }
+                    .artwork-gallery img {
+                        width: 100%;
+                        height: 150px;
+                        object-fit: cover;
+                        border: 2px outset #c0c0c0;
+                        cursor: pointer;
+                        animation: imageFadeIn 1s ease-out;
+                        animation-delay: calc(var(--index) * 0.2s);
+                        position: relative;
                     }
                     .artwork-gallery img:hover {
                         transform: scale(1.05);
                         box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
                         transition: transform 0.2s, box-shadow 0.2s;
+                    }
+                    .artwork-gallery img::after {
+                        content: '';
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        background: linear-gradient(rgba(255,255,255,0.1) 50%, transparent 50%) 0 0 / 100% 2px;
+                        opacity: 0.3;
+                        pointer-events: none;
+                    }
+                    @keyframes imageFadeIn {
+                        from { opacity: 0; transform: scale(0.9); }
+                        to { opacity: 1; transform: scale(1); }
                     }
                     .clippy-bubble {
                         position: fixed;
@@ -97,7 +172,7 @@ function openFriedrich() {
                     }
                 </style>
                 <div class="title-bar">
-                    <div class="title-bar-text animated">Friedrich - Internet Explorer</div>
+                    <div class="title-bar-text y2k">Friedrich - Internet Explorer</div>
                     <div class="title-bar-controls">
                         <button aria-label="Minimize" onclick="minimizeWindow('friedrich-window')"></button>
                         <button aria-label="Maximize" onclick="maximizeWindow('friedrich-window')"></button>
@@ -115,12 +190,16 @@ function openFriedrich() {
                     <label>Address:</label>
                     <input type="text" id="friedrich-url" value="portfolio://friedrich" readonly>
                 </div>
-                <div class="ie-content playful" id="friedrich-content">
-                    <h2>Friedrich</h2>
-                    <p>Years on the streets have left their mark—his face weathered by the cold harbor wind, beard unkempt, eyes tired yet sharp. His posture is strong but weary, shaped by a life of labor and loss. St. Pauli’s raw, unfiltered energy defines him; he's a product of its harsh realities but also its deep camaraderie—a man still clinging to the salt and spirit of the sea.</p>
-                    <p>This project began as an assignment for my Character Design class. I developed a complete concept for this character, starting with several iterations of 2D concept sketches before sculpting him in ZBrush. Later, I retopologized the character in Autodesk Maya, textured it using Substance 3D Painter, and created blendshapes to showcase various emotions. Additionally, I built an interactive scene in Unreal Engine 5.5, allowing viewers to switch between his emotions at the press of a button.</p>
-                    <p>Overall, this was an incredibly exciting project through which I learned many new skills.</p>
-                    <div class="artwork-gallery" id="friedrich-gallery"></div>
+                <div class="ie-content y2k" id="friedrich-content">
+                    <div class="content-card">
+                        <h2>Friedrich</h2>
+                        <div class="typewriter">
+                            <p>Years on the streets have left their mark—his face weathered by the cold harbor wind, beard unkempt, eyes tired yet sharp. His posture is strong but weary, shaped by a life of labor and loss. St. Pauli’s raw, unfiltered energy defines him; he's a product of its harsh realities but also its deep camaraderie—a man still clinging to the salt and spirit of the sea.</p>
+                        </div>
+                        <p>This project began as an assignment for my Character Design class. I developed a complete concept for this character, starting with several iterations of 2D concept sketches before sculpting him in ZBrush. Later, I retopologized the character in Autodesk Maya, textured it using Substance 3D Painter, and created blendshapes to showcase various emotions. Additionally, I built an interactive scene in Unreal Engine 5.5, allowing viewers to switch between his emotions at the press of a button.</p>
+                        <p>Overall, this was an incredibly exciting project through which I learned many new skills.</p>
+                    </div>
+                    <div class="artwork-gallery y2k" id="friedrich-gallery"></div>
                 </div>
             `;
             document.body.appendChild(windowDiv);
@@ -159,7 +238,7 @@ function openFriedrich() {
                 img.src = url;
                 img.alt = `Friedrich artwork ${index + 1}`;
                 img.className = 'artwork-image';
-                img.style.cursor = 'pointer';
+                img.style.setProperty('--index', index);
                 img.onclick = () => {
                     window.playSound('click-sound');
                     const existingLargeView = document.getElementById('friedrich-large-view');
@@ -176,7 +255,7 @@ function openFriedrich() {
                     largeView.style.left = '5%';
                     largeView.innerHTML = `
                         <div class="title-bar">
-                            <div class="title-bar-text animated">Friedrich - Full View</div>
+                            <div class="title-bar-text y2k">Friedrich - Full View</div>
                             <div class="title-bar-controls">
                                 <button aria-label="Minimize" onclick="minimizeWindow('friedrich-large-view')"></button>
                                 <button aria-label="Maximize" onclick="maximizeWindow('friedrich-large-view')"></button>
