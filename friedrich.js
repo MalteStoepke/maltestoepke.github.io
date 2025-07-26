@@ -1,4 +1,4 @@
-function waitForGlobals(callback, maxAttempts = 20, interval = 100) {
+function waitForGlobals(callback, maxAttempts = 30, interval = 100) {
     let attempts = 0;
     function checkGlobals() {
         if (
@@ -10,9 +10,11 @@ function waitForGlobals(callback, maxAttempts = 20, interval = 100) {
             window.bringToFront &&
             window.playSound
         ) {
+            console.log('All required global functions loaded.');
             callback();
         } else if (attempts < maxAttempts) {
             attempts++;
+            console.log(`Waiting for global functions, attempt ${attempts}/${maxAttempts}`);
             setTimeout(checkGlobals, interval);
         } else {
             console.error('Required global functions not loaded after max attempts.');
@@ -24,10 +26,12 @@ function waitForGlobals(callback, maxAttempts = 20, interval = 100) {
 }
 
 function openFriedrich() {
+    console.log('Attempting to open Friedrich window...');
     waitForGlobals(() => {
         // Remove existing window
         const existingWindow = document.getElementById('friedrich-window');
         if (existingWindow) {
+            console.log('Removing existing Friedrich window.');
             existingWindow.remove();
         }
 
@@ -222,17 +226,4 @@ function openFriedrich() {
                 if (currentCharIndex < text.length) {
                     currentPara.textContent = text.slice(0, currentCharIndex + 1);
                     currentCharIndex++;
-                    setTimeout(typeNextCharacter, window.innerWidth < 600 ? 40 : 30);
-                } else {
-                    currentPara.classList.remove('typewriter-cursor');
-                    currentPara.textContent = text;
-                    currentParaIndex++;
-                    currentCharIndex = 0;
-                    setTimeout(typeNextCharacter, 500);
-                }
-            }
-
-            setTimeout(typeNextCharacter, 1000);
-
-            // Handle window resize
-            window.add
+                    setTimeout(typeNextCharacter, window.innerWidth < 600 ?
