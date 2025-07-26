@@ -1,12 +1,12 @@
 function openFriedrich() {
-    // Check if required global functions exist
-    if (!window.openWindow || !window.minimizeWindow || !window.maximizeWindow || !window.closeWindow || !window.startDrag || !window.bringToFront || !window.playSound) {
-        console.error('Required global functions are missing. Ensure index.html is loaded correctly.');
+    // Check for required globals
+    if (!window.openWindow || !window.minimizeWindow || !window.maximizeWindow || !window.closeWindow || !window.startDrag || !window.bringToFront || !window.playSound || !window.clippyAgent) {
+        console.error('Required global functions are missing.');
         alert('Error: Portfolio OS not fully loaded. Please refresh the page.');
         return;
     }
 
-    // Remove existing window if it exists to prevent duplicates
+    // Remove existing window
     const existingWindow = document.getElementById('friedrich-window');
     if (existingWindow) {
         existingWindow.remove();
@@ -22,8 +22,63 @@ function openFriedrich() {
         windowDiv.style.top = '10%';
         windowDiv.style.left = '10%';
         windowDiv.innerHTML = `
+            <style>
+                .title-bar-text.animated {
+                    animation: colorCycle 6s infinite;
+                }
+                @keyframes colorCycle {
+                    0% { color: white; }
+                    33% { color: #ff4040; }
+                    66% { color: #40c040; }
+                    100% { color: white; }
+                }
+                .ie-toolbar button:hover {
+                    background: #e0e0e0;
+                    border: 1px inset #c0c0c0;
+                }
+                .ie-content.playful {
+                    border: 2px inset #ffffff;
+                    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+                }
+                .artwork-gallery img:hover {
+                    transform: scale(1.05);
+                    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+                    transition: transform 0.2s, box-shadow 0.2s;
+                }
+                .clippy-bubble {
+                    position: fixed;
+                    background: #ffffe1;
+                    border: 2px solid #000;
+                    border-radius: 8px;
+                    padding: 10px;
+                    max-width: 300px;
+                    z-index: 10002;
+                    font-family: "MS Sans Serif", Arial, sans-serif;
+                    font-size: 12px;
+                    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+                }
+                .clippy-bubble p {
+                    margin: 0 0 10px 0;
+                }
+                .clippy-buttons {
+                    display: flex;
+                    gap: 8px;
+                    justify-content: center;
+                }
+                .clippy-buttons button {
+                    background: #c0c0c0;
+                    border: 2px outset #ffffff;
+                    padding: 4px 8px;
+                    cursor: pointer;
+                    font-size: 12px;
+                }
+                .clippy-buttons button:hover {
+                    background: #e0e0e0;
+                    border: 2px inset #c0c0c0;
+                }
+            </style>
             <div class="title-bar">
-                <div class="title-bar-text">Friedrich - Internet Explorer</div>
+                <div class="title-bar-text animated">Friedrich - Internet Explorer</div>
                 <div class="title-bar-controls">
                     <button aria-label="Minimize" onclick="minimizeWindow('friedrich-window')"></button>
                     <button aria-label="Maximize" onclick="maximizeWindow('friedrich-window')"></button>
@@ -31,9 +86,9 @@ function openFriedrich() {
                 </div>
             </div>
             <div class="ie-toolbar">
-                <button disabled>Back</button>
+                <button onclick="showArtifactMenu(this.getBoundingClientRect().left, this.getBoundingClientRect().bottom)">Back</button>
                 <button disabled>Forward</button>
-                <button disabled>Stop</button>
+                <button onclick="triggerClippyEasterEgg()">Stop</button>
                 <button onclick="refreshFriedrich()">Refresh</button>
                 <button onclick="openInternetExplorer()">Home</button>
             </div>
@@ -41,7 +96,7 @@ function openFriedrich() {
                 <label>Address:</label>
                 <input type="text" id="friedrich-url" value="portfolio://friedrich" readonly>
             </div>
-            <div class="ie-content" id="friedrich-content" style="background: white; padding: 8px;">
+            <div class="ie-content playful" id="friedrich-content">
                 <h2>Friedrich</h2>
                 <p>Years on the streets have left their mark—his face weathered by the cold harbor wind, beard unkempt, eyes tired yet sharp. His posture is strong but weary, shaped by a life of labor and loss. St. Pauli’s raw, unfiltered energy defines him; he's a product of its harsh realities but also its deep camaraderie—a man still clinging to the salt and spirit of the sea.</p>
                 <p>This project began as an assignment for my Character Design class. I developed a complete concept for this character, starting with several iterations of 2D concept sketches before sculpting him in ZBrush. Later, I retopologized the character in Autodesk Maya, textured it using Substance 3D Painter, and created blendshapes to showcase various emotions. Additionally, I built an interactive scene in Unreal Engine 5.5, allowing viewers to switch between his emotions at the press of a button.</p>
@@ -74,7 +129,7 @@ function openFriedrich() {
             'https://cdnb.artstation.com/p/assets/images/images/085/987/115/large/malte-friedrich-notexture-frontal.jpg?1742137375',
             'https://cdna.artstation.com/p/assets/images/images/085/987/120/large/malte-friedrich-notexture-angry-side.jpg?1742137382',
             'https://cdnb.artstation.com/p/assets/images/images/085/992/475/large/malte-wireframe-frontal.jpg?1742147824',
-            'https://cdnb.artstation.com/p/assets/images/images/085/992/472/large/malte-wireframe-side.jpg?1742147816',
+            'https://cdna.artstation.com/p/assets/images/images/085/992/472/large/malte-wireframe-side.jpg?1742147816',
             'https://cdnb.artstation.com/p/assets/images/images/086/017/925/large/malte-uv-1.jpg?1742215120',
             'https://cdnb.artstation.com/p/assets/images/images/086/017/913/large/malte-uv-2.jpg?1742215103',
             'https://cdna.artstation.com/p/assets/images/images/085/973/646/large/malte-character-design-presentation-2.jpg?1742093660'
@@ -87,13 +142,12 @@ function openFriedrich() {
             img.className = 'artwork-image';
             img.style.cursor = 'pointer';
             img.onclick = () => {
-                // Remove existing large view if present
+                window.playSound('click-sound');
                 const existingLargeView = document.getElementById('friedrich-large-view');
                 if (existingLargeView) {
                     existingLargeView.remove();
                 }
 
-                // Create large view window
                 const largeView = document.createElement('div');
                 largeView.className = 'window';
                 largeView.id = 'friedrich-large-view';
@@ -103,7 +157,7 @@ function openFriedrich() {
                 largeView.style.left = '5%';
                 largeView.innerHTML = `
                     <div class="title-bar">
-                        <div class="title-bar-text">Friedrich - Full View</div>
+                        <div class="title-bar-text animated">Friedrich - Full View</div>
                         <div class="title-bar-controls">
                             <button aria-label="Minimize" onclick="minimizeWindow('friedrich-large-view')"></button>
                             <button aria-label="Maximize" onclick="maximizeWindow('friedrich-large-view')"></button>
@@ -116,7 +170,6 @@ function openFriedrich() {
                 `;
                 document.body.appendChild(largeView);
 
-                // Add dragging for large view
                 const largeTitleBar = largeView.querySelector('.title-bar');
                 largeTitleBar.addEventListener('mousedown', (e) => {
                     if (!e.target.closest('.title-bar-controls')) {
@@ -145,4 +198,64 @@ function refreshFriedrich() {
         content.scrollTop = 0;
         window.playSound('click-sound');
     }
+}
+
+function triggerClippyEasterEgg() {
+    window.playSound('window-open-sound');
+    if (!window.clippyAgent) {
+        console.error('Clippy agent not loaded.');
+        alert('Clippy is not available. Please ensure the portfolio is fully loaded.');
+        return;
+    }
+
+    const existingBubble = document.getElementById('clippy-bubble');
+    if (existingBubble) {
+        existingBubble.remove();
+    }
+
+    const bubble = document.createElement('div');
+    bubble.id = 'clippy-bubble';
+    bubble.className = 'clippy-bubble';
+    bubble.style.position = 'fixed';
+    bubble.style.bottom = '100px';
+    bubble.style.right = '100px';
+    bubble.innerHTML = `
+        <p id="clippy-text"></p>
+        <div class="clippy-buttons" id="clippy-buttons" style="display: none;">
+            <button onclick="handleClippyResponse('yes')">Yes</button>
+            <button onclick="handleClippyResponse('yes-ofc')">Yes ofc</button>
+        </div>
+    `;
+    document.body.appendChild(bubble);
+
+    const textElement = document.getElementById('clippy-text');
+    const fullText = "Hey! Don't stop now! This work of art means a lot to Malte. Have you admired it enough?";
+    let index = 0;
+
+    function typeText() {
+        if (index < fullText.length) {
+            textElement.textContent += fullText[index];
+            index++;
+            setTimeout(typeText, 50);
+        } else {
+            document.getElementById('clippy-buttons').style.display = 'flex';
+        }
+    }
+
+    window.clippyAgent.moveTo(window.innerWidth - 200, window.innerHeight - 150);
+    window.clippyAgent.play('Alert');
+    typeText();
+
+    window.handleClippyResponse = function(response) {
+        window.playSound('click-sound');
+        textElement.textContent = response === 'yes' ? 
+            "Good enough, I suppose. Keep exploring!" : 
+            "That's the spirit! But I'm keeping you here a bit longer!";
+        document.getElementById('clippy-buttons').style.display = 'none';
+        window.clippyAgent.play('Congratulate');
+        setTimeout(() => {
+            bubble.remove();
+            window.clippyAgent.moveTo(window.innerWidth - 100, window.innerHeight - 100);
+        }, 2000);
+    };
 }
