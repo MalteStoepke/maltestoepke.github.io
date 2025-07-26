@@ -4,18 +4,29 @@ function openFriedrich() {
         const windowDiv = document.createElement('div');
         windowDiv.className = 'window';
         windowDiv.id = 'friedrich-window';
-        windowDiv.style.width = '600px';
+        windowDiv.style.width = '700px';
         windowDiv.style.height = '500px';
         windowDiv.innerHTML = `
             <div class="title-bar">
-                <div class="title-bar-text">Friedrich</div>
+                <div class="title-bar-text">Friedrich - Internet Explorer</div>
                 <div class="title-bar-controls">
                     <button aria-label="Minimize" onclick="minimizeWindow('friedrich-window')"></button>
                     <button aria-label="Maximize" onclick="maximizeWindow('friedrich-window')"></button>
                     <button aria-label="Close" onclick="closeWindow('friedrich-window')"></button>
                 </div>
             </div>
-            <div class="window-body">
+            <div class="ie-toolbar">
+                <button onclick="alert('Back navigation not implemented for this project.')">Back</button>
+                <button onclick="alert('Forward navigation not implemented for this project.')">Forward</button>
+                <button onclick="alert('Stop not implemented for this project.')">Stop</button>
+                <button onclick="refreshFriedrich()">Refresh</button>
+                <button onclick="openInternetExplorer()">Home</button>
+            </div>
+            <div class="ie-address-bar">
+                <label>Address:</label>
+                <input type="text" id="friedrich-url" value="portfolio://friedrich" readonly>
+            </div>
+            <div class="ie-content" id="friedrich-content">
                 <h2>Friedrich</h2>
                 <p>Years on the streets have left their mark—his face weathered by the cold harbor wind, beard unkempt, eyes tired yet sharp. His posture is strong but weary, shaped by a life of labor and loss. St. Pauli’s raw, unfiltered energy defines him; he's a product of its harsh realities but also its deep camaraderie—a man still clinging to the salt and spirit of the sea.</p>
                 <p>This project began as an assignment for my Character Design class. I developed a complete concept for this character, starting with several iterations of 2D concept sketches before sculpting him in ZBrush. Later, I retopologized the character in Autodesk Maya, textured it using Substance 3D Painter, and created blendshapes to showcase various emotions. Additionally, I built an interactive scene in Unreal Engine 5.5, allowing viewers to switch between his emotions at the press of a button.</p>
@@ -24,6 +35,15 @@ function openFriedrich() {
             </div>
         `;
         document.body.appendChild(windowDiv);
+
+        // Add dragging functionality
+        const titleBar = windowDiv.querySelector('.title-bar');
+        titleBar.addEventListener('mousedown', (e) => {
+            if (e.target.closest('.title-bar-controls')) return;
+            startDrag(e, windowDiv);
+            bringToFront('friedrich-window');
+        });
+        windowDiv.addEventListener('mousedown', () => bringToFront('friedrich-window'));
 
         // Add images to gallery
         const gallery = document.getElementById('friedrich-gallery');
@@ -68,6 +88,14 @@ function openFriedrich() {
                     </div>
                 `;
                 document.body.appendChild(largeView);
+                // Add dragging for large view
+                const largeTitleBar = largeView.querySelector('.title-bar');
+                largeTitleBar.addEventListener('mousedown', (e) => {
+                    if (e.target.closest('.title-bar-controls')) return;
+                    startDrag(e, largeView);
+                    bringToFront('friedrich-large-view');
+                });
+                largeView.addEventListener('mousedown', () => bringToFront('friedrich-large-view'));
                 openWindow('friedrich-large-view');
             };
             gallery.appendChild(img);
@@ -75,4 +103,12 @@ function openFriedrich() {
     }
 
     openWindow('friedrich-window');
+}
+
+function refreshFriedrich() {
+    const content = document.getElementById('friedrich-content');
+    if (content) {
+        content.scrollTop = 0;
+        playSound('click-sound');
+    }
 }
