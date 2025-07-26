@@ -1,195 +1,215 @@
+function waitForGlobals(callback, maxAttempts = 20, interval = 100) {
+    let attempts = 0;
+    function checkGlobals() {
+        if (
+            window.openWindow &&
+            window.minimizeWindow &&
+            window.maximizeWindow &&
+            window.closeWindow &&
+            window.startDrag &&
+            window.bringToFront &&
+            window.playSound
+        ) {
+            callback();
+        } else if (attempts < maxAttempts) {
+            attempts++;
+            setTimeout(checkGlobals, interval);
+        } else {
+            console.error('Required global functions not loaded after max attempts.');
+            window.playSound && window.playSound('error-sound');
+            alert('Error: Portfolio OS not fully loaded. Please refresh the page.');
+        }
+    }
+    checkGlobals();
+}
+
 function openFriedrich() {
-    // Check for required globals
-    if (!window.openWindow || !window.minimizeWindow || !window.maximizeWindow || !window.closeWindow || !window.startDrag || !window.bringToFront || !window.playSound || !window.clippyAgent) {
-        console.error('Required global functions are missing.');
-        alert('Error: Portfolio OS not fully loaded. Please refresh the page.');
-        return;
-    }
+    waitForGlobals(() => {
+        // Remove existing window
+        const existingWindow = document.getElementById('friedrich-window');
+        if (existingWindow) {
+            existingWindow.remove();
+        }
 
-    // Remove existing window
-    const existingWindow = document.getElementById('friedrich-window');
-    if (existingWindow) {
-        existingWindow.remove();
-    }
-
-    try {
-        // Create the window
-        const windowDiv = document.createElement('div');
-        windowDiv.className = 'window';
-        windowDiv.id = 'friedrich-window';
-        windowDiv.style.width = '700px';
-        windowDiv.style.height = '500px';
-        windowDiv.style.top = '10%';
-        windowDiv.style.left = '10%';
-        windowDiv.innerHTML = `
-            <style>
-                .title-bar-text.animated {
-                    animation: colorCycle 6s infinite;
-                }
-                @keyframes colorCycle {
-                    0% { color: white; }
-                    33% { color: #ff4040; }
-                    66% { color: #40c040; }
-                    100% { color: white; }
-                }
-                .ie-toolbar button:hover {
-                    background: #e0e0e0;
-                    border: 1px inset #c0c0c0;
-                }
-                .ie-content.playful {
-                    border: 2px inset #ffffff;
-                    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-                }
-                .artwork-gallery img:hover {
-                    transform: scale(1.05);
-                    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-                    transition: transform 0.2s, box-shadow 0.2s;
-                }
-                .clippy-bubble {
-                    position: fixed;
-                    background: #ffffe1;
-                    border: 2px solid #000;
-                    border-radius: 8px;
-                    padding: 10px;
-                    max-width: 300px;
-                    z-index: 10002;
-                    font-family: "MS Sans Serif", Arial, sans-serif;
-                    font-size: 12px;
-                    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-                }
-                .clippy-bubble p {
-                    margin: 0 0 10px 0;
-                }
-                .clippy-buttons {
-                    display: flex;
-                    gap: 8px;
-                    justify-content: center;
-                }
-                .clippy-buttons button {
-                    background: #c0c0c0;
-                    border: 2px outset #ffffff;
-                    padding: 4px 8px;
-                    cursor: pointer;
-                    font-size: 12px;
-                }
-                .clippy-buttons button:hover {
-                    background: #e0e0e0;
-                    border: 2px inset #c0c0c0;
-                }
-            </style>
-            <div class="title-bar">
-                <div class="title-bar-text animated">Friedrich - Internet Explorer</div>
-                <div class="title-bar-controls">
-                    <button aria-label="Minimize" onclick="minimizeWindow('friedrich-window')"></button>
-                    <button aria-label="Maximize" onclick="maximizeWindow('friedrich-window')"></button>
-                    <button aria-label="Close" onclick="closeWindow('friedrich-window')"></button>
-                </div>
-            </div>
-            <div class="ie-toolbar">
-                <button onclick="showArtifactMenu(this.getBoundingClientRect().left, this.getBoundingClientRect().bottom)">Back</button>
-                <button disabled>Forward</button>
-                <button onclick="triggerClippyEasterEgg()">Stop</button>
-                <button onclick="refreshFriedrich()">Refresh</button>
-                <button onclick="openInternetExplorer()">Home</button>
-            </div>
-            <div class="ie-address-bar">
-                <label>Address:</label>
-                <input type="text" id="friedrich-url" value="portfolio://friedrich" readonly>
-            </div>
-            <div class="ie-content playful" id="friedrich-content">
-                <h2>Friedrich</h2>
-                <p>Years on the streets have left their mark—his face weathered by the cold harbor wind, beard unkempt, eyes tired yet sharp. His posture is strong but weary, shaped by a life of labor and loss. St. Pauli’s raw, unfiltered energy defines him; he's a product of its harsh realities but also its deep camaraderie—a man still clinging to the salt and spirit of the sea.</p>
-                <p>This project began as an assignment for my Character Design class. I developed a complete concept for this character, starting with several iterations of 2D concept sketches before sculpting him in ZBrush. Later, I retopologized the character in Autodesk Maya, textured it using Substance 3D Painter, and created blendshapes to showcase various emotions. Additionally, I built an interactive scene in Unreal Engine 5.5, allowing viewers to switch between his emotions at the press of a button.</p>
-                <p>Overall, this was an incredibly exciting project through which I learned many new skills.</p>
-                <div class="artwork-gallery" id="friedrich-gallery"></div>
-            </div>
-        `;
-        document.body.appendChild(windowDiv);
-
-        // Add dragging functionality
-        const titleBar = windowDiv.querySelector('.title-bar');
-        titleBar.addEventListener('mousedown', (e) => {
-            if (!e.target.closest('.title-bar-controls')) {
-                window.startDrag(e, windowDiv);
-                window.bringToFront('friedrich-window');
-            }
-        });
-        windowDiv.addEventListener('mousedown', () => window.bringToFront('friedrich-window'));
-
-        // Add images to gallery
-        const gallery = document.getElementById('friedrich-gallery');
-        const imageUrls = [
-            'https://cdna.artstation.com/p/assets/images/images/085/985/342/large/malte-friedrich-artsy-frontal-neutral.jpg?1742133400',
-            'https://cdna.artstation.com/p/assets/images/images/085/983/778/large/malte-friedrich-artsy-angry.jpg?1742129659',
-            'https://cdnb.artstation.com/p/assets/images/images/085/983/811/large/malte-friedrich-artsy2-upset.jpg?1742129722',
-            'https://cdnb.artstation.com/p/assets/images/images/085/985/349/large/malte-friedrich-artsy-smile.jpg?1742133269',
-            'https://cdna.artstation.com/p/assets/images/images/085/985/346/large/malte-friedrich-artsy-huh.jpg?1742133262',
-            'https://cdna.artstation.com/p/assets/images/images/085/973/620/large/malte-friedrich-frontal-sx.jpg?1742093456',
-            'https://cdna.artstation.com/p/assets/images/images/085/974/116/large/malte-friedrich-frontal-whistle.jpg?1742095826',
-            'https://cdnb.artstation.com/p/assets/images/images/085/987/115/large/malte-friedrich-notexture-frontal.jpg?1742137375',
-            'https://cdna.artstation.com/p/assets/images/images/085/987/120/large/malte-friedrich-notexture-angry-side.jpg?1742137382',
-            'https://cdnb.artstation.com/p/assets/images/images/085/992/475/large/malte-wireframe-frontal.jpg?1742147824',
-            'https://cdna.artstation.com/p/assets/images/images/085/992/472/large/malte-wireframe-side.jpg?1742147816',
-            'https://cdnb.artstation.com/p/assets/images/images/086/017/925/large/malte-uv-1.jpg?1742215120',
-            'https://cdnb.artstation.com/p/assets/images/images/086/017/913/large/malte-uv-2.jpg?1742215103',
-            'https://cdna.artstation.com/p/assets/images/images/085/973/646/large/malte-character-design-presentation-2.jpg?1742093660'
-        ];
-
-        imageUrls.forEach((url, index) => {
-            const img = document.createElement('img');
-            img.src = url;
-            img.alt = `Friedrich artwork ${index + 1}`;
-            img.className = 'artwork-image';
-            img.style.cursor = 'pointer';
-            img.onclick = () => {
-                window.playSound('click-sound');
-                const existingLargeView = document.getElementById('friedrich-large-view');
-                if (existingLargeView) {
-                    existingLargeView.remove();
-                }
-
-                const largeView = document.createElement('div');
-                largeView.className = 'window';
-                largeView.id = 'friedrich-large-view';
-                largeView.style.width = '800px';
-                largeView.style.height = '600px';
-                largeView.style.top = '5%';
-                largeView.style.left = '5%';
-                largeView.innerHTML = `
-                    <div class="title-bar">
-                        <div class="title-bar-text animated">Friedrich - Full View</div>
-                        <div class="title-bar-controls">
-                            <button aria-label="Minimize" onclick="minimizeWindow('friedrich-large-view')"></button>
-                            <button aria-label="Maximize" onclick="maximizeWindow('friedrich-large-view')"></button>
-                            <button aria-label="Close" onclick="closeWindow('friedrich-large-view')"></button>
-                        </div>
-                    </div>
-                    <div class="window-body" style="text-align: center; padding: 0;">
-                        <img src="${url}" style="max-width: 100%; max-height: calc(100% - 22px); display: block; margin: 0 auto;">
-                    </div>
-                `;
-                document.body.appendChild(largeView);
-
-                const largeTitleBar = largeView.querySelector('.title-bar');
-                largeTitleBar.addEventListener('mousedown', (e) => {
-                    if (!e.target.closest('.title-bar-controls')) {
-                        window.startDrag(e, largeView);
-                        window.bringToFront('friedrich-large-view');
+        try {
+            // Create the window
+            const windowDiv = document.createElement('div');
+            windowDiv.className = 'window';
+            windowDiv.id = 'friedrich-window';
+            windowDiv.style.width = '700px';
+            windowDiv.style.height = '500px';
+            windowDiv.style.top = '10%';
+            windowDiv.style.left = '10%';
+            windowDiv.innerHTML = `
+                <style>
+                    .title-bar-text.animated {
+                        animation: colorCycle 6s infinite;
                     }
-                });
-                largeView.addEventListener('mousedown', () => window.bringToFront('friedrich-large-view'));
+                    @keyframes colorCycle {
+                        0% { color: white; }
+                        33% { color: #ff4040; }
+                        66% { color: #40c040; }
+                        100% { color: white; }
+                    }
+                    .ie-toolbar button:hover {
+                        background: #e0e0e0;
+                        border: 1px inset #c0c0c0;
+                    }
+                    .ie-content.playful {
+                        border: 2px inset #ffffff;
+                        box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+                    }
+                    .artwork-gallery img:hover {
+                        transform: scale(1.05);
+                        box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+                        transition: transform 0.2s, box-shadow 0.2s;
+                    }
+                    .clippy-bubble {
+                        position: fixed;
+                        background: #ffffe1;
+                        border: 2px solid #000;
+                        border-radius: 8px;
+                        padding: 10px;
+                        max-width: 300px;
+                        z-index: 10002;
+                        font-family: "MS Sans Serif", Arial, sans-serif;
+                        font-size: 12px;
+                        box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+                    }
+                    .clippy-bubble p {
+                        margin: 0 0 10px 0;
+                    }
+                    .clippy-buttons {
+                        display: flex;
+                        gap: 8px;
+                        justify-content: center;
+                    }
+                    .clippy-buttons button {
+                        background: #c0c0c0;
+                        border: 2px outset #ffffff;
+                        padding: 4px 8px;
+                        cursor: pointer;
+                        font-size: 12px;
+                    }
+                    .clippy-buttons button:hover {
+                        background: #e0e0e0;
+                        border: 2px inset #c0c0c0;
+                    }
+                </style>
+                <div class="title-bar">
+                    <div class="title-bar-text animated">Friedrich - Internet Explorer</div>
+                    <div class="title-bar-controls">
+                        <button aria-label="Minimize" onclick="minimizeWindow('friedrich-window')"></button>
+                        <button aria-label="Maximize" onclick="maximizeWindow('friedrich-window')"></button>
+                        <button aria-label="Close" onclick="closeWindow('friedrich-window')"></button>
+                    </div>
+                </div>
+                <div class="ie-toolbar">
+                    <button onclick="showArtifactMenu(this.getBoundingClientRect().left, this.getBoundingClientRect().bottom)">Back</button>
+                    <button disabled>Forward</button>
+                    <button onclick="triggerClippyEasterEgg()">Stop</button>
+                    <button onclick="refreshFriedrich()">Refresh</button>
+                    <button onclick="openInternetExplorer()">Home</button>
+                </div>
+                <div class="ie-address-bar">
+                    <label>Address:</label>
+                    <input type="text" id="friedrich-url" value="portfolio://friedrich" readonly>
+                </div>
+                <div class="ie-content playful" id="friedrich-content">
+                    <h2>Friedrich</h2>
+                    <p>Years on the streets have left their mark—his face weathered by the cold harbor wind, beard unkempt, eyes tired yet sharp. His posture is strong but weary, shaped by a life of labor and loss. St. Pauli’s raw, unfiltered energy defines him; he's a product of its harsh realities but also its deep camaraderie—a man still clinging to the salt and spirit of the sea.</p>
+                    <p>This project began as an assignment for my Character Design class. I developed a complete concept for this character, starting with several iterations of 2D concept sketches before sculpting him in ZBrush. Later, I retopologized the character in Autodesk Maya, textured it using Substance 3D Painter, and created blendshapes to showcase various emotions. Additionally, I built an interactive scene in Unreal Engine 5.5, allowing viewers to switch between his emotions at the press of a button.</p>
+                    <p>Overall, this was an incredibly exciting project through which I learned many new skills.</p>
+                    <div class="artwork-gallery" id="friedrich-gallery"></div>
+                </div>
+            `;
+            document.body.appendChild(windowDiv);
 
-                window.openWindow('friedrich-large-view');
-            };
-            gallery.appendChild(img);
-        });
+            // Add dragging functionality
+            const titleBar = windowDiv.querySelector('.title-bar');
+            titleBar.addEventListener('mousedown', (e) => {
+                if (!e.target.closest('.title-bar-controls')) {
+                    window.startDrag(e, windowDiv);
+                    window.bringToFront('friedrich-window');
+                }
+            });
+            windowDiv.addEventListener('mousedown', () => window.bringToFront('friedrich-window'));
 
-        window.openWindow('friedrich-window');
-    } catch (error) {
-        console.error('Error creating Friedrich window:', error);
-        window.playSound('error-sound');
-        alert('Failed to load Friedrich project. Please try again.');
-    }
+            // Add images to gallery
+            const gallery = document.getElementById('friedrich-gallery');
+            const imageUrls = [
+                'https://cdna.artstation.com/p/assets/images/images/085/985/342/large/malte-friedrich-artsy-frontal-neutral.jpg?1742133400',
+                'https://cdna.artstation.com/p/assets/images/images/085/983/778/large/malte-friedrich-artsy-angry.jpg?1742129659',
+                'https://cdnb.artstation.com/p/assets/images/images/085/983/811/large/malte-friedrich-artsy2-upset.jpg?1742129722',
+                'https://cdnb.artstation.com/p/assets/images/images/085/985/349/large/malte-friedrich-artsy-smile.jpg?1742133269',
+                'https://cdna.artstation.com/p/assets/images/images/085/985/346/large/malte-friedrich-artsy-huh.jpg?1742133262',
+                'https://cdna.artstation.com/p/assets/images/images/085/973/620/large/malte-friedrich-frontal-sx.jpg?1742093456',
+                'https://cdna.artstation.com/p/assets/images/images/085/974/116/large/malte-friedrich-frontal-whistle.jpg?1742095826',
+                'https://cdnb.artstation.com/p/assets/images/images/085/987/115/large/malte-friedrich-notexture-frontal.jpg?1742137375',
+                'https://cdna.artstation.com/p/assets/images/images/085/987/120/large/malte-friedrich-notexture-angry-side.jpg?1742137382',
+                'https://cdnb.artstation.com/p/assets/images/images/085/992/475/large/malte-wireframe-frontal.jpg?1742147824',
+                'https://cdna.artstation.com/p/assets/images/images/085/992/472/large/malte-wireframe-side.jpg?1742147816',
+                'https://cdnb.artstation.com/p/assets/images/images/086/017/925/large/malte-uv-1.jpg?1742215120',
+                'https://cdnb.artstation.com/p/assets/images/images/086/017/913/large/malte-uv-2.jpg?1742215103',
+                'https://cdna.artstation.com/p/assets/images/images/085/973/646/large/malte-character-design-presentation-2.jpg?1742093660'
+            ];
+
+            imageUrls.forEach((url, index) => {
+                const img = document.createElement('img');
+                img.src = url;
+                img.alt = `Friedrich artwork ${index + 1}`;
+                img.className = 'artwork-image';
+                img.style.cursor = 'pointer';
+                img.onclick = () => {
+                    window.playSound('click-sound');
+                    const existingLargeView = document.getElementById('friedrich-large-view');
+                    if (existingLargeView) {
+                        existingLargeView.remove();
+                    }
+
+                    const largeView = document.createElement('div');
+                    largeView.className = 'window';
+                    largeView.id = 'friedrich-large-view';
+                    largeView.style.width = '800px';
+                    largeView.style.height = '600px';
+                    largeView.style.top = '5%';
+                    largeView.style.left = '5%';
+                    largeView.innerHTML = `
+                        <div class="title-bar">
+                            <div class="title-bar-text animated">Friedrich - Full View</div>
+                            <div class="title-bar-controls">
+                                <button aria-label="Minimize" onclick="minimizeWindow('friedrich-large-view')"></button>
+                                <button aria-label="Maximize" onclick="maximizeWindow('friedrich-large-view')"></button>
+                                <button aria-label="Close" onclick="closeWindow('friedrich-large-view')"></button>
+                            </div>
+                        </div>
+                        <div class="window-body" style="text-align: center; padding: 0;">
+                            <img src="${url}" style="max-width: 100%; max-height: calc(100% - 22px); display: block; margin: 0 auto;">
+                        </div>
+                    `;
+                    document.body.appendChild(largeView);
+
+                    const largeTitleBar = largeView.querySelector('.title-bar');
+                    largeTitleBar.addEventListener('mousedown', (e) => {
+                        if (!e.target.closest('.title-bar-controls')) {
+                            window.startDrag(e, largeView);
+                            window.bringToFront('friedrich-large-view');
+                        }
+                    });
+                    largeView.addEventListener('mousedown', () => window.bringToFront('friedrich-large-view'));
+
+                    window.openWindow('friedrich-large-view');
+                };
+                gallery.appendChild(img);
+            });
+
+            window.openWindow('friedrich-window');
+        } catch (error) {
+            console.error('Error creating Friedrich window:', error);
+            window.playSound && window.playSound('error-sound');
+            alert('Failed to load Friedrich project. Please try again.');
+        }
+    });
 }
 
 function refreshFriedrich() {
@@ -203,8 +223,8 @@ function refreshFriedrich() {
 function triggerClippyEasterEgg() {
     window.playSound('window-open-sound');
     if (!window.clippyAgent) {
-        console.error('Clippy agent not loaded.');
-        alert('Clippy is not available. Please ensure the portfolio is fully loaded.');
+        console.warn('Clippy agent not loaded, showing fallback message.');
+        alert('Hey! Don\'t stop now! This work of art means a lot to Malte. Have you admired it enough?');
         return;
     }
 
