@@ -46,12 +46,16 @@ function openFriedrich() {
                         display: inline-block;
                         font-weight: bold;
                         text-shadow: 2px 2px 4px #000, 0 0 10px #ff4040;
-                        animation: y2kPulse 2s infinite ease-in-out;
+                        animation: y2kPulse 2s infinite ease-in-out, neonFlicker 0.1s infinite;
                     }
                     @keyframes y2kPulse {
                         0% { transform: scale(1); color: #ffffff; text-shadow: 2px 2px 4px #000, 0 0 10px #ff4040; }
                         50% { transform: scale(1.05); color: #40c0ff; text-shadow: 2px 2px 4px #000, 0 0 15px #40c0ff; }
                         100% { transform: scale(1); color: #ffffff; text-shadow: 2px 2px 4px #000, 0 0 10px #ff4040; }
+                    }
+                    @keyframes neonFlicker {
+                        0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
+                        20%, 24%, 55% { opacity: 0.8; }
                     }
                     .ie-toolbar button:hover {
                         background: #e0e0e0;
@@ -76,8 +80,9 @@ function openFriedrich() {
                     .content-card h2 {
                         font-size: 72px;
                         text-align: center;
-                        margin-bottom: 15px;
+                        margin: 0 auto 15px auto;
                         font-family: "MS Sans Serif", Arial, sans-serif;
+                        width: fit-content;
                     }
                     .content-card .description p {
                         font-size: 12px;
@@ -197,9 +202,9 @@ function openFriedrich() {
                     <div class="content-card">
                         <h2 class="content-title y2k">Friedrich</h2>
                         <div class="description" id="friedrich-description">
-                            <p>Years on the streets have left their mark—his face weathered by the cold harbor wind, beard unkempt, eyes tired yet sharp. His posture is strong but weary, shaped by a life of labor and loss. St. Pauli’s raw, unfiltered energy defines him; he's a product of its harsh realities but also its deep camaraderie—a man still clinging to the salt and spirit of the sea.</p>
-                            <p>This project began as an assignment for my Character Design class. I developed a complete concept for this character, starting with several iterations of 2D concept sketches before sculpting him in ZBrush. Later, I retopologized the character in Autodesk Maya, textured it using Substance 3D Painter, and created blendshapes to showcase various emotions. Additionally, I built an interactive scene in Unreal Engine 5.5, allowing viewers to switch between his emotions at the press of a button.</p>
-                            <p>Overall, this was an incredibly exciting project through which I learned many new skills.</p>
+                            <p id="para-0"></p>
+                            <p id="para-1"></p>
+                            <p id="para-2"></p>
                         </div>
                     </div>
                     <div class="artwork-gallery y2k" id="friedrich-gallery"></div>
@@ -220,13 +225,15 @@ function openFriedrich() {
             // Typewriter animation for description
             const descriptionDiv = document.getElementById('friedrich-description');
             const paragraphs = descriptionDiv.querySelectorAll('p');
-            paragraphs.forEach(p => {
-                p.style.display = 'none';
-                p.style.whiteSpace = 'pre-wrap'; // Ensure line breaks are preserved
-            });
+            const fullText = [
+                "Years on the streets have left their mark—his face weathered by the cold harbor wind, beard unkempt, eyes tired yet sharp. His posture is strong but weary, shaped by a life of labor and loss. St. Pauli’s raw, unfiltered energy defines him; he's a product of its harsh realities but also its deep camaraderie—a man still clinging to the salt and spirit of the sea.",
+                "This project began as an assignment for my Character Design class. I developed a complete concept for this character, starting with several iterations of 2D concept sketches before sculpting him in ZBrush. Later, I retopologized the character in Autodesk Maya, textured it using Substance 3D Painter, and created blendshapes to showcase various emotions. Additionally, I built an interactive scene in Unreal Engine 5.5, allowing viewers to switch between his emotions at the press of a button.",
+                "Overall, this was an incredibly exciting project through which I learned many new skills."
+            ];
+
+            paragraphs.forEach(p => p.style.display = 'none');
             let currentParaIndex = 0;
             let currentCharIndex = 0;
-            let isTyping = false;
 
             function typeNextCharacter() {
                 if (currentParaIndex >= paragraphs.length) {
@@ -239,38 +246,30 @@ function openFriedrich() {
                 const currentPara = paragraphs[currentParaIndex];
                 if (!currentPara.classList.contains('visible')) {
                     currentPara.style.display = 'block';
-                    currentPara.classList.add('visible');
+                    currentPara.classList.add('visible', 'typewriter-cursor');
                 }
 
-                if (!isTyping) {
-                    currentPara.classList.add('typewriter-cursor');
-                    isTyping = true;
-                }
-
-                const fullText = currentPara.textContent;
-                if (currentCharIndex < fullText.length) {
-                    currentPara.textContent = fullText.slice(0, currentCharIndex + 1);
+                const text = fullText[currentParaIndex];
+                if (currentCharIndex < text.length) {
+                    currentPara.textContent = text.slice(0, currentCharIndex + 1);
                     currentCharIndex++;
-                    // Adjust typing speed based on window size to ensure visibility
                     setTimeout(typeNextCharacter, window.innerWidth < 600 ? 40 : 30);
                 } else {
                     currentPara.classList.remove('typewriter-cursor');
-                    currentPara.textContent = fullText;
+                    currentPara.textContent = text;
                     currentParaIndex++;
                     currentCharIndex = 0;
-                    isTyping = false;
-                    setTimeout(typeNextCharacter, 500); // Pause between paragraphs
+                    setTimeout(typeNextCharacter, 500);
                 }
             }
 
-            // Start typing after a short delay
             setTimeout(typeNextCharacter, 1000);
 
-            // Handle window resize to adjust text layout
+            // Handle window resize
             window.addEventListener('resize', () => {
                 paragraphs.forEach(p => {
                     if (p.classList.contains('visible')) {
-                        p.style.whiteSpace = 'pre-wrap'; // Re-apply to handle reflow
+                        p.style.whiteSpace = 'pre-wrap';
                     }
                 });
             });
@@ -347,7 +346,7 @@ function openFriedrich() {
             console.log('Friedrich window created. Checking animations...');
             const contentTitle = windowDiv.querySelector('.content-title.y2k');
             if (contentTitle) {
-                console.log('Content title found, applying y2kPulse animation with font-size: 72px');
+                console.log('Content title found, applying y2kPulse and neonFlicker animations with font-size: 72px');
             } else {
                 console.warn('Content title not found with class .content-title.y2k');
             }
