@@ -42,7 +42,7 @@ function openFriedrich() {
             windowDiv.style.left = '10%';
             windowDiv.innerHTML = `
                 <style>
-                    .title-bar-text.y2k {
+                    .title-bar-text.y2k, .content-title.y2k {
                         display: inline-block;
                         font-weight: bold;
                         text-shadow: 2px 2px 4px #000, 0 0 10px #ff4040;
@@ -74,21 +74,10 @@ function openFriedrich() {
                         animation: fadeIn 1s ease-out;
                     }
                     .content-card h2 {
-                        color: #000080;
-                        font-size: 36px;
+                        font-size: 72px;
                         text-align: center;
-                        margin-bottom: 10px;
-                        text-shadow: 1px 1px 2px #ffffff, 0 0 14px #ff4040;
-                        animation: titleBounce 1.5s infinite ease-in-out;
+                        margin-bottom: 15px;
                         font-family: "MS Sans Serif", Arial, sans-serif;
-                        background: linear-gradient(to right, #000080, #1084d0);
-                        -webkit-background-clip: text;
-                        -webkit-text-fill-color: transparent;
-                    }
-                    @keyframes titleBounce {
-                        0% { transform: translateY(0); }
-                        50% { transform: translateY(-5px); }
-                        100% { transform: translateY(0); }
                     }
                     .content-card .description p {
                         font-size: 12px;
@@ -99,6 +88,7 @@ function openFriedrich() {
                         -webkit-background-clip: text;
                         -webkit-text-fill-color: transparent;
                         margin: 5px 0;
+                        white-space: pre-wrap;
                         display: none;
                     }
                     .content-card .description p.visible {
@@ -205,7 +195,7 @@ function openFriedrich() {
                 </div>
                 <div class="ie-content y2k" id="friedrich-content">
                     <div class="content-card">
-                        <h2>Friedrich</h2>
+                        <h2 class="content-title y2k">Friedrich</h2>
                         <div class="description" id="friedrich-description">
                             <p>Years on the streets have left their mark—his face weathered by the cold harbor wind, beard unkempt, eyes tired yet sharp. His posture is strong but weary, shaped by a life of labor and loss. St. Pauli’s raw, unfiltered energy defines him; he's a product of its harsh realities but also its deep camaraderie—a man still clinging to the salt and spirit of the sea.</p>
                             <p>This project began as an assignment for my Character Design class. I developed a complete concept for this character, starting with several iterations of 2D concept sketches before sculpting him in ZBrush. Later, I retopologized the character in Autodesk Maya, textured it using Substance 3D Painter, and created blendshapes to showcase various emotions. Additionally, I built an interactive scene in Unreal Engine 5.5, allowing viewers to switch between his emotions at the press of a button.</p>
@@ -230,16 +220,19 @@ function openFriedrich() {
             // Typewriter animation for description
             const descriptionDiv = document.getElementById('friedrich-description');
             const paragraphs = descriptionDiv.querySelectorAll('p');
-            paragraphs.forEach(p => p.style.display = 'none'); // Hide initially
+            paragraphs.forEach(p => {
+                p.style.display = 'none';
+                p.style.whiteSpace = 'pre-wrap'; // Ensure line breaks are preserved
+            });
             let currentParaIndex = 0;
             let currentCharIndex = 0;
             let isTyping = false;
 
             function typeNextCharacter() {
                 if (currentParaIndex >= paragraphs.length) {
-                    // Remove cursor after typing is complete
                     const lastPara = paragraphs[paragraphs.length - 1];
                     if (lastPara) lastPara.classList.remove('typewriter-cursor');
+                    console.log('Typewriter animation completed');
                     return;
                 }
 
@@ -258,19 +251,29 @@ function openFriedrich() {
                 if (currentCharIndex < fullText.length) {
                     currentPara.textContent = fullText.slice(0, currentCharIndex + 1);
                     currentCharIndex++;
-                    setTimeout(typeNextCharacter, 30);
+                    // Adjust typing speed based on window size to ensure visibility
+                    setTimeout(typeNextCharacter, window.innerWidth < 600 ? 40 : 30);
                 } else {
                     currentPara.classList.remove('typewriter-cursor');
                     currentPara.textContent = fullText;
                     currentParaIndex++;
                     currentCharIndex = 0;
                     isTyping = false;
-                    setTimeout(typeNextCharacter, 500); // Pause before next paragraph
+                    setTimeout(typeNextCharacter, 500); // Pause between paragraphs
                 }
             }
 
             // Start typing after a short delay
             setTimeout(typeNextCharacter, 1000);
+
+            // Handle window resize to adjust text layout
+            window.addEventListener('resize', () => {
+                paragraphs.forEach(p => {
+                    if (p.classList.contains('visible')) {
+                        p.style.whiteSpace = 'pre-wrap'; // Re-apply to handle reflow
+                    }
+                });
+            });
 
             // Add images to gallery
             const gallery = document.getElementById('friedrich-gallery');
@@ -342,11 +345,11 @@ function openFriedrich() {
 
             // Debug animation application
             console.log('Friedrich window created. Checking animations...');
-            const contentTitle = windowDiv.querySelector('.content-card h2');
+            const contentTitle = windowDiv.querySelector('.content-title.y2k');
             if (contentTitle) {
-                console.log('Content title found, applying titleBounce animation with font-size: 36px');
+                console.log('Content title found, applying y2kPulse animation with font-size: 72px');
             } else {
-                console.warn('Content title not found in .content-card');
+                console.warn('Content title not found with class .content-title.y2k');
             }
 
             window.openWindow('friedrich-window');
