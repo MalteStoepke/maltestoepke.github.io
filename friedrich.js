@@ -75,15 +75,29 @@ function openFriedrich() {
                     }
                     .content-card h2 {
                         color: #000080;
-                        font-size: 16px;
+                        font-size: 18px;
                         text-align: center;
                         margin-bottom: 10px;
-                        text-shadow: 1px 1px 2px #ffffff;
+                        text-shadow: 1px 1px 2px #ffffff, 0 0 8px #ff4040;
+                        animation: titleBounce 3s infinite ease-in-out;
+                        font-family: "MS Sans Serif", Arial, sans-serif;
+                        background: linear-gradient(to right, #000080, #1084d0);
+                        -webkit-background-clip: text;
+                        -webkit-text-fill-color: transparent;
+                    }
+                    @keyframes titleBounce {
+                        0% { transform: translateY(0); }
+                        50% { transform: translateY(-3px); }
+                        100% { transform: translateY(0); }
                     }
                     .content-card p {
                         font-size: 12px;
                         line-height: 1.5;
                         color: #000;
+                        font-family: "MS Sans Serif", Arial, sans-serif;
+                        background: linear-gradient(to right, #000, #444);
+                        -webkit-background-clip: text;
+                        -webkit-text-fill-color: transparent;
                     }
                     .typewriter p:first-child {
                         display: inline-block;
@@ -281,6 +295,15 @@ function openFriedrich() {
                 };
                 gallery.appendChild(img);
             });
+
+            // Debug animation application
+            console.log('Friedrich window created. Checking animations...');
+            const contentTitle = windowDiv.querySelector('.content-card h2');
+            if (contentTitle) {
+                console.log('Content title found, applying titleBounce animation');
+            } else {
+                console.warn('Content title not found in .content-card');
+            }
 
             window.openWindow('friedrich-window');
         } catch (error) {
