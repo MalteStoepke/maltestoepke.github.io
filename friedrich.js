@@ -1,4 +1,4 @@
-function waitForGlobals(callback, maxAttempts = 30, interval = 100) {
+function waitForGlobals(callback, maxAttempts = 20, interval = 100) {
     let attempts = 0;
     function checkGlobals() {
         if (
@@ -10,11 +10,9 @@ function waitForGlobals(callback, maxAttempts = 30, interval = 100) {
             window.bringToFront &&
             window.playSound
         ) {
-            console.log('All required global functions loaded.');
             callback();
         } else if (attempts < maxAttempts) {
             attempts++;
-            console.log(`Waiting for global functions, attempt ${attempts}/${maxAttempts}`);
             setTimeout(checkGlobals, interval);
         } else {
             console.error('Required global functions not loaded after max attempts.');
@@ -26,12 +24,10 @@ function waitForGlobals(callback, maxAttempts = 30, interval = 100) {
 }
 
 function openFriedrich() {
-    console.log('Attempting to open Friedrich window...');
     waitForGlobals(() => {
         // Remove existing window
         const existingWindow = document.getElementById('friedrich-window');
         if (existingWindow) {
-            console.log('Removing existing Friedrich window.');
             existingWindow.remove();
         }
 
@@ -143,6 +139,37 @@ function openFriedrich() {
                         from { opacity: 0; transform: scale(0.9); }
                         to { opacity: 1; transform: scale(1); }
                     }
+                    .clippy-bubble {
+                        position: fixed;
+                        background: #ffffe1;
+                        border: 2px solid #000;
+                        border-radius: 8px;
+                        padding: 10px;
+                        max-width: 300px;
+                        z-index: 10002;
+                        font-family: "MS Sans Serif", Arial, sans-serif;
+                        font-size: 12px;
+                        box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+                    }
+                    .clippy-bubble p {
+                        margin: 0 0 10px 0;
+                    }
+                    .clippy-buttons {
+                        display: flex;
+                        gap: 8px;
+                        justify-content: center;
+                    }
+                    .clippy-buttons button {
+                        background: #c0c0c0;
+                        border: 2px outset #ffffff;
+                        padding: 4px 8px;
+                        cursor: pointer;
+                        font-size: 12px;
+                    }
+                    .clippy-buttons button:hover {
+                        background: #e0e0e0;
+                        border: 2px inset #c0c0c0;
+                    }
                     .typewriter-cursor::after {
                         content: '|';
                         animation: blink 0.75s step-end infinite;
@@ -163,7 +190,7 @@ function openFriedrich() {
                 <div class="ie-toolbar">
                     <button onclick="showArtifactMenu(this.getBoundingClientRect().left, this.getBoundingClientRect().bottom)">Back</button>
                     <button disabled>Forward</button>
-                    <button onclick="showClippyOverlay()">Stop</button>
+                    <button onclick="triggerClippyEasterEgg()">Stop</button>
                     <button onclick="refreshFriedrich()">Refresh</button>
                     <button onclick="openInternetExplorer()">Home</button>
                 </div>
@@ -226,4 +253,177 @@ function openFriedrich() {
                 if (currentCharIndex < text.length) {
                     currentPara.textContent = text.slice(0, currentCharIndex + 1);
                     currentCharIndex++;
-                    setTimeout(typeNextCharacter, window.innerWidth < 600 ?
+                    setTimeout(typeNextCharacter, window.innerWidth < 600 ? 40 : 30);
+                } else {
+                    currentPara.classList.remove('typewriter-cursor');
+                    currentPara.textContent = text;
+                    currentParaIndex++;
+                    currentCharIndex = 0;
+                    setTimeout(typeNextCharacter, 500);
+                }
+            }
+
+            setTimeout(typeNextCharacter, 1000);
+
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                paragraphs.forEach(p => {
+                    if (p.classList.contains('visible')) {
+                        p.style.whiteSpace = 'pre-wrap';
+                    }
+                });
+            });
+
+            // Add images to gallery
+            const gallery = document.getElementById('friedrich-gallery');
+            const imageUrls = [
+                'https://cdna.artstation.com/p/assets/images/images/085/985/342/large/malte-friedrich-artsy-frontal-neutral.jpg?1742133400',
+                'https://cdna.artstation.com/p/assets/images/images/085/983/778/large/malte-friedrich-artsy-angry.jpg?1742129659',
+                'https://cdnb.artstation.com/p/assets/images/images/085/983/811/large/malte-friedrich-artsy2-upset.jpg?1742129722',
+                'https://cdnb.artstation.com/p/assets/images/images/085/985/349/large/malte-friedrich-artsy-smile.jpg?1742133269',
+                'https://cdna.artstation.com/p/assets/images/images/085/985/346/large/malte-friedrich-artsy-huh.jpg?1742133262',
+                'https://cdna.artstation.com/p/assets/images/images/085/973/620/large/malte-friedrich-frontal-sx.jpg?1742093456',
+                'https://cdna.artstation.com/p/assets/images/images/085/974/116/large/malte-friedrich-frontal-whistle.jpg?1742095826',
+                'https://cdnb.artstation.com/p/assets/images/images/085/987/115/large/malte-friedrich-notexture-frontal.jpg?1742137375',
+                'https://cdna.artstation.com/p/assets/images/images/085/987/120/large/malte-friedrich-notexture-angry-side.jpg?1742137382',
+                'https://cdnb.artstation.com/p/assets/images/images/085/992/475/large/malte-wireframe-frontal.jpg?1742147824',
+                'https://cdna.artstation.com/p/assets/images/images/085/992/472/large/malte-wireframe-side.jpg?1742147816',
+                'https://cdnb.artstation.com/p/assets/images/images/086/017/925/large/malte-uv-1.jpg?1742215120',
+                'https://cdnb.artstation.com/p/assets/images/images/086/017/913/large/malte-uv-2.jpg?1742215103',
+                'https://cdna.artstation.com/p/assets/images/images/085/973/646/large/malte-character-design-presentation-2.jpg?1742093660'
+            ];
+
+            imageUrls.forEach((url, index) => {
+                const img = document.createElement('img');
+                img.src = url;
+                img.alt = `Friedrich artwork ${index + 1}`;
+                img.className = 'artwork-image';
+                img.style.setProperty('--index', index);
+                img.onclick = () => {
+                    window.playSound('click-sound');
+                    const existingLargeView = document.getElementById('friedrich-large-view');
+                    if (existingLargeView) {
+                        existingLargeView.remove();
+                    }
+
+                    const largeView = document.createElement('div');
+                    largeView.className = 'window';
+                    largeView.id = 'friedrich-large-view';
+                    largeView.style.width = '800px';
+                    largeView.style.height = '600px';
+                    largeView.style.top = '5%';
+                    largeView.style.left = '5%';
+                    largeView.innerHTML = `
+                        <div class="title-bar">
+                            <div class="title-bar-text y2k">Friedrich - Full View</div>
+                            <div class="title-bar-controls">
+                                <button aria-label="Minimize" onclick="minimizeWindow('friedrich-large-view')"></button>
+                                <button aria-label="Maximize" onclick="maximizeWindow('friedrich-large-view')"></button>
+                                <button aria-label="Close" onclick="closeWindow('friedrich-large-view')"></button>
+                            </div>
+                        </div>
+                        <div class="window-body" style="text-align: center; padding: 0;">
+                            <img src="${url}" style="max-width: 100%; max-height: calc(100% - 22px); display: block; margin: 0 auto;">
+                        </div>
+                    `;
+                    document.body.appendChild(largeView);
+
+                    const largeTitleBar = largeView.querySelector('.title-bar');
+                    largeTitleBar.addEventListener('mousedown', (e) => {
+                        if (!e.target.closest('.title-bar-controls')) {
+                            window.startDrag(e, largeView);
+                            window.bringToFront('friedrich-large-view');
+                        }
+                    });
+                    largeView.addEventListener('mousedown', () => window.bringToFront('friedrich-large-view'));
+
+                    window.openWindow('friedrich-large-view');
+                };
+                gallery.appendChild(img);
+            });
+
+            // Debug animation application
+            console.log('Friedrich window created. Checking animations...');
+            const contentTitle = windowDiv.querySelector('.content-title.y2k');
+            if (contentTitle) {
+                console.log('Content title found, applying y2kPulse and neonFlicker animations with font-size: 72px');
+            } else {
+                console.warn('Content title not found with class .content-title.y2k');
+            }
+
+            window.openWindow('friedrich-window');
+        } catch (error) {
+            console.error('Error creating Friedrich window:', error);
+            window.playSound && window.playSound('error-sound');
+            alert('Failed to load Friedrich project. Please try again.');
+        }
+    });
+}
+
+function refreshFriedrich() {
+    const content = document.getElementById('friedrich-content');
+    if (content) {
+        content.scrollTop = 0;
+        window.playSound('click-sound');
+    }
+}
+
+function triggerClippyEasterEgg() {
+    window.playSound('window-open-sound');
+    if (!window.clippyAgent) {
+        console.warn('Clippy agent not loaded, showing fallback message.');
+        alert('Hey! Don\'t stop now! This work of art means a lot to Malte. Have you admired it enough?');
+        return;
+    }
+
+    const existingBubble = document.getElementById('clippy-bubble');
+    if (existingBubble) {
+        existingBubble.remove();
+    }
+
+    const bubble = document.createElement('div');
+    bubble.id = 'clippy-bubble';
+    bubble.className = 'clippy-bubble';
+    bubble.style.position = 'fixed';
+    bubble.style.bottom = '100px';
+    bubble.style.right = '100px';
+    bubble.innerHTML = `
+        <p id="clippy-text"></p>
+        <div class="clippy-buttons" id="clippy-buttons" style="display: none;">
+            <button onclick="handleClippyResponse('yes')">Yes</button>
+            <button onclick="handleClippyResponse('yes-ofc')">Yes ofc</button>
+        </div>
+    `;
+    document.body.appendChild(bubble);
+
+    const textElement = document.getElementById('clippy-text');
+    const fullText = "Hey! Don't stop now! This work of art means a lot to Malte. Have you admired it enough?";
+    let index = 0;
+
+    function typeText() {
+        if (index < fullText.length) {
+            textElement.textContent += fullText[index];
+            index++;
+            setTimeout(typeText, 50);
+        } else {
+            document.getElementById('clippy-buttons').style.display = 'flex';
+        }
+    }
+
+    window.clippyAgent.moveTo(window.innerWidth - 200, window.innerHeight - 150);
+    window.clippyAgent.play('Alert');
+    typeText();
+
+    window.handleClippyResponse = function(response) {
+        window.playSound('click-sound');
+        textElement.textContent = response === 'yes' ? 
+            "Good enough, I suppose. Keep exploring!" : 
+            "That's the spirit! But I'm keeping you here a bit longer!";
+        document.getElementById('clippy-buttons').style.display = 'none';
+        window.clippyAgent.play('Congratulate');
+        setTimeout(() => {
+            bubble.remove();
+            window.clippyAgent.moveTo(window.innerWidth - 100, window.innerHeight - 100);
+        }, 2000);
+    };
+}
