@@ -30,11 +30,12 @@ function showClippyOverlay() {
                     font-size: 12px;
                     box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
                     margin-bottom: 10px;
+                    position: relative;
                 }
                 .clippy-speech-bubble::after {
                     content: '';
                     position: absolute;
-                    bottom: -20px;
+                    bottom: -10px;
                     right: 20px;
                     border: 10px solid transparent;
                     border-top-color: #ffffe1;
@@ -68,15 +69,15 @@ function showClippyOverlay() {
                     background-repeat: no-repeat;
                 }
                 .clippy-graphic.fallback {
-                    background-image: url('https://patriklegard.com/clippy.png');
+                    background-image: url('https://www.clippit.org/clippy.png');
                 }
             </style>
             <div class="clippy-container">
                 <div class="clippy-speech-bubble">
                     <p id="clippy-text"></p>
                     <div class="clippy-buttons" id="clippy-buttons" style="display: none;">
-                        <button onclick="handleClippyResponse('yes')">Yes</button>
-                        <button onclick="handleClippyResponse('yes-ofc')">Yes ofc</button>
+                        <button onclick="window.handleClippyResponse('yes')">Yes</button>
+                        <button onclick="window.handleClippyResponse('yes-ofc')">Yes ofc</button>
                     </div>
                 </div>
                 <div class="clippy-graphic" id="clippy-graphic"></div>
@@ -84,15 +85,24 @@ function showClippyOverlay() {
         `;
         document.body.appendChild(overlay);
 
+        // Play sound
+        window.playSound && window.playSound('window-open-sound');
+
         // Initialize Clippy with clippyjs
         if (window.clippy && window.clippy.load) {
             window.clippy.load('Clippy', function(agent) {
                 window.clippyAgent = agent;
+                const graphic = document.getElementById('clippy-graphic');
+                graphic.style.display = 'none'; // Hide static graphic
                 agent.show();
                 agent.moveTo(window.innerWidth - 200, window.innerHeight - 150);
                 agent.play('Alert');
                 startTypewriter();
-            }, null, 'https://raw.githubusercontent.com/pi0/clippyjs/master/assets/agents/');
+            }, function() {
+                console.warn('Clippy.js failed to load, using fallback graphic.');
+                document.getElementById('clippy-graphic').classList.add('fallback');
+                startTypewriter();
+            }, 'https://raw.githubusercontent.com/pi0/clippyjs/master/assets/agents/');
         } else {
             console.warn('Clippy.js not loaded, using fallback graphic.');
             document.getElementById('clippy-graphic').classList.add('fallback');
