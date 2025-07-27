@@ -15,26 +15,45 @@ function initMaya() {
         return;
     }
 
-    // Add UI controls
+    // Add UI controls for rotation and scale
     const controlsDiv = document.createElement('div');
     controlsDiv.className = 'maya-controls';
     controlsDiv.style.marginBottom = '8px';
+    controlsDiv.style.fontSize = '12px';
+    controlsDiv.style.fontFamily = '"MS Sans Serif", Tahoma, Arial, sans-serif';
     controlsDiv.innerHTML = `
-        <div style="margin-bottom: 4px;">
-            <strong>Rotate Cube (degrees):</strong>
+        <div style="margin-bottom: 4px; color: #000080; font-weight: bold;">
+            Rotate Cube (degrees):
         </div>
         <div style="display: flex; gap: 8px; margin-bottom: 8px;">
-            <label>X: <input type="range" id="rotateX" min="-180" max="180" value="0"></label>
-            <label>Y: <input type="range" id="rotateY" min="-180" max="180" value="0"></label>
-            <label>Z: <input type="range" id="rotateZ" min="-180" max="180" value="0"></label>
+            <label style="display: flex; align-items: center; gap: 4px;">
+                X: <input type="range" id="rotateX" min="-180" max="180" value="0" style="width: 100px;">
+            </label>
+            <label style="display: flex; align-items: center; gap: 4px;">
+                Y: <input type="range" id="rotateY" min="-180" max="180" value="0" style="width: 100px;">
+            </label>
+            <label style="display: flex; align-items: center; gap: 4px;">
+                Z: <input type="range" id="rotateZ" min="-180" max="180" value="0" style="width: 100px;">
+            </label>
         </div>
-        <div style="margin-bottom: 4px;">
-            <strong>Scale Cube:</strong>
+        <div style="margin-bottom: 4px; color: #000080; font-weight: bold;">
+            Scale Cube:
         </div>
         <div style="display: flex; gap: 8px;">
-            <label>X: <input type="range" id="scaleX" min="0.1" max="2" step="0.1" value="1"></label>
-            <label>Y: <input type="range" id="scaleY" min="0.1" max="2" step="0.1" value="1"></label>
-            <label>Z: <input type="range" id="scaleZ" min="0.1" max="2" step="0.1" value="1"></label>
+            <label style="display: flex; align-items: center; gap: 4px;">
+                X: <input type="range" id="scaleX" min="0.1" max="2" step="0.1" value="1" style="width: 100px;">
+            </label>
+            <label style="display: flex; align-items: center; gap: 4px;">
+                Y: <input type="range" id="scaleY" min="0.1" max="2" step="0.1" value="1" style="width: 100px;">
+            </label>
+            <label style="display: flex; align-items: center; gap: 4px;">
+                Z: <input type="range" id="scaleZ" min="0.1" max="2" step="0.1" value="1" style="width: 100px;">
+            </label>
+        </div>
+        <div style="margin-top: 8px;">
+            <button onclick="resetCube()" style="padding: 2px 6px; background: #c0c0c0; border: 2px outset #ffffff; font-size: 12px;">
+                Reset Cube
+            </button>
         </div>
     `;
     windowBody.insertBefore(controlsDiv, canvas);
@@ -144,6 +163,19 @@ function setup3DScene(canvas) {
     scaleX.addEventListener('input', updateCubeTransform);
     scaleY.addEventListener('input', updateCubeTransform);
     scaleZ.addEventListener('input', updateCubeTransform);
+
+    // Reset cube transformation
+    window.resetCube = function() {
+        rotateX.value = 0;
+        rotateY.value = 0;
+        rotateZ.value = 0;
+        scaleX.value = 1;
+        scaleY.value = 1;
+        scaleZ.value = 1;
+        updateCubeTransform();
+        camera.position.set(0, 0, 5);
+        controls.reset();
+    };
 
     // Animation loop
     function animate() {
