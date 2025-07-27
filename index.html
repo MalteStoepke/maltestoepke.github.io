@@ -40,8 +40,8 @@
             width: 90px;
             border: 1px solid transparent;
             user-select: none;
-            display: block;
-            visibility: visible;
+            display: block !important;
+            visibility: visible !important;
         }
         
         .icon.draggable:hover {
@@ -69,7 +69,7 @@
         }
 
         .icon[data-id="maya"] {
-            z-index: 2;
+            z-index: 2 !important;
         }
 
         .window {
@@ -596,7 +596,7 @@
             <p>Friedrich</p>
         </div>
         <div class="icon" data-id="maya" style="left: 120px; top: 120px;" ondblclick="openMaya()">
-            <img src="https://win98icons.alexmeub.com/icons/png/opengl-0.png" alt="Maya 1.0">
+            <img src="https://win98icons.alexmeub.com/icons/png/directx-0.png" alt="Maya 1.0">
             <p>Maya 1.0</p>
         </div>
     </div>
@@ -751,7 +751,6 @@
             </div>
         </div>
         <div class="window-body">
-            <p>Maya 1.0 - 3D Modeling Application (Under Development)</p>
             <canvas id="maya-canvas" width="580" height="340"></canvas>
         </div>
     </div>
@@ -799,7 +798,7 @@
             <li class="start-menu-separator"></li>
             <li onclick="openPaint()"><img src="https://win98icons.alexmeub.com/icons/png/paint-0.png">Paint</li>
             <li onclick="openWindow('pixelsweeper-window')"><img src="https://win98icons.alexmeub.com/icons/png/minesweeper-2.png">PixelSweeper</li>
-            <li onclick="openMaya()"><img src="https://win98icons.alexmeub.com/icons/png/opengl-0.png">Maya 1.0</li>
+            <li onclick="openMaya()"><img src="https://win98icons.alexmeub.com/icons/png/directx-0.png">Maya 1.0</li>
             <li class="start-menu-separator"></li>
             <li id="login-logout-button" onclick="logout()"><img src="https://win98icons.alexmeub.com/icons/png/keys-4.png">Log Out</li>
         </ul>
@@ -1067,7 +1066,7 @@
                     explanation = 'Explore the Friedrich project, showcasing a character design with various emotions and technical details.';
                     break;
                 case 'maya-window':
-                    explanation = 'This is Maya 1.0, a 3D modeling application.';
+                    explanation = 'This is Maya 1.0, a 3D modeling application with interactive controls.';
                     break;
             }
             if (explanation) {
