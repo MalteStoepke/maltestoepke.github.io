@@ -71,7 +71,7 @@ function initPaint() {
         };
     }
 
-    // Convert hex or named color to RGB
+    // Convert color to RGB
     function colorToRgb(color) {
         if (color.startsWith('rgb')) {
             const matches = color.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
@@ -155,24 +155,33 @@ function initPaint() {
                 ctx.fillRect(px, py, 1, 1);
             }
         }
+        saveState();
     }
 
     // Draw preview for vector shapes
-    function drawPreview() {
+    function drawPreview(e) {
         if (!painting || !['line', 'rectangle', 'ellipse', 'rounded-rectangle'].includes(currentTool)) return;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        restoreState(undoStack[undoStack.length - 1]);
+
+        // Restore canvas to last saved state
+        if (undoStack.length > 0) {
+            restoreState(undoStack[undoStack.length - 1]);
+        }
+
         ctx.beginPath();
         ctx.strokeStyle = currentColor;
         ctx.fillStyle = currentColor;
         ctx.lineWidth = brushSize;
+        ctx.lineCap = 'round';
 
-        const width = selection.endX - startX;
-        const height = selection.endY - startY;
+        const rect = canvas.getBoundingClientRect();
+        const endX = (e.clientX - rect.left) / zoomLevel;
+        const endY = (e.clientY - rect.top) / zoomLevel;
+        const width = endX - startX;
+        const height = endY - startY;
 
         if (currentTool === 'line') {
             ctx.moveTo(startX, startY);
-            ctx.lineTo(selection.endX, selection.endY);
+            ctx.lineTo(endX, endY);
             ctx.stroke();
         } else if (currentTool === 'rectangle') {
             if (fillStyle === 'fill') {
@@ -185,7 +194,6 @@ function initPaint() {
             ctx.stroke();
         } else if (currentTool === 'rounded-rectangle') {
             const radius = Math.min(Math.abs(width), Math.abs(height)) / 4;
-            ctx.beginPath();
             ctx.moveTo(startX + radius, startY);
             ctx.lineTo(startX + width - radius, startY);
             ctx.quadraticCurveTo(startX + width, startY, startX + width, startY + radius);
@@ -199,16 +207,21 @@ function initPaint() {
             if (fillStyle === 'fill') ctx.fill();
             ctx.stroke();
         }
-        ctx.beginPath();
+        ctx.beginPath(); // Reset path to prevent bleed
     }
 
     // Drawing logic
     function startPosition(e) {
         e.preventDefault();
         const rect = canvas.getBoundingClientRect();
-        startX = (e.clientX - rect.left) / zoomLevel;
-        startY = (e.clientY - rect.top) / zoomLevel;
+        startX = Math.floor((e.clientX - rect.left) / zoomLevel);
+        startY = Math.floor((e.clientY - rect.top) / zoomLevel);
         console.log('Mouse down at:', startX, startY, 'Tool:', currentTool);
+
+        // Reset states
+        painting = false;
+        isSelecting = false;
+        ctx.beginPath();
 
         if (currentTool === 'magnifier') {
             zoomCanvas(startX, startY);
@@ -230,16 +243,14 @@ function initPaint() {
         }
 
         if (currentTool === 'fill') {
-            floodFill(startX, startY, ctx.getImageData(Math.floor(startX), Math.floor(startY), 1, 1).data, colorToRgb(currentColor));
+            floodFill(startX, startY, ctx.getImageData(startX, startY, 1, 1).data, colorToRgb(currentColor));
             return;
         }
 
         if (currentTool === 'select' || currentTool === 'free-select') {
             isSelecting = true;
             selection = { startX, startY, endX: startX, endY: startY };
-            if (currentTool === 'select') {
-                selectionData = null;
-            }
+            selectionData = null;
             return;
         }
 
@@ -258,6 +269,7 @@ function initPaint() {
                 ctx.arc(startX, startY, 2, 0, 2 * Math.PI);
                 ctx.fillStyle = currentColor;
                 ctx.fill();
+                saveState();
             }
             return;
         }
@@ -267,7 +279,6 @@ function initPaint() {
         if (['pencil', 'brush', 'eraser', 'airbrush'].includes(currentTool)) {
             ctx.beginPath();
             ctx.moveTo(startX, startY);
-            draw(e);
         } else {
             selection = { startX, startY, endX: startX, endY: startY };
         }
@@ -275,10 +286,10 @@ function initPaint() {
 
     function endPosition(e) {
         if (!painting && !isSelecting) return;
-        painting = false;
+
         const rect = canvas.getBoundingClientRect();
-        const endX = (e.clientX - rect.left) / zoomLevel;
-        const endY = (e.clientY - rect.top) / zoomLevel;
+        const endX = Math.floor((e.clientX - rect.left) / zoomLevel);
+        const endY = Math.floor((e.clientY - rect.top) / zoomLevel);
         console.log('Mouse up at:', endX, endY);
 
         if (currentTool === 'select' || currentTool === 'free-select') {
@@ -287,8 +298,14 @@ function initPaint() {
             selection.endY = endY;
             if (currentTool === 'select') {
                 try {
-                    selectionData = ctx.getImageData(Math.min(startX, endX), Math.min(startY, endY), Math.abs(endX - startX), Math.abs(endY - startY));
-                    console.log('Selection captured:', selection);
+                    const x = Math.min(startX, endX);
+                    const y = Math.min(startY, endY);
+                    const width = Math.abs(endX - startX);
+                    const height = Math.abs(endY - startY);
+                    if (width > 0 && height > 0) {
+                        selectionData = ctx.getImageData(x, y, width, height);
+                        console.log('Selection captured:', selection);
+                    }
                 } catch (e) {
                     console.error('Error capturing selection:', e);
                 }
@@ -297,10 +314,16 @@ function initPaint() {
         }
 
         if (['line', 'rectangle', 'ellipse', 'rounded-rectangle'].includes(currentTool)) {
+            // Restore canvas before final draw
+            if (undoStack.length > 0) {
+                restoreState(undoStack[undoStack.length - 1]);
+            }
+
             ctx.beginPath();
             ctx.strokeStyle = currentColor;
             ctx.fillStyle = currentColor;
             ctx.lineWidth = brushSize;
+            ctx.lineCap = 'round';
 
             const width = endX - startX;
             const height = endY - startY;
@@ -320,7 +343,6 @@ function initPaint() {
                 ctx.stroke();
             } else if (currentTool === 'rounded-rectangle') {
                 const radius = Math.min(Math.abs(width), Math.abs(height)) / 4;
-                ctx.beginPath();
                 ctx.moveTo(startX + radius, startY);
                 ctx.lineTo(startX + width - radius, startY);
                 ctx.quadraticCurveTo(startX + width, startY, startX + width, startY + radius);
@@ -336,25 +358,24 @@ function initPaint() {
             }
             saveState();
         }
-        ctx.beginPath();
+
+        painting = false;
         selection = null;
+        ctx.beginPath(); // Reset path
     }
 
     function draw(e) {
         if (!painting || !['pencil', 'brush', 'eraser', 'airbrush'].includes(currentTool)) {
             if (isSelecting && (currentTool === 'select' || currentTool === 'free-select')) {
-                const rect = canvas.getBoundingClientRect();
-                selection.endX = (e.clientX - rect.left) / zoomLevel;
-                selection.endY = (e.clientY - rect.top) / zoomLevel;
-                drawPreview();
+                drawPreview(e);
             }
             return;
         }
 
         e.preventDefault();
         const rect = canvas.getBoundingClientRect();
-        const x = (e.clientX - rect.left) / zoomLevel;
-        const y = (e.clientY - rect.top) / zoomLevel;
+        const x = Math.floor((e.clientX - rect.left) / zoomLevel);
+        const y = Math.floor((e.clientY - rect.top) / zoomLevel);
 
         ctx.lineCap = currentTool === 'pencil' ? 'square' : 'round';
         ctx.lineWidth = brushSize;
@@ -376,6 +397,7 @@ function initPaint() {
             ctx.strokeStyle = currentColor;
             ctx.fillStyle = currentColor;
             ctx.lineWidth = brushSize;
+            ctx.lineCap = 'round';
             ctx.moveTo(points[0].x, points[0].y);
             ctx.quadraticCurveTo(points[1].x, points[1].y, points[2].x, points[2].y);
             if (fillStyle === 'fill') ctx.fill();
@@ -392,6 +414,7 @@ function initPaint() {
             ctx.strokeStyle = currentColor;
             ctx.fillStyle = currentColor;
             ctx.lineWidth = brushSize;
+            ctx.lineCap = 'round';
             ctx.moveTo(points[0].x, points[0].y);
             for (let i = 1; i < points.length; i++) {
                 ctx.lineTo(points[i].x, points[i].y);
@@ -423,6 +446,7 @@ function initPaint() {
         img.onerror = () => {
             console.error('Error zooming canvas.');
         };
+        safePlaySound('click-sound');
     }
 
     function promptForText() {
@@ -440,6 +464,7 @@ function initPaint() {
             }
         }
         textInputActive = false;
+        safePlaySound('click-sound');
     }
 
     // Clear existing listeners
@@ -452,7 +477,11 @@ function initPaint() {
     canvas.addEventListener('mousedown', startPosition);
     canvas.addEventListener('mouseup', endPosition);
     canvas.addEventListener('mousemove', draw);
-    canvas.addEventListener('mouseleave', endPosition);
+    canvas.addEventListener('mouseleave', () => {
+        painting = false;
+        isSelecting = false;
+        ctx.beginPath();
+    });
 
     // Tool and color controls
     window.setTool = function(tool) {
@@ -464,6 +493,9 @@ function initPaint() {
         textInputActive = false;
         points = [];
         selection = null;
+        painting = false;
+        isSelecting = false;
+        ctx.beginPath();
         document.querySelectorAll('.tool-button').forEach(btn => btn.classList.remove('active'));
         const toolButton = document.getElementById(`${tool}-tool`);
         if (toolButton) {
@@ -476,7 +508,7 @@ function initPaint() {
     };
 
     window.setColor = function(color) {
-        currentColor = color.startsWith('rgb') ? color : color;
+        currentColor = color;
         ctx.strokeStyle = currentColor;
         ctx.fillStyle = currentColor;
         document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
@@ -625,6 +657,7 @@ function initPaint() {
     // Initialize tool state
     window.setTool('pencil');
     window.setColor('black');
+    window.setBrushSize(5);
     console.log('Paint application initialized successfully.');
     return true;
 }
