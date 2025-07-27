@@ -49,7 +49,7 @@ function initPaint() {
         }
     }
 
-    // Save canvas state for undo/redo (limited to 3 levels as in Win98)
+    // Save canvas state for undo/redo (3 levels, as in Win98)
     function saveState() {
         undoStack.push(canvas.toDataURL());
         if (undoStack.length > 3) undoStack.shift();
@@ -155,7 +155,6 @@ function initPaint() {
                 ctx.fillRect(px, py, 1, 1);
             }
         }
-        saveState();
     }
 
     // Draw preview for vector shapes
@@ -167,18 +166,19 @@ function initPaint() {
             restoreState(undoStack[undoStack.length - 1]);
         }
 
-        ctx.beginPath();
+        ctx.save();
         ctx.strokeStyle = currentColor;
         ctx.fillStyle = currentColor;
         ctx.lineWidth = brushSize;
         ctx.lineCap = 'round';
 
         const rect = canvas.getBoundingClientRect();
-        const endX = (e.clientX - rect.left) / zoomLevel;
-        const endY = (e.clientY - rect.top) / zoomLevel;
+        const endX = Math.floor((e.clientX - rect.left) / zoomLevel);
+        const endY = Math.floor((e.clientY - rect.top) / zoomLevel);
         const width = endX - startX;
         const height = endY - startY;
 
+        ctx.beginPath();
         if (currentTool === 'line') {
             ctx.moveTo(startX, startY);
             ctx.lineTo(endX, endY);
@@ -207,7 +207,7 @@ function initPaint() {
             if (fillStyle === 'fill') ctx.fill();
             ctx.stroke();
         }
-        ctx.beginPath(); // Reset path to prevent bleed
+        ctx.restore();
     }
 
     // Drawing logic
@@ -221,6 +221,9 @@ function initPaint() {
         // Reset states
         painting = false;
         isSelecting = false;
+        points = [];
+        selection = null;
+        selectionData = null;
         ctx.beginPath();
 
         if (currentTool === 'magnifier') {
@@ -250,37 +253,25 @@ function initPaint() {
         if (currentTool === 'select' || currentTool === 'free-select') {
             isSelecting = true;
             selection = { startX, startY, endX: startX, endY: startY };
-            selectionData = null;
             return;
         }
 
         if (currentTool === 'curve' || currentTool === 'polygon') {
             points.push({ x: startX, y: startY });
-            if (currentTool === 'curve' && points.length === 3) {
-                drawCurve();
-                points = [];
-                saveState();
-            } else if (currentTool === 'polygon' && points.length > 2 && Math.abs(startX - points[0].x) < 5 && Math.abs(startY - points[0].y) < 5) {
-                drawPolygon();
-                points = [];
-                saveState();
-            } else {
-                ctx.beginPath();
-                ctx.arc(startX, startY, 2, 0, 2 * Math.PI);
-                ctx.fillStyle = currentColor;
-                ctx.fill();
-                saveState();
-            }
+            ctx.beginPath();
+            ctx.arc(startX, startY, 2, 0, 2 * Math.PI);
+            ctx.fillStyle = currentColor;
+            ctx.fill();
+            saveState();
             return;
         }
 
         painting = true;
+        selection = { startX, startY, endX: startX, endY: startY };
         saveState();
         if (['pencil', 'brush', 'eraser', 'airbrush'].includes(currentTool)) {
             ctx.beginPath();
             ctx.moveTo(startX, startY);
-        } else {
-            selection = { startX, startY, endX: startX, endY: startY };
         }
     }
 
@@ -292,7 +283,7 @@ function initPaint() {
         const endY = Math.floor((e.clientY - rect.top) / zoomLevel);
         console.log('Mouse up at:', endX, endY);
 
-        if (currentTool === 'select' || currentTool === 'free-select') {
+        if (isSelecting && (currentTool === 'select' || currentTool === 'free-select')) {
             isSelecting = false;
             selection.endX = endX;
             selection.endY = endY;
@@ -313,13 +304,21 @@ function initPaint() {
             return;
         }
 
-        if (['line', 'rectangle', 'ellipse', 'rounded-rectangle'].includes(currentTool)) {
+        if (currentTool === 'curve' && points.length === 3) {
+            drawCurve();
+            points = [];
+            saveState();
+        } else if (currentTool === 'polygon' && points.length > 2 && Math.abs(startX - points[0].x) < 5 && Math.abs(startY - points[0].y) < 5) {
+            drawPolygon();
+            points = [];
+            saveState();
+        } else if (['line', 'rectangle', 'ellipse', 'rounded-rectangle'].includes(currentTool)) {
             // Restore canvas before final draw
             if (undoStack.length > 0) {
                 restoreState(undoStack[undoStack.length - 1]);
             }
 
-            ctx.beginPath();
+            ctx.save();
             ctx.strokeStyle = currentColor;
             ctx.fillStyle = currentColor;
             ctx.lineWidth = brushSize;
@@ -328,6 +327,7 @@ function initPaint() {
             const width = endX - startX;
             const height = endY - startY;
 
+            ctx.beginPath();
             if (currentTool === 'line') {
                 ctx.moveTo(startX, startY);
                 ctx.lineTo(endX, endY);
@@ -356,18 +356,22 @@ function initPaint() {
                 if (fillStyle === 'fill') ctx.fill();
                 ctx.stroke();
             }
+            ctx.restore();
             saveState();
         }
 
         painting = false;
+        isSelecting = false;
         selection = null;
-        ctx.beginPath(); // Reset path
+        ctx.beginPath();
     }
 
     function draw(e) {
         if (!painting || !['pencil', 'brush', 'eraser', 'airbrush'].includes(currentTool)) {
             if (isSelecting && (currentTool === 'select' || currentTool === 'free-select')) {
-                drawPreview(e);
+                selection.endX = Math.floor((e.clientX - canvas.getBoundingClientRect().left) / zoomLevel);
+                selection.endY = Math.floor((e.clientY - canvas.getBoundingClientRect().top) / zoomLevel);
+                drawSelectionPreview();
             }
             return;
         }
@@ -377,31 +381,57 @@ function initPaint() {
         const x = Math.floor((e.clientX - rect.left) / zoomLevel);
         const y = Math.floor((e.clientY - rect.top) / zoomLevel);
 
+        ctx.save();
         ctx.lineCap = currentTool === 'pencil' ? 'square' : 'round';
         ctx.lineWidth = brushSize;
         ctx.strokeStyle = currentTool === 'eraser' ? secondaryColor : currentColor;
 
         if (currentTool === 'airbrush') {
             drawAirbrush(x, y);
+            saveState();
         } else {
             ctx.lineTo(x, y);
             ctx.stroke();
             ctx.beginPath();
             ctx.moveTo(x, y);
         }
+        ctx.restore();
+    }
+
+    function drawSelectionPreview() {
+        if (!isSelecting || !['select', 'free-select'].includes(currentTool)) return;
+
+        if (undoStack.length > 0) {
+            restoreState(undoStack[undoStack.length - 1]);
+        }
+
+        ctx.save();
+        ctx.setLineDash([5, 5]); // Dashed line for selection
+        ctx.strokeStyle = 'black';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        const width = selection.endX - selection.startX;
+        const height = selection.endY - selection.startY;
+        ctx.strokeRect(selection.startX, selection.startY, width, height);
+        ctx.restore();
     }
 
     function drawCurve() {
         try {
-            ctx.beginPath();
+            if (undoStack.length > 0) {
+                restoreState(undoStack[undoStack.length - 1]);
+            }
+            ctx.save();
             ctx.strokeStyle = currentColor;
             ctx.fillStyle = currentColor;
             ctx.lineWidth = brushSize;
             ctx.lineCap = 'round';
+            ctx.beginPath();
             ctx.moveTo(points[0].x, points[0].y);
             ctx.quadraticCurveTo(points[1].x, points[1].y, points[2].x, points[2].y);
             if (fillStyle === 'fill') ctx.fill();
             ctx.stroke();
+            ctx.restore();
             console.log('Curve drawn with points:', points);
         } catch (e) {
             console.error('Error drawing curve:', e);
@@ -410,11 +440,15 @@ function initPaint() {
 
     function drawPolygon() {
         try {
-            ctx.beginPath();
+            if (undoStack.length > 0) {
+                restoreState(undoStack[undoStack.length - 1]);
+            }
+            ctx.save();
             ctx.strokeStyle = currentColor;
             ctx.fillStyle = currentColor;
             ctx.lineWidth = brushSize;
             ctx.lineCap = 'round';
+            ctx.beginPath();
             ctx.moveTo(points[0].x, points[0].y);
             for (let i = 1; i < points.length; i++) {
                 ctx.lineTo(points[i].x, points[i].y);
@@ -422,6 +456,7 @@ function initPaint() {
             ctx.closePath();
             if (fillStyle === 'fill') ctx.fill();
             ctx.stroke();
+            ctx.restore();
             console.log('Polygon drawn with points:', points);
         } catch (e) {
             console.error('Error drawing polygon:', e);
@@ -453,10 +488,11 @@ function initPaint() {
         const text = prompt('Enter text to add:');
         if (text && textInputActive) {
             try {
+                ctx.save();
                 ctx.font = `${fontSize}px ${fontFamily}`;
                 ctx.fillStyle = currentColor;
                 ctx.fillText(text, textX, textY);
-                textInputActive = false;
+                ctx.restore();
                 saveState();
                 console.log('Text added:', text, 'at:', textX, textY);
             } catch (e) {
@@ -481,6 +517,9 @@ function initPaint() {
         painting = false;
         isSelecting = false;
         ctx.beginPath();
+        if (undoStack.length > 0) {
+            restoreState(undoStack[undoStack.length - 1]);
+        }
     });
 
     // Tool and color controls
