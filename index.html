@@ -40,6 +40,8 @@
             width: 90px;
             border: 1px solid transparent;
             user-select: none;
+            display: block;
+            visibility: visible;
         }
         
         .icon.draggable:hover {
@@ -64,6 +66,10 @@
         
         .icon.selected p {
             background-color: #000080;
+        }
+
+        .icon[data-id="maya"] {
+            z-index: 2;
         }
 
         .window {
@@ -589,6 +595,10 @@
             <img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png" alt="Friedrich">
             <p>Friedrich</p>
         </div>
+        <div class="icon" data-id="maya" style="left: 120px; top: 120px;" ondblclick="openMaya()">
+            <img src="https://win98icons.alexmeub.com/icons/png/opengl-0.png" alt="Maya 1.0">
+            <p>Maya 1.0</p>
+        </div>
     </div>
     
     <div class="window" id="my-computer-window" style="width: 400px; height: 300px;">
@@ -731,6 +741,21 @@
         </div>
     </div>
 
+    <div class="window" id="maya-window" style="width: 600px; height: 400px;">
+        <div class="title-bar">
+            <div class="title-bar-text">Maya 1.0</div>
+            <div class="title-bar-controls">
+                <button aria-label="Minimize" onclick="minimizeWindow('maya-window')"></button>
+                <button aria-label="Maximize" onclick="maximizeWindow('maya-window')"></button>
+                <button aria-label="Close" onclick="closeWindow('maya-window')"></button>
+            </div>
+        </div>
+        <div class="window-body">
+            <p>Maya 1.0 - 3D Modeling Application (Under Development)</p>
+            <canvas id="maya-canvas" width="580" height="340"></canvas>
+        </div>
+    </div>
+
     <div class="window" id="recycle-window" style="width: 400px; height: 300px;">
         <div class="title-bar">
             <div class="title-bar-text">Recycle Bin</div>
@@ -774,6 +799,7 @@
             <li class="start-menu-separator"></li>
             <li onclick="openPaint()"><img src="https://win98icons.alexmeub.com/icons/png/paint-0.png">Paint</li>
             <li onclick="openWindow('pixelsweeper-window')"><img src="https://win98icons.alexmeub.com/icons/png/minesweeper-2.png">PixelSweeper</li>
+            <li onclick="openMaya()"><img src="https://win98icons.alexmeub.com/icons/png/opengl-0.png">Maya 1.0</li>
             <li class="start-menu-separator"></li>
             <li id="login-logout-button" onclick="logout()"><img src="https://win98icons.alexmeub.com/icons/png/keys-4.png">Log Out</li>
         </ul>
@@ -799,6 +825,7 @@
     let paintScriptLoaded = false;
     let ieScriptLoaded = false;
     let friedrichScriptLoaded = false;
+    let mayaScriptLoaded = false;
     
     const correctUsername = "Malte Stoepke";
     const correctPassword = "Maus_123";
@@ -992,7 +1019,7 @@
     
     // --- Clock ---
     function updateClock() {
-        document.getElementById('taskbar-time').textContent = 'Last Update: 07/22/2025';
+        document.getElementById('taskbar-time').textContent = 'Last Update: 07/27/2025';
     }
     
     // --- Window Management ---
@@ -1039,6 +1066,9 @@
                 case 'friedrich-window':
                     explanation = 'Explore the Friedrich project, showcasing a character design with various emotions and technical details.';
                     break;
+                case 'maya-window':
+                    explanation = 'This is Maya 1.0, a 3D modeling application.';
+                    break;
             }
             if (explanation) {
                 window.clippyAgent.speak(explanation);
@@ -1081,6 +1111,29 @@
             document.body.appendChild(script);
         } else {
             openWindow('ie-window');
+        }
+    }
+    
+    function openMaya() {
+        console.log('Attempting to open Maya 1.0');
+        if (!mayaScriptLoaded) {
+            const script = document.createElement('script');
+            script.src = 'maya.js';
+            script.onload = () => {
+                console.log('maya.js loaded successfully');
+                mayaScriptLoaded = true;
+                initMaya();
+                openWindow('maya-window');
+            };
+            script.onerror = () => {
+                console.error('Failed to load maya.js');
+                playSound('error-sound');
+                alert('Failed to load Maya 1.0 application.');
+            };
+            document.body.appendChild(script);
+        } else {
+            console.log('Maya script already loaded, opening window');
+            openWindow('maya-window');
         }
     }
     
@@ -1197,7 +1250,9 @@
 
     // --- Desktop Icons ---
     function setupIconInteraction() {
+        console.log('Setting up icon interactions');
         document.querySelectorAll('.icon').forEach(icon => {
+            console.log(`Processing icon: ${icon.dataset.id}`);
             // Remove previous listeners to avoid duplicates
             const newIcon = icon.cloneNode(true);
             icon.parentNode.replaceChild(newIcon, icon);
@@ -1219,9 +1274,11 @@
             
             // Add double click listener
             newIcon.addEventListener('dblclick', () => {
+                console.log(`Double-clicked icon: ${newIcon.dataset.id}`);
                 const windowId = newIcon.dataset.id === 'paint' ? null : 
                                 newIcon.dataset.id === 'ie' ? null : 
                                 newIcon.dataset.id === 'friedrich' ? null : 
+                                newIcon.dataset.id === 'maya' ? null :
                                 `${newIcon.dataset.id}-window`;
                 if (newIcon.dataset.id === 'paint') {
                     openPaint();
@@ -1229,6 +1286,8 @@
                     openInternetExplorer();
                 } else if (newIcon.dataset.id === 'friedrich') {
                     openFriedrich();
+                } else if (newIcon.dataset.id === 'maya') {
+                    openMaya();
                 } else {
                     openWindow(windowId);
                 }
