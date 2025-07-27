@@ -386,14 +386,6 @@
             margin-top: 20px;
         }
 
-        .paint-canvas {
-            border: 1px solid black;
-            background: white;
-            cursor: crosshair;
-            display: block;
-            margin: 0 auto;
-        }
-        
         .minesweeper-board {
             display: grid;
             gap: 1px;
@@ -678,47 +670,6 @@
             <p class="editable-field" contenteditable="false" id="about-contact">Log in with the provided credentials to edit this page.</p>
             <div class="edit-controls">
                 <button onclick="saveAboutEdits()">Save Changes</button>
-            </div>
-        </div>
-    </div>
-    
-    <div class="window" id="paint-window" style="width: 500px; height: 400px;">
-        <div class="title-bar">
-            <div class="title-bar-text">untitled - Paint</div>
-            <div class="title-bar-controls">
-                <button aria-label="Minimize" onclick="minimizeWindow('paint-window')"></button>
-                <button aria-label="Maximize" onclick="maximizeWindow('paint-window')"></button>
-                <button aria-label="Close" onclick="closeWindow('paint-window')"></button>
-            </div>
-        </div>
-        <div class="window-body">
-            <div class="paint-tools">
-                <div class="tool-button active" id="brush-tool" onclick="setTool('brush')">
-                    <i class="fas fa-paint-brush"></i>
-                </div>
-                <div class="tool-button" id="text-tool" onclick="setTool('text')">
-                    <i class="fas fa-font"></i>
-                </div>
-                <div class="tool-button" id="eraser-tool" onclick="setTool('eraser')">
-                    <i class="fas fa-eraser"></i>
-                </div>
-                <div class="tool-button" onclick="clearCanvas()">
-                    <i class="fas fa-trash"></i>
-                </div>
-                <button class="login-button" onclick="saveArtwork()" style="margin-left: 10px;">
-                    <i class="fas fa-save"></i> Save to Desktop
-                </button>
-            </div>
-            <canvas id="paint-canvas" class="paint-canvas" width="480" height="320"></canvas>
-            <div class="color-picker">
-                <div class="color-option" style="background: black;" onclick="setColor('black')"></div>
-                <div class="color-option" style="background: red;" onclick="setColor('red')"></div>
-                <div class="color-option" style="background: green;" onclick="setColor('green')"></div>
-                <div class="color-option" style="background: blue;" onclick="setColor('blue')"></div>
-                <div class="color-option" style="background: yellow;" onclick="setColor('yellow')"></div>
-                <div class="color-option" style="background: purple;" onclick="setColor('purple')"></div>
-                <div class="color-option" style="background: orange;" onclick="setColor('orange')"></div>
-                <div class="color-option" style="background: pink;" onclick="setColor('pink')"></div>
             </div>
         </div>
     </div>
@@ -1053,9 +1004,6 @@
                 case 'about-window':
                     explanation = 'Read about me in this Notepad file.';
                     break;
-                case 'paint-window':
-                    explanation = 'Use Paint to create your own artwork and save it to the desktop.';
-                    break;
                 case 'pixelsweeper-window':
                     explanation = 'Play PixelSweeper, a Minesweeper clone.';
                     break;
@@ -1081,8 +1029,10 @@
             script.src = 'paint.js';
             script.onload = () => {
                 paintScriptLoaded = true;
-                initPaint();
-                openWindow('paint-window');
+                if (typeof initPaint === 'function') {
+                    initPaint();
+                }
+                playSound('window-open-sound');
             };
             script.onerror = () => {
                 playSound('error-sound');
@@ -1090,7 +1040,10 @@
             };
             document.body.appendChild(script);
         } else {
-            openWindow('paint-window');
+            if (typeof initPaint === 'function') {
+                initPaint();
+            }
+            playSound('window-open-sound');
         }
     }
     
