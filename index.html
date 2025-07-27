@@ -459,6 +459,52 @@
             cursor: pointer;
         }
         
+        .paint-canvas {
+            border: 1px solid black;
+            background: white;
+            cursor: crosshair;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .paint-tools {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 8px;
+        }
+
+        .tool-button {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #c0c0c0;
+            border: 2px outset #ffffff;
+            cursor: pointer;
+        }
+
+        .tool-button.active {
+            border: 2px inset #c0c0c0;
+        }
+
+        .color-picker {
+            display: flex;
+            gap: 4px;
+            margin-top: 8px;
+        }
+
+        .color-option {
+            width: 24px;
+            height: 24px;
+            border: 2px outset #ffffff;
+            cursor: pointer;
+        }
+
+        .color-option.selected {
+            border: 2px inset #c0c0c0;
+        }
+
         @media (max-width: 768px) {
             .window {
                 width: 95%;
@@ -1004,6 +1050,9 @@
                 case 'about-window':
                     explanation = 'Read about me in this Notepad file.';
                     break;
+                case 'paint-window':
+                    explanation = 'Use Paint to create your own artwork and save it to the desktop.';
+                    break;
                 case 'pixelsweeper-window':
                     explanation = 'Play PixelSweeper, a Minesweeper clone.';
                     break;
@@ -1024,6 +1073,102 @@
     }
     
     function openPaint() {
+        const winId = 'paint-window';
+        let win = document.getElementById(winId);
+        if (!win) {
+            win = document.createElement('div');
+            win.className = 'window';
+            win.id = winId;
+            win.style.width = '500px';
+            win.style.height = '400px';
+            win.innerHTML = `
+                <div class="title-bar">
+                    <div class="title-bar-text">untitled - Paint</div>
+                    <div class="title-bar-controls">
+                        <button aria-label="Minimize" onclick="minimizeWindow('paint-window')"></button>
+                        <button aria-label="Maximize" onclick="maximizeWindow('paint-window')"></button>
+                        <button aria-label="Close" onclick="closeWindow('paint-window')"></button>
+                    </div>
+                </div>
+                <div class="window-body">
+                    <div class="paint-tools">
+                        <div class="tool-button active" id="pencil-tool" onclick="setTool('pencil')">
+                            <i class="fas fa-pencil-alt"></i>
+                        </div>
+                        <div class="tool-button" id="brush-tool" onclick="setTool('brush')">
+                            <i class="fas fa-paint-brush"></i>
+                        </div>
+                        <div class="tool-button" id="eraser-tool" onclick="setTool('eraser')">
+                            <i class="fas fa-eraser"></i>
+                        </div>
+                        <div class="tool-button" id="fill-tool" onclick="setTool('fill')">
+                            <i class="fas fa-fill-drip"></i>
+                        </div>
+                        <div class="tool-button" id="pick-tool" onclick="setTool('pick')">
+                            <i class="fas fa-eye-dropper"></i>
+                        </div>
+                        <div class="tool-button" id="magnifier-tool" onclick="setTool('magnifier')">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <div class="tool-button" id="text-tool" onclick="setTool('text')">
+                            <i class="fas fa-font"></i>
+                        </div>
+                        <div class="tool-button" id="line-tool" onclick="setTool('line')">
+                            <i class="fas fa-slash"></i>
+                        </div>
+                        <div class="tool-button" id="curve-tool" onclick="setTool('curve')">
+                            <i class="fas fa-bezier-curve"></i>
+                        </div>
+                        <div class="tool-button" id="rectangle-tool" onclick="setTool('rectangle')">
+                            <i class="fas fa-square"></i>
+                        </div>
+                        <div class="tool-button" id="ellipse-tool" onclick="setTool('ellipse')">
+                            <i class="fas fa-circle"></i>
+                        </div>
+                        <div class="tool-button" id="rounded-rectangle-tool" onclick="setTool('rounded-rectangle')">
+                            <i class="fas fa-square-full"></i>
+                        </div>
+                        <div class="tool-button" id="polygon-tool" onclick="setTool('polygon')">
+                            <i class="fas fa-draw-polygon"></i>
+                        </div>
+                        <div class="tool-button" id="select-tool" onclick="setTool('select')">
+                            <i class="fas fa-object-ungroup"></i>
+                        </div>
+                        <div class="tool-button" id="free-select-tool" onclick="setTool('free-select')">
+                            <i class="fas fa-lasso"></i>
+                        </div>
+                        <div class="tool-button" onclick="clearCanvas()">
+                            <i class="fas fa-trash"></i>
+                        </div>
+                        <button class="login-button" onclick="saveArtwork()" style="margin-left: 10px;">
+                            <i class="fas fa-save"></i> Save to Desktop
+                        </button>
+                    </div>
+                    <canvas id="paint-canvas" class="paint-canvas" width="480" height="320"></canvas>
+                    <div class="color-picker">
+                        <div class="color-option selected" style="background: black;" onclick="setColor('black')"></div>
+                        <div class="color-option" style="background: red;" onclick="setColor('red')"></div>
+                        <div class="color-option" style="background: green;" onclick="setColor('green')"></div>
+                        <div class="color-option" style="background: blue;" onclick="setColor('blue')"></div>
+                        <div class="color-option" style="background: yellow;" onclick="setColor('yellow')"></div>
+                        <div class="color-option" style="background: purple;" onclick="setColor('purple')"></div>
+                        <div class="color-option" style="background: orange;" onclick="setColor('orange')"></div>
+                        <div class="color-option" style="background: pink;" onclick="setColor('pink')"></div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(win);
+            // Re-apply window event listeners
+            const titleBar = win.querySelector('.title-bar');
+            if (titleBar) {
+                titleBar.addEventListener('mousedown', (e) => {
+                    if (e.target.closest('.title-bar-controls')) return;
+                    startDrag(e, win);
+                    bringToFront(winId);
+                });
+            }
+            win.addEventListener('mousedown', () => bringToFront(winId));
+        }
         if (!paintScriptLoaded) {
             const script = document.createElement('script');
             script.src = 'paint.js';
@@ -1031,8 +1176,11 @@
                 paintScriptLoaded = true;
                 if (typeof initPaint === 'function') {
                     initPaint();
+                    openWindow(winId);
+                } else {
+                    playSound('error-sound');
+                    alert('Failed to initialize Paint application.');
                 }
-                playSound('window-open-sound');
             };
             script.onerror = () => {
                 playSound('error-sound');
@@ -1043,7 +1191,7 @@
             if (typeof initPaint === 'function') {
                 initPaint();
             }
-            playSound('window-open-sound');
+            openWindow(winId);
         }
     }
     
