@@ -1,17 +1,10 @@
 function initPaint() {
-    console.log('Initializing Paint application...');
     const canvas = document.getElementById('paint-canvas');
     if (!canvas) {
         console.error('Canvas with id "paint-canvas" not found.');
-        alert('Error: Paint canvas not found. Please try reopening Paint.');
-        return false;
+        return;
     }
     const ctx = canvas.getContext('2d');
-    if (!ctx) {
-        console.error('Failed to get 2D context for canvas.');
-        alert('Error: Unable to initialize canvas context.');
-        return false;
-    }
 
     // State variables
     let painting = false;
@@ -29,32 +22,20 @@ function initPaint() {
     let zoomLevel = 1;
     let airbrushPattern = 'medium';
     let fontSize = 16;
-    let fontFamily = '"MS Sans Serif", Arial, sans-serif';
+    let fontFamily = '"MS Sans Serif"';
     let isSelecting = false;
     let selection = null;
-    let selectionData = null;
 
     // Initialize canvas
-    ctx.fillStyle = secondaryColor;
+    ctx.fillStyle = 'white';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     saveState();
-    console.log('Canvas initialized with white background.');
 
-    // Helper to safely play sound
-    function safePlaySound(id) {
-        if (typeof window.playSound === 'function') {
-            window.playSound(id);
-        } else {
-            console.warn(`playSound function not found, skipping sound: ${id}`);
-        }
-    }
-
-    // Save canvas state for undo/redo (3 levels, as in Win98)
+    // Save canvas state for undo/redo (limited to 3 levels as in Win98)
     function saveState() {
         undoStack.push(canvas.toDataURL());
         if (undoStack.length > 3) undoStack.shift();
         redoStack = [];
-        console.log('Canvas state saved. Undo stack size:', undoStack.length);
     }
 
     // Restore canvas state
@@ -64,81 +45,59 @@ function initPaint() {
         img.onload = () => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.drawImage(img, 0, 0);
-            console.log('Canvas state restored.');
-        };
-        img.onerror = () => {
-            console.error('Failed to restore canvas state from data URL.');
         };
     }
 
-    // Convert color to RGB
-    function colorToRgb(color) {
-        if (color.startsWith('rgb')) {
-            const matches = color.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
-            if (matches) {
-                return { r: parseInt(matches[1]), g: parseInt(matches[2]), b: parseInt(matches[3]), a: 255 };
-            }
-        }
-        const ctxTemp = document.createElement('canvas').getContext('2d');
-        ctxTemp.fillStyle = color;
-        ctxTemp.fillRect(0, 0, 1, 1);
-        const pixel = ctxTemp.getImageData(0, 0, 1, 1).data;
-        return { r: pixel[0], g: pixel[1], b: pixel[2], a: pixel[3] };
+    // Convert hex to RGB
+    function hexToRgb(hex) {
+        if (hex.startsWith('#')) hex = hex.slice(1);
+        const r = parseInt(hex.slice(0, 2), 16);
+        const g = parseInt(hex.slice(2, 4), 16);
+        const b = parseInt(hex.slice(4, 6), 16);
+        return { r, g, b, a: 255 };
     }
 
     // Get pixel color
     function getPixelColor(x, y) {
-        try {
-            const pixel = ctx.getImageData(Math.floor(x), Math.floor(y), 1, 1).data;
-            return `rgb(${pixel[0]}, ${pixel[1]}, ${pixel[2]})`;
-        } catch (e) {
-            console.error('Error getting pixel color:', e);
-            return currentColor;
-        }
+        const pixel = ctx.getImageData(x, y, 1, 1).data;
+        return `rgb(${pixel[0]}, ${pixel[1]}, ${pixel[2]})`;
     }
 
     // Flood fill algorithm
     function floodFill(x, y, targetColor, replacementColor) {
-        try {
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const pixels = imageData.data;
-            const target = [targetColor[0], targetColor[1], targetColor[2], targetColor[3]];
-            const replacement = [replacementColor.r, replacementColor.g, replacementColor.b, replacementColor.a];
-            const stack = [[Math.floor(x), Math.floor(y)]];
-            const width = canvas.width;
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const pixels = imageData.data;
+        const target = [targetColor[0], targetColor[1], targetColor[2], targetColor[3]];
+        const stack = [[Math.floor(x), Math.floor(y)]];
+        const width = canvas.width;
 
-            function matchColor(pixelPos) {
-                return pixels[pixelPos] === target[0] &&
-                       pixels[pixelPos + 1] === target[1] &&
-                       pixels[pixelPos + 2] === target[2] &&
-                       pixels[pixelPos + 3] === target[3];
-            }
-
-            while (stack.length) {
-                const [px, py] = stack.pop();
-                const pos = (py * width + px) * 4;
-
-                if (px < 0 || px >= canvas.width || py < 0 || py >= canvas.height || !matchColor(pos)) {
-                    continue;
-                }
-
-                pixels[pos] = replacement[0];
-                pixels[pos + 1] = replacement[1];
-                pixels[pos + 2] = replacement[2];
-                pixels[pos + 3] = replacement[3];
-
-                stack.push([px + 1, py]);
-                stack.push([px - 1, py]);
-                stack.push([px, py + 1]);
-                stack.push([px, py - 1]);
-            }
-
-            ctx.putImageData(imageData, 0, 0);
-            saveState();
-            console.log('Flood fill applied at:', x, y);
-        } catch (e) {
-            console.error('Error in floodFill:', e);
+        function matchColor(pixelPos) {
+            return pixels[pixelPos] === target[0] &&
+                   pixels[pixelPos + 1] === target[1] &&
+                   pixels[pixelPos + 2] === target[2] &&
+                   pixels[pixelPos + 3] === target[3];
         }
+
+        while (stack.length) {
+            const [px, py] = stack.pop();
+            const pos = (py * width + px) * 4;
+
+            if (px < 0 || px >= canvas.width || py < 0 || py >= canvas.height || !matchColor(pos)) {
+                continue;
+            }
+
+            pixels[pos] = replacementColor.r;
+            pixels[pos + 1] = replacementColor.g;
+            pixels[pos + 2] = replacementColor.b;
+            pixels[pos + 3] = replacementColor.a;
+
+            stack.push([px + 1, py]);
+            stack.push([px - 1, py]);
+            stack.push([px, py + 1]);
+            stack.push([px, py - 1]);
+        }
+
+        ctx.putImageData(imageData, 0, 0);
     }
 
     // Airbrush pattern
@@ -149,82 +108,18 @@ function initPaint() {
         for (let i = 0; i < density; i++) {
             const angle = Math.random() * 2 * Math.PI;
             const r = Math.random() * radius;
-            const px = Math.floor(x + r * Math.cos(angle));
-            const py = Math.floor(y + r * Math.sin(angle));
-            if (px >= 0 && px < canvas.width && py >= 0 && py < canvas.height) {
-                ctx.fillRect(px, py, 1, 1);
-            }
+            const px = x + r * Math.cos(angle);
+            const py = y + r * Math.sin(angle);
+            ctx.fillRect(px, py, 1, 1);
         }
-    }
-
-    // Draw preview for vector shapes
-    function drawPreview(e) {
-        if (!painting || !['line', 'rectangle', 'ellipse', 'rounded-rectangle'].includes(currentTool)) return;
-
-        // Restore canvas to last saved state
-        if (undoStack.length > 0) {
-            restoreState(undoStack[undoStack.length - 1]);
-        }
-
-        ctx.save();
-        ctx.strokeStyle = currentColor;
-        ctx.fillStyle = currentColor;
-        ctx.lineWidth = brushSize;
-        ctx.lineCap = 'round';
-
-        const rect = canvas.getBoundingClientRect();
-        const endX = Math.floor((e.clientX - rect.left) / zoomLevel);
-        const endY = Math.floor((e.clientY - rect.top) / zoomLevel);
-        const width = endX - startX;
-        const height = endY - startY;
-
-        ctx.beginPath();
-        if (currentTool === 'line') {
-            ctx.moveTo(startX, startY);
-            ctx.lineTo(endX, endY);
-            ctx.stroke();
-        } else if (currentTool === 'rectangle') {
-            if (fillStyle === 'fill') {
-                ctx.fillRect(startX, startY, width, height);
-            }
-            ctx.strokeRect(startX, startY, width, height);
-        } else if (currentTool === 'ellipse') {
-            ctx.ellipse(startX + width / 2, startY + height / 2, Math.abs(width / 2), Math.abs(height / 2), 0, 0, 2 * Math.PI);
-            if (fillStyle === 'fill') ctx.fill();
-            ctx.stroke();
-        } else if (currentTool === 'rounded-rectangle') {
-            const radius = Math.min(Math.abs(width), Math.abs(height)) / 4;
-            ctx.moveTo(startX + radius, startY);
-            ctx.lineTo(startX + width - radius, startY);
-            ctx.quadraticCurveTo(startX + width, startY, startX + width, startY + radius);
-            ctx.lineTo(startX + width, startY + height - radius);
-            ctx.quadraticCurveTo(startX + width, startY + height, startX + width - radius, startY + height);
-            ctx.lineTo(startX + radius, startY + height);
-            ctx.quadraticCurveTo(startX, startY + height, startX, startY + height - radius);
-            ctx.lineTo(startX, startY + radius);
-            ctx.quadraticCurveTo(startX, startY, startX + radius, startY);
-            ctx.closePath();
-            if (fillStyle === 'fill') ctx.fill();
-            ctx.stroke();
-        }
-        ctx.restore();
     }
 
     // Drawing logic
     function startPosition(e) {
         e.preventDefault();
         const rect = canvas.getBoundingClientRect();
-        startX = Math.floor((e.clientX - rect.left) / zoomLevel);
-        startY = Math.floor((e.clientY - rect.top) / zoomLevel);
-        console.log('Mouse down at:', startX, startY, 'Tool:', currentTool);
-
-        // Reset states
-        painting = false;
-        isSelecting = false;
-        points = [];
-        selection = null;
-        selectionData = null;
-        ctx.beginPath();
+        startX = (e.clientX - rect.left) / zoomLevel;
+        startY = (e.clientY - rect.top) / zoomLevel;
 
         if (currentTool === 'magnifier') {
             zoomCanvas(startX, startY);
@@ -246,7 +141,8 @@ function initPaint() {
         }
 
         if (currentTool === 'fill') {
-            floodFill(startX, startY, ctx.getImageData(startX, startY, 1, 1).data, colorToRgb(currentColor));
+            floodFill(startX, startY, ctx.getImageData(startX, startY, 1, 1).data, hexToRgb(currentColor));
+            saveState();
             return;
         }
 
@@ -258,18 +154,22 @@ function initPaint() {
 
         if (currentTool === 'curve' || currentTool === 'polygon') {
             points.push({ x: startX, y: startY });
-            ctx.beginPath();
-            ctx.arc(startX, startY, 2, 0, 2 * Math.PI);
-            ctx.fillStyle = currentColor;
-            ctx.fill();
-            saveState();
+            if (currentTool === 'curve' && points.length === 3) {
+                drawCurve();
+                points = [];
+                saveState();
+            } else if (currentTool === 'polygon' && points.length > 2 && Math.abs(startX - points[0].x) < 5 && Math.abs(startY - points[0].y) < 5) {
+                drawPolygon();
+                points = [];
+                saveState();
+            }
             return;
         }
 
         painting = true;
-        selection = { startX, startY, endX: startX, endY: startY };
-        saveState();
         if (['pencil', 'brush', 'eraser', 'airbrush'].includes(currentTool)) {
+            draw(e);
+        } else {
             ctx.beginPath();
             ctx.moveTo(startX, startY);
         }
@@ -277,72 +177,48 @@ function initPaint() {
 
     function endPosition(e) {
         if (!painting && !isSelecting) return;
-
+        painting = false;
+        isSelecting = false;
         const rect = canvas.getBoundingClientRect();
-        const endX = Math.floor((e.clientX - rect.left) / zoomLevel);
-        const endY = Math.floor((e.clientY - rect.top) / zoomLevel);
-        console.log('Mouse up at:', endX, endY);
+        const endX = (e.clientX - rect.left) / zoomLevel;
+        const endY = (e.clientY - rect.top) / zoomLevel;
 
-        if (isSelecting && (currentTool === 'select' || currentTool === 'free-select')) {
-            isSelecting = false;
+        if (currentTool === 'select' || currentTool === 'free-select') {
             selection.endX = endX;
             selection.endY = endY;
-            if (currentTool === 'select') {
-                try {
-                    const x = Math.min(startX, endX);
-                    const y = Math.min(startY, endY);
-                    const width = Math.abs(endX - startX);
-                    const height = Math.abs(endY - startY);
-                    if (width > 0 && height > 0) {
-                        selectionData = ctx.getImageData(x, y, width, height);
-                        console.log('Selection captured:', selection);
-                    }
-                } catch (e) {
-                    console.error('Error capturing selection:', e);
-                }
-            }
+            saveState();
             return;
         }
 
-        if (currentTool === 'curve' && points.length === 3) {
-            drawCurve();
-            points = [];
-            saveState();
-        } else if (currentTool === 'polygon' && points.length > 2 && Math.abs(startX - points[0].x) < 5 && Math.abs(startY - points[0].y) < 5) {
-            drawPolygon();
-            points = [];
-            saveState();
-        } else if (['line', 'rectangle', 'ellipse', 'rounded-rectangle'].includes(currentTool)) {
-            // Restore canvas before final draw
-            if (undoStack.length > 0) {
-                restoreState(undoStack[undoStack.length - 1]);
-            }
-
-            ctx.save();
-            ctx.strokeStyle = currentColor;
-            ctx.fillStyle = currentColor;
-            ctx.lineWidth = brushSize;
-            ctx.lineCap = 'round';
-
-            const width = endX - startX;
-            const height = endY - startY;
-
+        if (['line', 'rectangle', 'ellipse', 'rounded-rectangle'].includes(currentTool)) {
             ctx.beginPath();
             if (currentTool === 'line') {
                 ctx.moveTo(startX, startY);
                 ctx.lineTo(endX, endY);
-                ctx.stroke();
             } else if (currentTool === 'rectangle') {
+                const width = endX - startX;
+                const height = endY - startY;
                 if (fillStyle === 'fill') {
+                    ctx.fillStyle = currentColor;
                     ctx.fillRect(startX, startY, width, height);
                 }
+                ctx.strokeStyle = currentColor;
                 ctx.strokeRect(startX, startY, width, height);
             } else if (currentTool === 'ellipse') {
-                ctx.ellipse(startX + width / 2, startY + height / 2, Math.abs(width / 2), Math.abs(height / 2), 0, 0, 2 * Math.PI);
-                if (fillStyle === 'fill') ctx.fill();
+                const width = endX - startX;
+                const height = endY - startY;
+                ctx.ellipse(startX + width/2, startY + height/2, Math.abs(width/2), Math.abs(height/2), 0, 0, 2 * Math.PI);
+                if (fillStyle === 'fill') {
+                    ctx.fillStyle = currentColor;
+                    ctx.fill();
+                }
+                ctx.strokeStyle = currentColor;
                 ctx.stroke();
             } else if (currentTool === 'rounded-rectangle') {
+                const width = endX - startX;
+                const height = endY - startY;
                 const radius = Math.min(Math.abs(width), Math.abs(height)) / 4;
+                ctx.beginPath();
                 ctx.moveTo(startX + radius, startY);
                 ctx.lineTo(startX + width - radius, startY);
                 ctx.quadraticCurveTo(startX + width, startY, startX + width, startY + radius);
@@ -353,154 +229,89 @@ function initPaint() {
                 ctx.lineTo(startX, startY + radius);
                 ctx.quadraticCurveTo(startX, startY, startX + radius, startY);
                 ctx.closePath();
-                if (fillStyle === 'fill') ctx.fill();
+                if (fillStyle === 'fill') {
+                    ctx.fillStyle = currentColor;
+                    ctx.fill();
+                }
+                ctx.strokeStyle = currentColor;
                 ctx.stroke();
             }
-            ctx.restore();
             saveState();
         }
-
-        painting = false;
-        isSelecting = false;
-        selection = null;
         ctx.beginPath();
     }
 
     function draw(e) {
-        if (!painting || !['pencil', 'brush', 'eraser', 'airbrush'].includes(currentTool)) {
-            if (isSelecting && (currentTool === 'select' || currentTool === 'free-select')) {
-                selection.endX = Math.floor((e.clientX - canvas.getBoundingClientRect().left) / zoomLevel);
-                selection.endY = Math.floor((e.clientY - canvas.getBoundingClientRect().top) / zoomLevel);
-                drawSelectionPreview();
-            }
-            return;
-        }
+        if (!painting || !['pencil', 'brush', 'eraser', 'airbrush'].includes(currentTool)) return;
 
         e.preventDefault();
         const rect = canvas.getBoundingClientRect();
-        const x = Math.floor((e.clientX - rect.left) / zoomLevel);
-        const y = Math.floor((e.clientY - rect.top) / zoomLevel);
+        const x = (e.clientX - rect.left) / zoomLevel;
+        const y = (e.clientY - rect.top) / zoomLevel;
 
-        ctx.save();
         ctx.lineCap = currentTool === 'pencil' ? 'square' : 'round';
         ctx.lineWidth = brushSize;
-        ctx.strokeStyle = currentTool === 'eraser' ? secondaryColor : currentColor;
+        ctx.strokeStyle = currentTool === 'eraser' ? 'white' : currentColor;
 
         if (currentTool === 'airbrush') {
             drawAirbrush(x, y);
-            saveState();
         } else {
             ctx.lineTo(x, y);
             ctx.stroke();
             ctx.beginPath();
             ctx.moveTo(x, y);
         }
-        ctx.restore();
-    }
-
-    function drawSelectionPreview() {
-        if (!isSelecting || !['select', 'free-select'].includes(currentTool)) return;
-
-        if (undoStack.length > 0) {
-            restoreState(undoStack[undoStack.length - 1]);
-        }
-
-        ctx.save();
-        ctx.setLineDash([5, 5]); // Dashed line for selection
-        ctx.strokeStyle = 'black';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        const width = selection.endX - selection.startX;
-        const height = selection.endY - selection.startY;
-        ctx.strokeRect(selection.startX, selection.startY, width, height);
-        ctx.restore();
     }
 
     function drawCurve() {
-        try {
-            if (undoStack.length > 0) {
-                restoreState(undoStack[undoStack.length - 1]);
-            }
-            ctx.save();
-            ctx.strokeStyle = currentColor;
+        ctx.beginPath();
+        ctx.moveTo(points[0].x, points[0].y);
+        ctx.quadraticCurveTo(points[1].x, points[1].y, points[2].x, points[2].y);
+        if (fillStyle === 'fill') {
             ctx.fillStyle = currentColor;
-            ctx.lineWidth = brushSize;
-            ctx.lineCap = 'round';
-            ctx.beginPath();
-            ctx.moveTo(points[0].x, points[0].y);
-            ctx.quadraticCurveTo(points[1].x, points[1].y, points[2].x, points[2].y);
-            if (fillStyle === 'fill') ctx.fill();
-            ctx.stroke();
-            ctx.restore();
-            console.log('Curve drawn with points:', points);
-        } catch (e) {
-            console.error('Error drawing curve:', e);
+            ctx.fill();
         }
+        ctx.strokeStyle = currentColor;
+        ctx.stroke();
     }
 
     function drawPolygon() {
-        try {
-            if (undoStack.length > 0) {
-                restoreState(undoStack[undoStack.length - 1]);
-            }
-            ctx.save();
-            ctx.strokeStyle = currentColor;
-            ctx.fillStyle = currentColor;
-            ctx.lineWidth = brushSize;
-            ctx.lineCap = 'round';
-            ctx.beginPath();
-            ctx.moveTo(points[0].x, points[0].y);
-            for (let i = 1; i < points.length; i++) {
-                ctx.lineTo(points[i].x, points[i].y);
-            }
-            ctx.closePath();
-            if (fillStyle === 'fill') ctx.fill();
-            ctx.stroke();
-            ctx.restore();
-            console.log('Polygon drawn with points:', points);
-        } catch (e) {
-            console.error('Error drawing polygon:', e);
+        ctx.beginPath();
+        ctx.moveTo(points[0].x, points[0].y);
+        for (let i = 1; i < points.length; i++) {
+            ctx.lineTo(points[i].x, points[i].y);
         }
+        ctx.closePath();
+        if (fillStyle === 'fill') {
+            ctx.fillStyle = currentColor;
+            ctx.fill();
+        }
+        ctx.strokeStyle = currentColor;
+        ctx.stroke();
     }
 
     function zoomCanvas(x, y) {
         const zoomLevels = [1, 2, 4, 8];
         const currentIndex = zoomLevels.indexOf(zoomLevel);
         zoomLevel = zoomLevels[(currentIndex + 1) % zoomLevels.length];
+        // Redraw canvas with zoom (simplified, actual zooming would require transform)
         const img = new Image();
         img.src = canvas.toDataURL();
         img.onload = () => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.save();
-            ctx.scale(zoomLevel, zoomLevel);
-            ctx.drawImage(img, x - (x / zoomLevel), y - (y / zoomLevel));
-            ctx.restore();
-            saveState();
-            console.log('Zoom level changed to:', zoomLevel);
+            ctx.drawImage(img, x - (x / zoomLevel), y - (y / zoomLevel), canvas.width / zoomLevel, canvas.height / zoomLevel);
         };
-        img.onerror = () => {
-            console.error('Error zooming canvas.');
-        };
-        safePlaySound('click-sound');
     }
 
     function promptForText() {
         const text = prompt('Enter text to add:');
         if (text && textInputActive) {
-            try {
-                ctx.save();
-                ctx.font = `${fontSize}px ${fontFamily}`;
-                ctx.fillStyle = currentColor;
-                ctx.fillText(text, textX, textY);
-                ctx.restore();
-                saveState();
-                console.log('Text added:', text, 'at:', textX, textY);
-            } catch (e) {
-                console.error('Error adding text:', e);
-            }
+            ctx.font = `${fontSize}px ${fontFamily}`;
+            ctx.fillStyle = currentColor;
+            ctx.fillText(text, textX, textY);
+            textInputActive = false;
+            saveState();
         }
-        textInputActive = false;
-        safePlaySound('click-sound');
     }
 
     // Clear existing listeners
@@ -513,133 +324,131 @@ function initPaint() {
     canvas.addEventListener('mousedown', startPosition);
     canvas.addEventListener('mouseup', endPosition);
     canvas.addEventListener('mousemove', draw);
-    canvas.addEventListener('mouseleave', () => {
-        painting = false;
-        isSelecting = false;
-        ctx.beginPath();
-        if (undoStack.length > 0) {
-            restoreState(undoStack[undoStack.length - 1]);
-        }
-    });
+    canvas.addEventListener('mouseleave', endPosition);
 
     // Tool and color controls
     window.setTool = function(tool) {
-        if (!['pencil', 'brush', 'eraser', 'fill', 'pick', 'magnifier', 'text', 'line', 'curve', 'rectangle', 'ellipse', 'rounded-rectangle', 'polygon', 'select', 'free-select'].includes(tool)) {
-            console.warn('Invalid tool selected:', tool);
-            return;
+        if (['pencil', 'brush', 'eraser', 'fill', 'pick', 'magnifier', 'text', 'line', 'curve', 'rectangle', 'ellipse', 'rounded-rectangle', 'polygon', 'select', 'free-select'].includes(tool)) {
+            currentTool = tool;
+            textInputActive = false;
+            points = [];
+            document.querySelectorAll('.tool-button').forEach(btn => btn.classList.remove('active'));
+            const toolButton = document.getElementById(`${tool}-tool`);
+            if (toolButton) {
+                toolButton.classList.add('active');
+            }
+            playSound('click-sound');
         }
-        currentTool = tool;
-        textInputActive = false;
-        points = [];
-        selection = null;
-        painting = false;
-        isSelecting = false;
-        ctx.beginPath();
-        document.querySelectorAll('.tool-button').forEach(btn => btn.classList.remove('active'));
-        const toolButton = document.getElementById(`${tool}-tool`);
-        if (toolButton) {
-            toolButton.classList.add('active');
-            console.log('Tool set to:', tool);
-        } else {
-            console.warn(`Tool button not found: ${tool}-tool`);
-        }
-        safePlaySound('click-sound');
     };
 
     window.setColor = function(color) {
         currentColor = color;
-        ctx.strokeStyle = currentColor;
-        ctx.fillStyle = currentColor;
+        ctx.strokeStyle = color;
+        ctx.fillStyle = color;
         document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
-        const colorOption = document.querySelector(`.color-option[style*="background: ${color}"], .color-option[style*="background: ${color.toLowerCase()}"]`);
+        const colorOption = document.querySelector(`.color-option[style*="background: ${color}"]`);
         if (colorOption) {
             colorOption.classList.add('selected');
-            console.log('Color set to:', color);
-        } else {
-            console.warn(`Color option not found for: ${color}`);
         }
-        safePlaySound('click-sound');
+        playSound('click-sound');
     };
 
     window.setBrushSize = function(size) {
-        brushSize = parseInt(size) || 5;
+        brushSize = parseInt(size);
         ctx.lineWidth = brushSize;
-        console.log('Brush size set to:', brushSize);
-        safePlaySound('click-sound');
+        playSound('click-sound');
     };
 
     window.setFillStyle = function(style) {
-        if (['outline', 'fill'].includes(style)) {
-            fillStyle = style;
-            console.log('Fill style set to:', style);
-            safePlaySound('click-sound');
-        }
+        fillStyle = style;
+        playSound('click-sound');
     };
 
     window.setAirbrushPattern = function(pattern) {
-        if (['small', 'medium', 'large'].includes(pattern)) {
-            airbrushPattern = pattern;
-            console.log('Airbrush pattern set to:', pattern);
-            safePlaySound('click-sound');
-        }
+        airbrushPattern = pattern;
+        playSound('click-sound');
     };
 
     window.setFont = function(size, family) {
-        fontSize = parseInt(size) || 16;
-        fontFamily = family || '"MS Sans Serif", Arial, sans-serif';
-        console.log('Font set to:', fontSize, fontFamily);
-        safePlaySound('click-sound');
+        fontSize = parseInt(size);
+        fontFamily = family;
+        playSound('click-sound');
     };
 
     window.clearCanvas = function() {
         if (confirm('Clear the canvas? This cannot be undone.')) {
-            ctx.fillStyle = secondaryColor;
+            ctx.fillStyle = 'white';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             zoomLevel = 1;
             saveState();
-            console.log('Canvas cleared.');
-            safePlaySound('click-sound');
+            playSound('click-sound');
         }
     };
 
     window.saveArtwork = function() {
         const title = prompt('Enter a title for your artwork:');
-        if (!title) {
-            console.log('Save cancelled: No title provided.');
-            return;
-        }
+        if (!title) return;
 
-        try {
-            const dataURL = canvas.toDataURL('image/png');
-            const link = document.createElement('a');
-            link.download = `${title}.png`;
-            link.href = dataURL;
-            link.click();
+        const dataURL = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.download = `${title}.png`;
+        link.href = dataURL;
+        link.click();
 
-            if (typeof window.addArtwork === 'function') {
-                const artwork = {
-                    id: `artwork_${Date.now()}`,
-                    title: title,
-                    dataURL: dataURL
-                };
-                window.addArtwork(artwork);
-                console.log('Artwork saved:', title);
-            } else {
-                console.warn('addArtwork function not found; artwork saved locally only.');
-            }
-            safePlaySound('click-sound');
-        } catch (e) {
-            console.error('Error saving artwork:', e);
-            alert('Error saving artwork.');
+        if (currentUser === correctUsername) {
+            const artwork = {
+                id: `artwork_${Date.now()}`,
+                title: title,
+                dataURL: dataURL
+            };
+            addArtwork(artwork);
+
+            const icon = document.createElement('div');
+            icon.className = 'icon';
+            icon.dataset.id = artwork.id;
+            icon.dataset.type = 'artwork';
+            icon.style.left = '20px';
+            icon.style.top = `${20 + Object.keys(openWindows).length * 80}px`;
+            icon.innerHTML = `
+                <img src="${dataURL}" alt="${title}">
+                <p>${title}</p>
+            `;
+            icon.ondblclick = () => {
+                const winId = `artwork-window-${artwork.id}`;
+                if (!document.getElementById(winId)) {
+                    const win = document.createElement('div');
+                    win.className = 'window';
+                    win.id = winId;
+                    win.style.width = '400px';
+                    win.style.height = '300px';
+                    win.innerHTML = `
+                        <div class="title-bar">
+                            <div class="title-bar-text">${title} - Paint</div>
+                            <div class="title-bar-controls">
+                                <button aria-label="Minimize" onclick="minimizeWindow('${winId}')"></button>
+                                <button aria-label="Maximize" onclick="maximizeWindow('${winId}')"></button>
+                                <button aria-label="Close" onclick="closeWindow('${winId}')"></button>
+                            </div>
+                        </div>
+                        <div class="window-body">
+                            <img src="${dataURL}" style="max-width: 100%; max-height: 100%;">
+                        </div>
+                    `;
+                    document.body.appendChild(win);
+                }
+                openWindow(winId);
+            };
+            desktop.appendChild(icon);
+            setupIconInteraction();
         }
+        playSound('click-sound');
     };
 
     window.undo = function() {
         if (undoStack.length > 1) {
             redoStack.push(undoStack.pop());
             restoreState(undoStack[undoStack.length - 1]);
-            console.log('Undo performed. Undo stack size:', undoStack.length);
-            safePlaySound('click-sound');
+            playSound('click-sound');
         }
     };
 
@@ -648,55 +457,43 @@ function initPaint() {
             const state = redoStack.pop();
             undoStack.push(state);
             restoreState(state);
-            console.log('Redo performed. Redo stack size:', redoStack.length);
-            safePlaySound('click-sound');
+            playSound('click-sound');
         }
     };
 
     window.imageAttributes = function(width, height, skewX, skewY, flipH, flipV, rotate) {
-        try {
-            const img = new Image();
-            img.src = canvas.toDataURL();
-            img.onload = () => {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.save();
-                if (flipH) ctx.scale(-1, 1);
-                if (flipV) ctx.scale(1, -1);
-                if (rotate) {
-                    ctx.translate(canvas.width / 2, canvas.height / 2);
-                    ctx.rotate(rotate * Math.PI / 180);
-                    ctx.translate(-canvas.width / 2, -canvas.height / 2);
-                }
-                if (skewX || skewY) {
-                    ctx.transform(1, skewY / 100, skewX / 100, 1, 0, 0);
-                }
-                ctx.drawImage(img, 0, 0, width || canvas.width, height || canvas.height);
-                ctx.restore();
-                saveState();
-                console.log('Image attributes applied:', { width, height, skewX, skewY, flipH, flipV, rotate });
-                safePlaySound('click-sound');
-            };
-            img.onerror = () => {
-                console.error('Error applying image attributes.');
-            };
-        } catch (e) {
-            console.error('Error in imageAttributes:', e);
-        }
+        const img = new Image();
+        img.src = canvas.toDataURL();
+        img.onload = () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.save();
+            if (flipH) ctx.scale(-1, 1);
+            if (flipV) ctx.scale(1, -1);
+            if (rotate) {
+                ctx.translate(canvas.width / 2, canvas.height / 2);
+                ctx.rotate(rotate * Math.PI / 180);
+                ctx.translate(-canvas.width / 2, -canvas.height / 2);
+            }
+            if (skewX || skewY) {
+                ctx.transform(1, skewY / 100, skewX / 100, 1, 0, 0);
+            }
+            ctx.drawImage(img, 0, 0, width || canvas.width, height || canvas.height);
+            ctx.restore();
+            saveState();
+        };
+        playSound('click-sound');
     };
 
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
-        if (e.ctrlKey && e.key.toLowerCase() === 'z') {
-            window.undo();
-        } else if (e.ctrlKey && e.key.toLowerCase() === 'y') {
-            window.redo();
+        if (e.ctrlKey && e.key === 'z') {
+            undo();
+        } else if (e.ctrlKey && e.key === 'y') {
+            redo();
         }
     });
 
     // Initialize tool state
     window.setTool('pencil');
     window.setColor('black');
-    window.setBrushSize(5);
-    console.log('Paint application initialized successfully.');
-    return true;
 }
