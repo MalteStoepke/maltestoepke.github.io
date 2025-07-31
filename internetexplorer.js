@@ -2,44 +2,58 @@ let historyStack = [];
 let currentHistoryIndex = -1;
 
 function initInternetExplorer() {
-    showHome();
+    try {
+        showHome();
 
-    const iframe = document.querySelector('#ie-window iframe');
-    if (iframe) {
-        // Handle iframe load errors
-        iframe.addEventListener('load', () => {
-            try {
-                if (!iframe.contentDocument || iframe.contentDocument.body.innerHTML === '') {
+        const iframe = document.querySelector('#ie-window iframe');
+        const urlInput = document.getElementById('browser-url');
+
+        if (iframe) {
+            iframe.addEventListener('load', () => {
+                try {
+                    if (!iframe.contentDocument || iframe.contentDocument.body.innerHTML === '') {
+                        handleLoadFailure(iframe.src);
+                    } else {
+                        document.querySelector('#ie-window .window-body').classList.remove('error');
+                    }
+                } catch (e) {
                     handleLoadFailure(iframe.src);
-                } else {
-                    document.querySelector('#ie-window .window-body').classList.remove('error');
                 }
-            } catch (e) {
-                handleLoadFailure(iframe.src);
-            }
-        });
-    }
+            });
 
-    // Handle Enter key in URL bar
-    const urlInput = document.getElementById('browser-url');
-    urlInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            loadUrl();
+            // Fallback for iframe errors (not always triggered)
+            iframe.addEventListener('error', () => {
+                handleLoadFailure(iframe.src);
+            });
         }
-    });
+
+        if (urlInput) {
+            urlInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    loadUrl();
+                }
+            });
+        }
+    } catch (e) {
+        console.error('Failed to initialize Internet Explorer:', e);
+        playSound('error-sound');
+        alert('Error initializing browser. Please try again.');
+    }
 }
 
 function showHome() {
     const contentDiv = document.getElementById('browser-content');
-    contentDiv.innerHTML = `
-        <h2>Welcome to ArtStation Browser</h2>
-        <p>Enter a URL in the address bar above to browse the web.</p>
-        <p>Tip: Some websites may not load due to security restrictions. Click the link in the error message to open them in a new tab.</p>
-    `;
-    document.getElementById('browser-url').value = '';
-    document.querySelector('#ie-window .window-body').classList.remove('error');
-    historyStack = [];
-    currentHistoryIndex = -1;
+    if (contentDiv) {
+        contentDiv.innerHTML = `
+            <h2>Welcome to ArtStation Browser</h2>
+            <p>Enter a URL in the address bar above to browse the web.</p>
+            <p>Note: Some websites may not load due to security restrictions.</p>
+        `;
+        document.getElementById('browser-url').value = '';
+        document.querySelector('#ie-window .window-body').classList.remove('error');
+        historyStack = [];
+        currentHistoryIndex = -1;
+    }
 }
 
 function loadUrl(url) {
@@ -57,7 +71,7 @@ function loadUrl(url) {
         url = 'https://' + url;
     }
 
-    // Validate URL format
+    // Validate URL
     try {
         new URL(url);
     } catch (e) {
@@ -67,32 +81,39 @@ function loadUrl(url) {
     }
 
     const contentDiv = document.getElementById('browser-content');
-    contentDiv.innerHTML = `
-        <iframe src="${url}" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
-        <div class="error-content"></div>
-    `;
-    document.getElementById('browser-url').value = url;
-    document.querySelector('#ie-window .window-body').classList.remove('error');
+    if (contentDiv) {
+        contentDiv.innerHTML = `
+            <iframe src="${url}" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
+            <div class="error-content"></div>
+        `;
+        document.getElementById('browser-url').value = url;
+        document.querySelector('#ie-window .window-body').classList.remove('error');
 
-    // Update history
-    if (currentHistoryIndex < historyStack.length - 1) {
-        historyStack = historyStack.slice(0, currentHistoryIndex + 1);
+        // Update history
+        if (currentHistoryIndex < historyStack.length - 1) {
+            historyStack = historyStack.slice(0, currentHistoryIndex + 1);
+        }
+        historyStack.push(url);
+        currentHistoryIndex++;
+        playSound('click-sound');
     }
-    historyStack.push(url);
-    currentHistoryIndex++;
-    playSound('click-sound');
 }
 
 function handleLoadFailure(url) {
-    const contentDiv = document.getElementById('browser-content').querySelector('.error-content');
-    document.querySelector('#ie-window .window-body').classList.add('error');
-    contentDiv.innerHTML = `
-        <h3>Unable to Load Page</h3>
-        <p>The webpage at <strong>${url}</strong> could not be loaded due to security restrictions (e.g., CORS or X-Frame-Options).</p>
-        <p><a href="${url}" target="_blank">Open in a new tab</a></p>
-    `;
-    if (window.clippyAgent) {
-        window.clippyAgent.speak('This webpage cannot be loaded in the browser. Click the link to open it in a new tab.');
+    const contentDiv = document.getElementById('browser-content');
+    if (contentDiv) {
+        const errorDiv = contentDiv.querySelector('.error-content');
+        if (errorDiv) {
+            errorDiv.innerHTML = `
+                <h3>Unable to Load Page</h3>
+                <p>The webpage at <strong>${url}</strong> could not be loaded due to security restrictions.</p>
+                <p><a href="${url}" target="_blank">Open in a new tab</a></p>
+            `;
+            document.querySelector('#ie-window .window-body').classList.add('error');
+            if (window.clippyAgent) {
+                window.clippyAgent.speak('This webpage cannot be loaded. Click the link to open it in a new tab.');
+            }
+        }
     }
 }
 
@@ -116,7 +137,8 @@ function goForward() {
 
 function stopLoading() {
     const iframe = document.querySelector('#ie-window iframe');
-    if (iframe) {
+    const contentDiv = document.getElementById('browser-content');
+    if (iframe && contentDiv) {
         iframe.src = 'about:blank';
         document.querySelector('#ie-window .window-body').classList.add('error');
         handleLoadFailure(document.getElementById('browser-url').value);
