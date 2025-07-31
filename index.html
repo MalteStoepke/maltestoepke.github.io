@@ -152,7 +152,6 @@
             width: 100%;
             height: 80%;
             border: 2px inset #ffffff;
-            display: none; /* Hide iframe for blog */
         }
 
         .window-body .fallback-content {
@@ -612,7 +611,7 @@
         </div>
         <div class="icon" data-id="ie" style="left: 20px; top: 180px;" ondblclick="openInternetExplorer()">
             <img src="https://win98icons.alexmeub.com/icons/png/msie2-0.png" alt="Internet Explorer">
-            <p>Malte's Blog</p>
+            <p>ArtStation Browser</p>
         </div>
         <div class="icon" data-id="about" style="left: 20px; top: 260px;" ondblclick="openWindow('about-window')">
             <img src="https://win98icons.alexmeub.com/icons/png/notepad_file-1.png" alt="About">
@@ -672,13 +671,13 @@
         </div>
         <div class="window-body" id="portfolio-content">
             <h2>My 3D Artworks</h2>
-            <p>Open Malte's Blog to read about my projects or explore individual folders.</p>
+            <p>Open the ArtStation Browser to view my projects or explore individual folders.</p>
         </div>
     </div>
     
     <div class="window" id="ie-window" style="width: 700px; height: 500px;">
         <div class="title-bar">
-            <div class="title-bar-text">Malte's Blog - Internet Explorer</div>
+            <div class="title-bar-text">ArtStation Browser - Internet Explorer</div>
             <div class="title-bar-controls">
                 <button aria-label="Minimize" onclick="minimizeWindow('ie-window')"></button>
                 <button aria-label="Maximize" onclick="maximizeWindow('ie-window')"></button>
@@ -694,7 +693,7 @@
         </div>
         <div class="ie-address-bar">
             <label>Address:</label>
-            <input type="text" id="browser-url" disabled>
+            <input type="text" id="browser-url" placeholder="Enter URL (e.g., https://malte_stoepke.artstation.com/projects/1NWEre)">
             <button onclick="loadUrl()">Go</button>
         </div>
         <div class="ie-content" id="browser-content"></div>
@@ -712,7 +711,7 @@
         <div class="window-body" style="background: white; font-family: 'Lucida Console', monospace;">
             <p class="editable-field" contenteditable="false" id="about-bio"><strong>Malte Stoepke - 3D Artist</strong></p>
             <br>
-            <p class="editable-field" contenteditable="false" id="about-desc">Welcome to my interactive portfolio! This project combines my passion for 3D art with a love for retro computing aesthetics. Check out my blog for project updates!</p>
+            <p class="editable-field" contenteditable="false" id="about-desc">Welcome to my interactive portfolio! This project combines my passion for 3D art with a love for retro computing aesthetics. All artworks are displayed in the ArtStation Browser.</p>
             <br>
             <p class="editable-field" contenteditable="false" id="about-contact">Log in with the provided credentials to edit this page.</p>
             <div class="edit-controls">
@@ -791,7 +790,7 @@
         <ul>
             <li onclick="openWindow('portfolio-window')"><img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png">Portfolio</li>
             <li onclick="openFriedrich()"><img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png">Friedrich</li>
-            <li onclick="openInternetExplorer()"><img src="https://win98icons.alexmeub.com/icons/png/msie2-0.png">Malte's Blog</li>
+            <li onclick="openInternetExplorer()"><img src="https://win98icons.alexmeub.com/icons/png/msie2-0.png">ArtStation Browser</li>
             <li onclick="openWindow('about-window')"><img src="https://win98icons.alexmeub.com/icons/png/notepad_file-1.png">About Me</li>
             <li class="start-menu-separator"></li>
             <li onclick="openPaint()"><img src="https://win98icons.alexmeub.com/icons/png/paint-0.png">Paint</li>
@@ -884,7 +883,7 @@
             clippy.load('Clippy', function(agent) {
                 window.clippyAgent = agent;
                 agent.show();
-                agent.speak("Hi! I'm Clippy. Welcome to Malte Stoepke's Portfolio OS. Double-click Malte's Blog to check out my posts!");
+                agent.speak('Hi! I\'m Clippy. Welcome to Malte Stoepke\'s Portfolio OS. Double-click the ArtStation Browser to view my projects!');
             });
         };
         
@@ -1016,7 +1015,7 @@
     
     // --- Clock ---
     function updateClock() {
-        document.getElementById('taskbar-time').textContent = 'Last Update: 07/31/2025';
+        document.getElementById('taskbar-time').textContent = 'Last Update: 07/27/2025';
     }
     
     // --- Window Management ---
@@ -1043,10 +1042,10 @@
                     explanation = 'This is My Computer. It contains access to my portfolio.';
                     break;
                 case 'portfolio-window':
-                    explanation = 'This is my portfolio. Open Malte\'s Blog to read about my projects.';
+                    explanation = 'This is my portfolio. Open the ArtStation Browser to view my projects.';
                     break;
                 case 'ie-window':
-                    explanation = 'Check out my totally rad blog with 3D art posts!';
+                    explanation = 'This is the ArtStation Browser. Enter a URL or select a project to view it.';
                     break;
                 case 'about-window':
                     explanation = 'Read about me in this Notepad file.';
@@ -1175,7 +1174,6 @@
             script.src = 'paint.js';
             script.onload = () => {
                 paintScriptLoaded = true;
-                console.log('paint.js loaded successfully');
                 if (typeof initPaint === 'function') {
                     initPaint();
                     openWindow(winId);
@@ -1185,7 +1183,6 @@
                 }
             };
             script.onerror = () => {
-                console.error('Failed to load paint.js');
                 playSound('error-sound');
                 alert('Failed to load Paint application.');
             };
@@ -1199,38 +1196,21 @@
     }
     
     function openInternetExplorer() {
-        console.log('Attempting to open Malte\'s Blog');
         if (!ieScriptLoaded) {
             const script = document.createElement('script');
             script.src = 'internetExplorer.js';
             script.onload = () => {
-                console.log('internetExplorer.js loaded successfully');
                 ieScriptLoaded = true;
-                try {
-                    initInternetExplorer();
-                    openWindow('ie-window');
-                } catch (e) {
-                    console.error('Error initializing Internet Explorer:', e);
-                    playSound('error-sound');
-                    alert('Failed to initialize Malte\'s Blog.');
-                }
+                initInternetExplorer();
+                openWindow('ie-window');
             };
             script.onerror = () => {
-                console.error('Failed to load internetExplorer.js');
                 playSound('error-sound');
-                alert('Failed to load Malte\'s Blog.');
+                alert('Failed to load Internet Explorer application.');
             };
             document.body.appendChild(script);
         } else {
-            console.log('internetExplorer.js already loaded, opening window');
-            try {
-                initInternetExplorer();
-                openWindow('ie-window');
-            } catch (e) {
-                console.error('Error initializing Internet Explorer:', e);
-                playSound('error-sound');
-                alert('Failed to initialize Malte\'s Blog.');
-            }
+            openWindow('ie-window');
         }
     }
     
