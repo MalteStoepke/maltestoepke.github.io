@@ -451,12 +451,50 @@
         }
 
         /* Blog-specific styles */
+        .blog-window .window-body {
+            padding: 0;
+            height: calc(100% - 66px); /* Adjust for toolbar and status bar */
+            background: #ffffff;
+        }
+
+        .blog-toolbar {
+            background: #c0c0c0;
+            border-bottom: 2px inset #ffffff;
+            padding: 4px;
+            display: flex;
+            gap: 4px;
+        }
+
+        .blog-toolbar button {
+            background: #c0c0c0;
+            border: 2px outset #ffffff;
+            padding: 4px 8px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .blog-toolbar button:hover {
+            background: #e0e0e0;
+        }
+
+        .blog-status-bar {
+            background: #c0c0c0;
+            border-top: 2px inset #ffffff;
+            padding: 2px 4px;
+            font-size: 11px;
+            color: #000080;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+        }
+
         .blog-post {
-            margin-bottom: 20px;
+            margin: 10px;
             padding: 10px;
             background: #ffffff;
             border: 2px outset #c0c0c0;
             transition: transform 0.2s ease;
+            cursor: pointer;
         }
 
         .blog-post:hover {
@@ -477,8 +515,8 @@
             color: #000080;
             margin-bottom: 5px;
             text-decoration: underline;
-            cursor: pointer;
             transition: color 0.3s;
+            animation: text-blink 1s infinite;
         }
 
         .blog-post h3:hover {
@@ -490,17 +528,19 @@
             color: #808080;
             margin-bottom: 10px;
             font-style: italic;
+            animation: fade-in 1.5s ease-in-out infinite;
         }
 
         .blog-post p {
             font-size: 12px;
             line-height: 1.5;
+            animation: text-slide 10s linear infinite;
         }
 
         .blog-controls {
             display: flex;
             gap: 10px;
-            margin-bottom: 10px;
+            margin: 10px;
         }
 
         .blog-controls button {
@@ -517,7 +557,7 @@
 
         .blog-form {
             display: none;
-            margin-top: 10px;
+            margin: 10px;
             padding: 10px;
             background: #ffffff;
             border: 2px inset #c0c0c0;
@@ -545,6 +585,23 @@
             0% { transform: scale(1); }
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
+        }
+
+        @keyframes text-blink {
+            0%, 50% { color: #000080; }
+            51%, 100% { color: #ff0000; }
+        }
+
+        @keyframes fade-in {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+
+        @keyframes text-slide {
+            0% { transform: translateX(0); }
+            50% { transform: translateX(10px); }
+            100% { transform: translateX(0); }
         }
 
         @media (max-width: 768px) {
@@ -792,7 +849,7 @@
         </div>
     </div>
 
-    <div class="window" id="blog-window" style="width: 600px; height: 400px;">
+    <div class="window blog-window" id="blog-window" style="width: 600px; height: 400px;">
         <div class="title-bar">
             <div class="title-bar-text">My Blog - Internet Explorer</div>
             <div class="title-bar-controls">
@@ -800,6 +857,12 @@
                 <button aria-label="Maximize" onclick="maximizeWindow('blog-window')"></button>
                 <button aria-label="Close" onclick="closeWindow('blog-window')"></button>
             </div>
+        </div>
+        <div class="blog-toolbar">
+            <button onclick="goBack()"><i class="fas fa-arrow-left"></i> Back</button>
+            <button onclick="goForward()"><i class="fas fa-arrow-right"></i> Forward</button>
+            <button onclick="refreshBlog()"><i class="fas fa-sync"></i> Refresh</button>
+            <button onclick="openWindow('my-computer-window')"><i class="fas fa-home"></i> Home</button>
         </div>
         <div class="window-body">
             <div class="blog-controls" id="blog-controls" style="display: none;">
@@ -813,6 +876,7 @@
             </div>
             <div id="blog-posts"></div>
         </div>
+        <div class="blog-status-bar">Ready</div>
     </div>
     
     <div class="context-menu" id="context-menu">
@@ -913,7 +977,7 @@
     }
 
     function initDB() {
-        const request = indexedDB.open('PortfolioOSDB', 2);
+        const request = indexedDB.open('PortfolioOSDB', 3);
 
         request.onerror = (event) => {
             console.error("Database error: ", event.target.errorCode);
@@ -938,23 +1002,23 @@
             }
             if (!db.objectStoreNames.contains('blogPosts')) {
                 let blogStore = db.createObjectStore('blogPosts', { keyPath: 'id', autoIncrement: true });
-                // Test blog posts
+                // Test blog posts with Unsplash images
                 blogStore.add({
                     title: "Test Post 1: 3D Modeling Journey",
                     date: "2000-01-01",
-                    image: "https://via.placeholder.com/300x200?text=Test+Post+1",
+                    image: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23",
                     content: "This is a test post! I'm sharing my journey into 3D modeling. Created a cool retro spaceship model today!"
                 });
                 blogStore.add({
                     title: "Test Post 2: Texture Experiments",
                     date: "2000-02-15",
-                    image: "https://via.placeholder.com/300x200?text=Test+Post+2",
+                    image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f",
                     content: "Another test post! Been playing with textures in Maya. Loving the neon aesthetic for this one!"
                 });
                 blogStore.add({
                     title: "Test Post 3: Animation Fun",
                     date: "2000-03-30",
-                    image: "https://via.placeholder.com/300x200?text=Test+Post+3",
+                    image: "https://images.unsplash.com/photo-1618477461853-e627b530133e",
                     content: "Test post number three! Started animating my models. It's tricky but super rewarding!"
                 });
             }
@@ -1124,7 +1188,7 @@
                     explanation = 'This is Maya 1.0, a 3D modeling application with interactive controls.';
                     break;
                 case 'blog-window':
-                    explanation = 'Check out my blog! Read my latest posts or add new ones if you\'re logged in as admin.';
+                    explanation = 'Check out my blog! Click posts to view them or add new ones if you\'re logged in as admin.';
                     break;
             }
             if (explanation) {
@@ -1515,6 +1579,32 @@
         
         playSound('click-sound');
         alert('About information updated!');
+    }
+
+    // --- Blog Navigation (Dummy Functions for IE Toolbar) ---
+    function goBack() {
+        playSound('click-sound');
+        document.querySelector('.blog-status-bar').textContent = 'Navigating back...';
+        setTimeout(() => {
+            document.querySelector('.blog-status-bar').textContent = 'Ready';
+        }, 1000);
+    }
+
+    function goForward() {
+        playSound('click-sound');
+        document.querySelector('.blog-status-bar').textContent = 'Navigating forward...';
+        setTimeout(() => {
+            document.querySelector('.blog-status-bar').textContent = 'Ready';
+        }, 1000);
+    }
+
+    function refreshBlog() {
+        playSound('click-sound');
+        document.querySelector('.blog-status-bar').textContent = 'Refreshing...';
+        loadBlogPosts(db, currentUser);
+        setTimeout(() => {
+            document.querySelector('.blog-status-bar').textContent = 'Ready';
+        }, 1000);
     }
 
     // --- Applications ---
