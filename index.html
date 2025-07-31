@@ -148,24 +148,6 @@
             font-size: 12px;
         }
 
-        .window-body iframe {
-            width: 100%;
-            height: 80%;
-            border: 2px inset #ffffff;
-        }
-
-        .window-body .fallback-content {
-            display: none;
-        }
-
-        .window-body.fallback .fallback-content {
-            display: block;
-        }
-
-        .window-body.fallback iframe {
-            display: none;
-        }
-
         .window-body img.artwork-image {
             max-width: 100%;
             height: auto;
@@ -186,43 +168,6 @@
             object-fit: cover;
             border: 2px outset #ffffff;
             cursor: pointer;
-        }
-
-        .ie-toolbar {
-            background: #c0c0c0;
-            border-bottom: 1px solid #808080;
-            padding: 4px;
-            display: flex;
-            gap: 4px;
-            align-items: center;
-        }
-
-        .ie-address-bar {
-            display: flex;
-            align-items: center;
-            margin: 4px;
-            background: #c0c0c0;
-            border-bottom: 1px solid #808080;
-            padding: 2px;
-        }
-
-        .ie-address-bar label {
-            margin-right: 4px;
-            font-size: 12px;
-            color: #808080;
-        }
-
-        .ie-address-bar input {
-            flex-grow: 1;
-            background: white;
-            padding: 4px;
-        }
-
-        .ie-content {
-            background: white;
-            padding: 8px;
-            height: 100%;
-            overflow: auto;
         }
 
         .taskbar {
@@ -609,23 +554,19 @@
             <img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png" alt="Portfolio">
             <p>My 3D Art</p>
         </div>
-        <div class="icon" data-id="ie" style="left: 20px; top: 180px;" ondblclick="openInternetExplorer()">
-            <img src="https://win98icons.alexmeub.com/icons/png/msie2-0.png" alt="Internet Explorer">
-            <p>ArtStation Browser</p>
-        </div>
-        <div class="icon" data-id="about" style="left: 20px; top: 260px;" ondblclick="openWindow('about-window')">
+        <div class="icon" data-id="about" style="left: 20px; top: 180px;" ondblclick="openWindow('about-window')">
             <img src="https://win98icons.alexmeub.com/icons/png/notepad_file-1.png" alt="About">
             <p>About Me.txt</p>
         </div>
-        <div class="icon" data-id="paint" style="left: 20px; top: 340px;" ondblclick="openPaint()">
+        <div class="icon" data-id="paint" style="left: 20px; top: 260px;" ondblclick="openPaint()">
             <img src="https://win98icons.alexmeub.com/icons/png/paint-0.png" alt="Paint">
             <p>Paint</p>
         </div>
-        <div class="icon" data-id="pixelsweeper" style="left: 20px; top: 420px;" ondblclick="openWindow('pixelsweeper-window')">
+        <div class="icon" data-id="pixelsweeper" style="left: 20px; top: 340px;" ondblclick="openWindow('pixelsweeper-window')">
             <img src="https://win98icons.alexmeub.com/icons/png/minesweeper-2.png" alt="PixelSweeper">
             <p>PixelSweeper</p>
         </div>
-        <div class="icon" data-id="recycle" style="left: 20px; top: 500px;" ondblclick="openWindow('recycle-window')">
+        <div class="icon" data-id="recycle" style="left: 20px; top: 420px;" ondblclick="openWindow('recycle-window')">
             <img src="https://win98icons.alexmeub.com/icons/png/recycle_full-2.png" alt="Recycle Bin">
             <p>Recycle Bin</p>
         </div>
@@ -633,7 +574,7 @@
             <img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png" alt="Friedrich">
             <p>Friedrich</p>
         </div>
-        <div class="icon" data-id="maya" style="left: 120px; top: 120px;" ondblclick="openMaya()">
+        <div class="icon" data-id="maya" style="left: 120px; top: 100px;" ondblclick="openMaya()">
             <img src="https://win98icons.alexmeub.com/icons/png/directx-0.png" alt="Maya 1.0">
             <p>Maya 1.0</p>
         </div>
@@ -671,32 +612,8 @@
         </div>
         <div class="window-body" id="portfolio-content">
             <h2>My 3D Artworks</h2>
-            <p>Open the ArtStation Browser to view my projects or explore individual folders.</p>
+            <p>Explore my projects in the individual folders.</p>
         </div>
-    </div>
-    
-    <div class="window" id="ie-window" style="width: 700px; height: 500px;">
-        <div class="title-bar">
-            <div class="title-bar-text">ArtStation Browser - Internet Explorer</div>
-            <div class="title-bar-controls">
-                <button aria-label="Minimize" onclick="minimizeWindow('ie-window')"></button>
-                <button aria-label="Maximize" onclick="maximizeWindow('ie-window')"></button>
-                <button aria-label="Close" onclick="closeWindow('ie-window')"></button>
-            </div>
-        </div>
-        <div class="ie-toolbar">
-            <button onclick="goBack()">Back</button>
-            <button onclick="goForward()">Forward</button>
-            <button onclick="stopLoading()">Stop</button>
-            <button onclick="refreshBrowser()">Refresh</button>
-            <button onclick="showHome()">Home</button>
-        </div>
-        <div class="ie-address-bar">
-            <label>Address:</label>
-            <input type="text" id="browser-url" placeholder="Enter URL (e.g., https://malte_stoepke.artstation.com/projects/1NWEre)">
-            <button onclick="loadUrl()">Go</button>
-        </div>
-        <div class="ie-content" id="browser-content"></div>
     </div>
     
     <div class="window" id="about-window" style="width: 400px; height: 250px;">
@@ -711,7 +628,7 @@
         <div class="window-body" style="background: white; font-family: 'Lucida Console', monospace;">
             <p class="editable-field" contenteditable="false" id="about-bio"><strong>Malte Stoepke - 3D Artist</strong></p>
             <br>
-            <p class="editable-field" contenteditable="false" id="about-desc">Welcome to my interactive portfolio! This project combines my passion for 3D art with a love for retro computing aesthetics. All artworks are displayed in the ArtStation Browser.</p>
+            <p class="editable-field" contenteditable="false" id="about-desc">Welcome to my interactive portfolio! This project combines my passion for 3D art with a love for retro computing aesthetics.</p>
             <br>
             <p class="editable-field" contenteditable="false" id="about-contact">Log in with the provided credentials to edit this page.</p>
             <div class="edit-controls">
@@ -790,7 +707,6 @@
         <ul>
             <li onclick="openWindow('portfolio-window')"><img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png">Portfolio</li>
             <li onclick="openFriedrich()"><img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png">Friedrich</li>
-            <li onclick="openInternetExplorer()"><img src="https://win98icons.alexmeub.com/icons/png/msie2-0.png">ArtStation Browser</li>
             <li onclick="openWindow('about-window')"><img src="https://win98icons.alexmeub.com/icons/png/notepad_file-1.png">About Me</li>
             <li class="start-menu-separator"></li>
             <li onclick="openPaint()"><img src="https://win98icons.alexmeub.com/icons/png/paint-0.png">Paint</li>
@@ -807,7 +723,6 @@
     
     <script src="https://unpkg.com/jquery@3.2.1"></script>
     <script src="https://unpkg.com/clippyjs@latest"></script>
-    <script src="internetExplorer.js"></script>
     <script src="friedrich.js"></script>
     <script src="artifacts.js"></script>
     <script>
@@ -819,7 +734,7 @@
     let highestZIndex = 10;
     let soundEnabled = true;
     let paintScriptLoaded = false;
-    let ieScriptLoaded = false;
+    let ieScriptLoaded = true; // Set to true to avoid conflicts
     let friedrichScriptLoaded = false;
     let mayaScriptLoaded = false;
     
@@ -883,7 +798,7 @@
             clippy.load('Clippy', function(agent) {
                 window.clippyAgent = agent;
                 agent.show();
-                agent.speak('Hi! I\'m Clippy. Welcome to Malte Stoepke\'s Portfolio OS. Double-click the ArtStation Browser to view my projects!');
+                agent.speak("Hi! I'm Clippy. Welcome to Malte Stoepke's Portfolio OS. Explore my 3D art projects!");
             });
         };
         
@@ -1042,10 +957,7 @@
                     explanation = 'This is My Computer. It contains access to my portfolio.';
                     break;
                 case 'portfolio-window':
-                    explanation = 'This is my portfolio. Open the ArtStation Browser to view my projects.';
-                    break;
-                case 'ie-window':
-                    explanation = 'This is the ArtStation Browser. Enter a URL or select a project to view it.';
+                    explanation = 'This is my portfolio. Explore my 3D art projects in the folders.';
                     break;
                 case 'about-window':
                     explanation = 'Read about me in this Notepad file.';
@@ -1174,6 +1086,7 @@
             script.src = 'paint.js';
             script.onload = () => {
                 paintScriptLoaded = true;
+                console.log('paint.js loaded successfully');
                 if (typeof initPaint === 'function') {
                     initPaint();
                     openWindow(winId);
@@ -1183,6 +1096,7 @@
                 }
             };
             script.onerror = () => {
+                console.error('Failed to load paint.js');
                 playSound('error-sound');
                 alert('Failed to load Paint application.');
             };
@@ -1192,25 +1106,6 @@
                 initPaint();
             }
             openWindow(winId);
-        }
-    }
-    
-    function openInternetExplorer() {
-        if (!ieScriptLoaded) {
-            const script = document.createElement('script');
-            script.src = 'internetExplorer.js';
-            script.onload = () => {
-                ieScriptLoaded = true;
-                initInternetExplorer();
-                openWindow('ie-window');
-            };
-            script.onerror = () => {
-                playSound('error-sound');
-                alert('Failed to load Internet Explorer application.');
-            };
-            document.body.appendChild(script);
-        } else {
-            openWindow('ie-window');
         }
     }
     
@@ -1376,14 +1271,11 @@
             newIcon.addEventListener('dblclick', () => {
                 console.log(`Double-clicked icon: ${newIcon.dataset.id}`);
                 const windowId = newIcon.dataset.id === 'paint' ? null : 
-                                newIcon.dataset.id === 'ie' ? null : 
                                 newIcon.dataset.id === 'friedrich' ? null : 
                                 newIcon.dataset.id === 'maya' ? null :
                                 `${newIcon.dataset.id}-window`;
                 if (newIcon.dataset.id === 'paint') {
                     openPaint();
-                } else if (newIcon.dataset.id === 'ie') {
-                    openInternetExplorer();
                 } else if (newIcon.dataset.id === 'friedrich') {
                     openFriedrich();
                 } else if (newIcon.dataset.id === 'maya') {
