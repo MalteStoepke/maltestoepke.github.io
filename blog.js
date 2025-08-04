@@ -1,6 +1,42 @@
 function initBlog(db, currentUser) {
-    updateBlogUI(currentUser);
-    loadBlogPosts(db, currentUser);
+    // Initialize test content if blogPosts store is empty
+    const transaction = db.transaction(['blogPosts'], 'readwrite');
+    const store = transaction.objectStore('blogPosts');
+    const request = store.getAll();
+
+    request.onsuccess = () => {
+        if (request.result.length === 0) {
+            const testPosts = [
+                {
+                    title: "Test Post 1: 3D Modeling Journey",
+                    date: "2000-01-01",
+                    image: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23",
+                    content: "This is a test post! I'm sharing my journey into 3D modeling. Created a cool retro spaceship model today! It took hours to get the curves just right, but the neon glow effect was worth it."
+                },
+                {
+                    title: "Test Post 2: Texture Experiments",
+                    date: "2000-02-15",
+                    image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f",
+                    content: "Another test post! Been playing with textures in Maya. Loving the neon aesthetic for this one! Tried out some metallic shaders and they really pop under dynamic lighting."
+                },
+                {
+                    title: "Test Post 3: Animation Fun",
+                    date: "2000-03-30",
+                    image: "https://images.unsplash.com/photo-1618477461853-e627b530133e",
+                    content: "Test post number three! Started animating my models. It's tricky but super rewarding! The keyframe timing is tough, but the smooth motion makes it look alive."
+                }
+            ];
+
+            testPosts.forEach(post => store.add(post));
+        }
+    };
+
+    request.onerror = (e) => console.error('Error checking blog posts:', e);
+
+    transaction.oncomplete = () => {
+        updateBlogUI(currentUser);
+        loadBlogPosts(db, currentUser);
+    };
 }
 
 function updateBlogUI(currentUser) {
@@ -31,7 +67,11 @@ function loadBlogPosts(db, currentUser) {
                 <p class="editable-field" contenteditable="${currentUser === 'Malte Stoepke'}">${post.content}</p>
                 ${currentUser === 'Malte Stoepke' ? `<button onclick="saveBlogPostEdit(${post.id})">Save Edit</button>` : ''}
             `;
-            postDiv.addEventListener('click', () => openPostWindow(post));
+            postDiv.addEventListener('click', (e) => {
+                if (!e.target.closest('button') && currentUser !== 'Malte Stoepke') {
+                    openPostWindow(post);
+                }
+            });
             if (currentUser === 'Malte Stoepke') {
                 postDiv.addEventListener('contextmenu', (e) => {
                     e.preventDefault();
@@ -123,58 +163,4 @@ function saveBlogPost() {
     const post = { title, date, image: image || 'https://images.unsplash.com/photo-1516321310767-0a198e8a07e0', content };
     const transaction = db.transaction(['blogPosts'], 'readwrite');
     const store = transaction.objectStore('blogPosts');
-    store.add(post);
-
-    transaction.oncomplete = () => {
-        playSound('click-sound');
-        alert('Blog post added!');
-        document.getElementById('blog-title').value = '';
-        document.getElementById('blog-image').value = '';
-        document.getElementById('blog-content').value = '';
-        document.getElementById('blog-form').classList.remove('active');
-        loadBlogPosts(db, currentUser);
-        document.querySelector('.blog-status-bar').textContent = 'Post saved';
-    };
-    transaction.onerror = (e) => {
-        console.error('Error adding blog post:', e);
-        document.querySelector('.blog-status-bar').textContent = 'Error saving post';
-    };
-}
-
-function saveBlogPostEdit(id) {
-    const postDiv = document.querySelector(`.blog-post[data-id="blog-post-${id}"]`);
-    const title = postDiv.querySelector('h3').textContent;
-    const content = postDiv.querySelector('p').textContent;
-
-    const transaction = db.transaction(['blogPosts'], 'readwrite');
-    const store = transaction.objectStore('blogPosts');
-    const request = store.get(id);
-
-    request.onsuccess = () => {
-        const post = request.result;
-        post.title = title;
-        post.content = content;
-        store.put(post);
-
-        transaction.oncomplete = () => {
-            playSound('click-sound');
-            alert('Blog post updated!');
-            loadBlogPosts(db, currentUser);
-            document.querySelector('.blog-status-bar').textContent = 'Post updated';
-        };
-    };
-
-    request.onerror = (e) => {
-        console.error('Error updating blog post:', e);
-        document.querySelector('.blog-status-bar').textContent = 'Error updating post';
-    };
-}
-
-function deleteBlogPost(id) {
-    const transaction = db.transaction(['blogPosts'], 'readwrite');
-    const store = transaction.objectStore('blogPosts');
-    store.delete(id);
-
-    transaction.oncomplete = () => {
-        playSound('click-sound');
-        alert('Blog post
+    store.add
