@@ -977,7 +977,7 @@
     }
 
     function initDB() {
-        const request = indexedDB.open('PortfolioOSDB', 3);
+        const request = indexedDB.open('PortfolioOSDB', 4);
 
         request.onerror = (event) => {
             console.error("Database error: ", event.target.errorCode);
@@ -1001,26 +1001,7 @@
                 db.createObjectStore('artworks', { keyPath: 'id' });
             }
             if (!db.objectStoreNames.contains('blogPosts')) {
-                let blogStore = db.createObjectStore('blogPosts', { keyPath: 'id', autoIncrement: true });
-                // Test blog posts with Unsplash images
-                blogStore.add({
-                    title: "Test Post 1: 3D Modeling Journey",
-                    date: "2000-01-01",
-                    image: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23",
-                    content: "This is a test post! I'm sharing my journey into 3D modeling. Created a cool retro spaceship model today!"
-                });
-                blogStore.add({
-                    title: "Test Post 2: Texture Experiments",
-                    date: "2000-02-15",
-                    image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f",
-                    content: "Another test post! Been playing with textures in Maya. Loving the neon aesthetic for this one!"
-                });
-                blogStore.add({
-                    title: "Test Post 3: Animation Fun",
-                    date: "2000-03-30",
-                    image: "https://images.unsplash.com/photo-1618477461853-e627b530133e",
-                    content: "Test post number three! Started animating my models. It's tricky but super rewarding!"
-                });
+                db.createObjectStore('blogPosts', { keyPath: 'id', autoIncrement: true });
             }
         };
     }
@@ -1190,6 +1171,10 @@
                 case 'blog-window':
                     explanation = 'Check out my blog! Click posts to view them or add new ones if you\'re logged in as admin.';
                     break;
+                default:
+                    if (winId.startsWith('blog-post-window')) {
+                        explanation = 'This is a blog post. Enjoy reading!';
+                    }
             }
             if (explanation) {
                 window.clippyAgent.speak(explanation);
@@ -1455,7 +1440,7 @@
 
     // --- Desktop Icons ---
     function setupIconInteraction() {
-        console.log('Setting up icon interactions');
+        console.log('Setting up Definicion de iconos');
         document.querySelectorAll('.icon').forEach(icon => {
             console.log(`Processing icon: ${icon.dataset.id}`);
             const newIcon = icon.cloneNode(true);
