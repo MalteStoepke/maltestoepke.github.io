@@ -6,22 +6,64 @@ function initBlog(db, currentUser) {
         if (request.result.length === 0) {
             const testPosts = [
                 {
-                    title: "Test Post 1: 3D Modeling Journey",
+                    title: "Retro Spaceship Model Completed",
                     date: "2025-01-01",
                     image: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23",
-                    content: "Starting my 3D modeling journey with a retro spaceship! Spent hours perfecting the curves and adding a neon glow effect. The result is a sleek, futuristic vessel that feels straight out of a 90s sci-fi game."
+                    content: "Finally finished my retro spaceship model! Inspired by 80s sci-fi, this model features sleek curves and a vibrant neon glow. Spent hours perfecting the thrusters and cockpit details. The UV mapping was challenging but the final texture bake looks stunning under dynamic lighting."
                 },
                 {
-                    title: "Test Post 2: Texture Experiments",
+                    title: "Cyberpunk Cityscape WIP",
                     date: "2025-02-15",
                     image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f",
-                    content: "Experimenting with textures in Maya today. Tried metallic shaders with dynamic lighting, and the neon aesthetic is popping! The reflections and highlights give my model a vibrant, cyberpunk vibe."
+                    content: "Working on a cyberpunk cityscape scene. The neon signs and reflective surfaces are coming together nicely. Experimenting with metallic shaders and volumetric fog to capture that dystopian vibe. Still need to optimize the geometry for better performance."
                 },
                 {
-                    title: "Test Post 3: Animation Fun",
+                    title: "Character Animation Breakthrough",
                     date: "2025-03-30",
                     image: "https://images.unsplash.com/photo-1618477461853-e627b530133e",
-                    content: "Diving into animation! Keyframe timing is tricky, but seeing my model move smoothly is so rewarding. Working on a looping animation that makes the character feel alive and dynamic."
+                    content: "Made a breakthrough in character animation today! Got the keyframe timing perfect for a looping walk cycle. The rig is super responsive, and the subtle head bobs add so much personality. Next up: adding facial expressions."
+                },
+                {
+                    title: "Low-Poly Forest Scene",
+                    date: "2025-04-10",
+                    image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e",
+                    content: "Started a low-poly forest scene for a game project. Using a limited color palette to keep the aesthetic clean. The stylized trees and animals are super fun to model, and the baked lighting gives it a cozy feel. Planning to add some particle effects next."
+                },
+                {
+                    title: "Sci-Fi Weapon Design",
+                    date: "2025-05-05",
+                    image: "https://images.unsplash.com/photo-1563089145-5999971573b6",
+                    content: "Designed a sci-fi plasma rifle this week. Focused on intricate details like cooling vents and glowing energy cells. The texturing process was intense, but the normal maps really make the details pop. Thinking about animating the reload sequence next."
+                },
+                {
+                    title: "VR Environment Experiment",
+                    date: "2025-06-20",
+                    image: "https://images.unsplash.com/photo-1516321310767-0a198e8a07e0",
+                    content: "Diving into VR environment creation! Built a futuristic space station with interactive panels. Optimizing for VR is tricky—had to reduce poly count significantly. The immersive feel when walking through the station is unreal!"
+                },
+                {
+                    title: "Retro Game Character Model",
+                    date: "2025-07-01",
+                    image: "https://images.unsplash.com/photo-1538481199705-c710c4e965fc",
+                    content: "Modeled a retro-inspired game character with a pixelated texture style. Kept the poly count low for that authentic 90s vibe. Rigging was a bit of a pain, but the character is now ready for some basic animations."
+                },
+                {
+                    title: "Water Shader Experiment",
+                    date: "2025-08-15",
+                    image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
+                    content: "Experimented with a custom water shader today. Got realistic ripples and reflections working! The foam edges need some tweaking, but the overall effect is mesmerizing. Planning to integrate it into a beach scene."
+                },
+                {
+                    title: "Steampunk Vehicle Concept",
+                    date: "2025-09-10",
+                    image: "https://images.unsplash.com/photo-1509043759401-136742328bb8",
+                    content: "Concepting a steampunk airship model. The brass textures and gear details are so satisfying to create. Spent a lot of time on the rigging for the moving parts. Excited to animate the propellers spinning!"
+                },
+                {
+                    title: "Fantasy Creature Sculpt",
+                    date: "2025-10-01",
+                    image: "https://images.unsplash.com/photo-1519098901909-b1223b390710",
+                    content: "Sculpted a fantasy dragon creature in ZBrush. The scales and wings took forever, but the detail is worth it. Currently working on the texture painting to give it a fiery, molten look. Can't wait to see it animated!"
                 }
             ];
             testPosts.forEach(post => store.add(post));
@@ -43,13 +85,16 @@ function updateBlogUI(currentUser) {
 
 function loadBlogPosts(db, currentUser) {
     const postsDiv = document.getElementById('blog-posts');
-    postsDiv.innerHTML = '';
+    const blogWindow = document.getElementById('blog-window');
+    postsDiv.innerHTML = '<div class="loading-bar"><div class="loading-progress" id="loading-progress"></div></div>';
     const transaction = db.transaction(['blogPosts'], 'readonly');
     const store = transaction.objectStore('blogPosts');
     const request = store.getAll();
+    
     request.onsuccess = () => {
         const posts = request.result;
         posts.sort((a, b) => new Date(b.date) - new Date(a.date));
+        postsDiv.innerHTML = '';
         posts.forEach(post => {
             const postDiv = document.createElement('div');
             postDiv.className = 'blog-post';
@@ -58,12 +103,12 @@ function loadBlogPosts(db, currentUser) {
                 <h3 class="editable-field" contenteditable="${currentUser === 'Malte Stoepke'}">${post.title}</h3>
                 <div class="date">${post.date}</div>
                 <img src="${post.image}" alt="${post.title}">
-                <p class="editable-field" contenteditable="${currentUser === 'Malte Stoepke'}">${post.content}</p>
+                <p class="editable-field" contenteditable="${currentUser === 'Malte Stoepke'}">${post.content.substring(0, 100)}...</p>
                 ${currentUser === 'Malte Stoepke' ? `<button onclick="saveBlogPostEdit(${post.id})">Save Edit</button>` : ''}
             `;
             postDiv.addEventListener('click', (e) => {
                 if (!e.target.closest('button') && !e.target.closest('.editable-field')) {
-                    openPostWindow(post);
+                    showPostInWindow(post, blogWindow);
                 }
             });
             if (currentUser === 'Malte Stoepke') {
@@ -82,63 +127,44 @@ function loadBlogPosts(db, currentUser) {
     };
 }
 
-function openPostWindow(post) {
-    const winId = `blog-post-window-${post.id}`;
-    let win = document.getElementById(winId);
-    if (!win) {
-        win = document.createElement('div');
-        win.className = 'window blog-window';
-        win.id = winId;
-        win.style.width = '500px';
-        win.style.height = '400px';
-        win.style.top = '15%';
-        win.style.left = '15%';
-        win.innerHTML = `
-            <div class="title-bar">
-                <div class="title-bar-text">${post.title} - Internet Explorer</div>
-                <div class="title-bar-controls">
-                    <button aria-label="Minimize" onclick="minimizeWindow('${winId}')"></button>
-                    <button aria-label="Maximize" onclick="maximizeWindow('${winId}')"></button>
-                    <button aria-label="Close" onclick="closeWindow('${winId}')"></button>
-                </div>
-            </div>
-            <div class="blog-toolbar">
-                <button onclick="goBack()"><i class="fas fa-arrow-left"></i> Back</button>
-                <button onclick="goForward()"><i class="fas fa-arrow-right"></i> Forward</button>
-                <button onclick="refreshBlog()"><i class="fas fa-sync"></i> Refresh</button>
-                <button onclick="openWindow('blog-window')"><i class="fas fa-home"></i> Home</button>
-            </div>
-            <div class="window-body">
-                <div class="blog-post">
-                    <h3>${post.title}</h3>
-                    <div class="date">${post.date}</div>
-                    <img src="${post.image}" alt="${post.title}">
-                    <p>${post.content}</p>
-                </div>
-            </div>
-            <div class="blog-status-bar">Ready</div>
-        `;
-        document.body.appendChild(win);
-        const titleBar = win.querySelector('.title-bar');
-        if (titleBar) {
-            titleBar.addEventListener('mousedown', (e) => {
-                if (!e.target.closest('.title-bar-controls')) {
-                    startDrag(e, win);
-                    bringToFront(winId);
-                }
-            });
-        }
-        win.addEventListener('mousedown', () => bringToFront(winId));
-    }
-    openWindow(winId);
-    playSound('window-open-sound');
+function showPostInWindow(post, blogWindow) {
+    const postsDiv = blogWindow.querySelector('#blog-posts');
+    const blogControls = blogWindow.querySelector('#blog-controls');
+    const blogForm = blogWindow.querySelector('#blog-form');
+    
+    postsDiv.innerHTML = `
+        <div class="blog-post">
+            <h3>${post.title}</h3>
+            <div class="date">${post.date}</div>
+            <img src="${post.image}" alt="${post.title}">
+            <p>${post.content}</p>
+        </div>
+    `;
+    blogControls.style.display = 'none';
+    blogForm.style.display = 'none';
+    document.querySelector('.blog-status-bar').textContent = 'Viewing post';
+    window.blogHistory = window.blogHistory || [];
+    window.blogHistory.push(post.id);
+    window.blogHistoryIndex = window.blogHistory.length - 1;
+    playSound('click-sound');
 }
 
 function toggleBlogForm() {
     const form = document.getElementById('blog-form');
+    const postsDiv = document.getElementById('blog-posts');
+    const blogControls = document.getElementById('blog-controls');
+    
     form.classList.toggle('active');
+    if (form.classList.contains('active')) {
+        postsDiv.style.display = 'none';
+        blogControls.style.display = 'none';
+        document.querySelector('.blog-status-bar').textContent = 'Adding new post...';
+    } else {
+        postsDiv.style.display = 'block';
+        blogControls.style.display = currentUser === 'Malte Stoepke' ? 'block' : 'none';
+        document.querySelector('.blog-status-bar').textContent = 'Ready';
+    }
     playSound('click-sound');
-    document.querySelector('.blog-status-bar').textContent = form.classList.contains('active') ? 'Adding new post...' : 'Ready';
 }
 
 function saveBlogPost() {
@@ -231,10 +257,6 @@ function deleteBlogPost(postId) {
         alert('Blog post deleted!');
         loadBlogPosts(db, currentUser);
         document.querySelector('.blog-status-bar').textContent = 'Post deleted successfully';
-        const postWindow = document.getElementById(`blog-post-window-${postId}`);
-        if (postWindow) {
-            closeWindow(`blog-post-window-${postId}`);
-        }
     };
     
     request.onerror = (e) => {
@@ -243,4 +265,105 @@ function deleteBlogPost(postId) {
         alert('Error deleting blog post.');
         document.querySelector('.blog-status-bar').textContent = 'Error deleting post';
     };
+}
+
+function goBack() {
+    if (!window.blogHistory || window.blogHistoryIndex <= 0) {
+        playSound('error-sound');
+        document.querySelector('.blog-status-bar').textContent = 'No previous page';
+        return;
+    }
+    
+    window.blogHistoryIndex--;
+    const postId = window.blogHistory[window.blogHistoryIndex];
+    const transaction = db.transaction(['blogPosts'], 'readonly');
+    const store = transaction.objectStore('blogPosts');
+    const request = store.get(postId);
+    
+    request.onsuccess = () => {
+        const post = request.result;
+        showPostInWindow(post, document.getElementById('blog-window'));
+        document.querySelector('.blog-status-bar').textContent = 'Navigated back';
+    };
+    
+    request.onerror = (e) => {
+        console.error('Error navigating back:', e);
+        document.querySelector('.blog-status-bar').textContent = 'Error navigating back';
+    };
+    playSound('click-sound');
+}
+
+function goForward() {
+    if (!window.blogHistory || window.blogHistoryIndex >= window.blogHistory.length - 1) {
+        playSound('error-sound');
+        document.querySelector('.blog-status-bar').textContent = 'No next page';
+        return;
+    }
+    
+    window.blogHistoryIndex++;
+    const postId = window.blogHistory[window.blogHistoryIndex];
+    const transaction = db.transaction(['blogPosts'], 'readonly');
+    const store = transaction.objectStore('blogPosts');
+    const request = store.get(postId);
+    
+    request.onsuccess = () => {
+        const post = request.result;
+        showPostInWindow(post, document.getElementById('blog-window'));
+        document.querySelector('.blog-status-bar').textContent = 'Navigated forward';
+    };
+    
+    request.onerror = (e) => {
+        console.error('Error navigating forward:', e);
+        document.querySelector('.blog-status-bar').textContent = 'Error navigating forward';
+    };
+    playSound('click-sound');
+}
+
+function refreshBlog() {
+    const postsDiv = document.getElementById('blog-posts');
+    const blogControls = document.getElementById('blog-controls');
+    const blogForm = document.getElementById('blog-form');
+    postsDiv.innerHTML = '<div class="loading-bar"><div class="loading-progress" id="loading-progress"></div></div>';
+    document.querySelector('.blog-status-bar').textContent = 'Refreshing...';
+    
+    let progress = 0;
+    const progressBar = document.getElementById('loading-progress');
+    const interval = setInterval(() => {
+        progress += 20;
+        progressBar.style.width = progress + '%';
+        if (progress >= 100) {
+            clearInterval(interval);
+            loadBlogPosts(db, currentUser);
+            blogControls.style.display = currentUser === 'Malte Stoepke' ? 'block' : 'none';
+            blogForm.style.display = 'none';
+            document.querySelector('.blog-status-bar').textContent = 'Ready';
+        }
+    }, 200);
+    
+    playSound('click-sound');
+}
+
+function goHome() {
+    const postsDiv = document.getElementById('blog-posts');
+    const blogControls = document.getElementById('blog-controls');
+    const blogForm = document.getElementById('blog-form');
+    
+    postsDiv.innerHTML = '<div class="loading-bar"><div class="loading-progress" id="loading-progress"></div></div>';
+    document.querySelector('.blog-status-bar').textContent = 'Loading home...';
+    
+    let progress = 0;
+    const progressBar = document.getElementById('loading-progress');
+    const interval = setInterval(() => {
+        progress += 20;
+        progressBar.style.width = progress + '%';
+        if (progress >= 100) {
+            clearInterval(interval);
+            loadBlogPosts(db, currentUser);
+            blogControls.style.display = currentUser === 'Malte Stoepke' ? 'block' : 'none';
+            blogForm.style.display = 'none';
+            document.querySelector('.blog-status-bar').textContent = 'Ready';
+        }
+    }, 200);
+    
+    playSound('click-sound');
 }
