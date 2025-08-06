@@ -14,7 +14,6 @@
             box-sizing: border-box;
             font-family: "MS Sans Serif", "Tahoma", Arial, sans-serif;
         }
-
         body {
             background: #008080 url('https://static.wikitide.net/windowswallpaperwiki/2/24/Clouds_%28Windows_95%29.png') no-repeat center center fixed;
             background-size: cover;
@@ -24,14 +23,12 @@
             flex-direction: column;
             position: relative;
         }
-
         .desktop {
             flex-grow: 1;
             padding: 10px;
             position: relative;
             z-index: 1;
         }
-
         .icon {
             position: absolute;
             text-align: center;
@@ -43,18 +40,16 @@
             display: block !important;
             visibility: visible !important;
         }
-        
+       
         .icon.draggable:hover {
             background: rgba(0, 0, 128, 0.5);
             border: 1px dotted white;
         }
-
         .icon img {
             width: 32px;
             height: 32px;
             object-fit: contain;
         }
-
         .icon p {
             color: white;
             text-shadow: 1px 1px black;
@@ -63,15 +58,13 @@
             word-wrap: break-word;
             background: #008080;
         }
-        
+       
         .icon.selected p {
             background-color: #000080;
         }
-
         .icon[data-id="maya"] {
             z-index: 2 !important;
         }
-
         .window {
             display: none;
             position: absolute;
@@ -89,7 +82,6 @@
             box-shadow: 2px 2px 0px #000000, -2px -2px 0px #ffffff;
             background: #c0c0c0;
         }
-
         .window.maximized {
             width: 100% !important;
             height: calc(100vh - 30px) !important;
@@ -98,11 +90,10 @@
             max-height: none;
             resize: none;
         }
-
         .window.active {
             display: block;
         }
-        
+       
         .title-bar {
             position: relative;
             height: 22px;
@@ -113,12 +104,10 @@
             font-size: 12px;
             line-height: 18px;
         }
-
         .title-bar-text {
             display: inline-block;
             padding-left: 4px;
         }
-
         .title-bar-controls {
             position: absolute;
             right: 4px;
@@ -126,7 +115,6 @@
             display: flex;
             gap: 2px;
         }
-
         .title-bar-controls button {
             width: 16px;
             height: 16px;
@@ -138,7 +126,6 @@
             border-left-color: #fff;
             cursor: pointer;
         }
-
         .window-body {
             margin-top: 22px;
             padding: 8px;
@@ -147,7 +134,6 @@
             overflow: auto;
             font-size: 12px;
         }
-
         .window-body img.artwork-image {
             max-width: 100%;
             height: auto;
@@ -155,13 +141,11 @@
             margin: 8px auto;
             border: 2px inset #ffffff;
         }
-
         .artwork-gallery {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
         }
-
         .artwork-gallery img {
             width: 150px;
             height: 150px;
@@ -169,7 +153,6 @@
             border: 2px outset #ffffff;
             cursor: pointer;
         }
-
         .taskbar {
             height: 30px;
             background: #c0c0c0;
@@ -181,7 +164,6 @@
             z-index: 100;
             flex-shrink: 0;
         }
-
         .start-button {
             font-weight: bold;
             padding: 2px 6px;
@@ -191,13 +173,12 @@
             background: #c0c0c0;
             border: 2px outset #ffffff;
         }
-
         .start-button img {
             width: 20px;
             height: 20px;
             margin-right: 4px;
         }
-        
+       
         .taskbar-time {
             font-size: 11px;
             padding: 2px 4px;
@@ -208,14 +189,13 @@
             text-align: center;
             margin-left: 4px;
         }
-        
+       
         .taskbar-user {
             font-size: 11px;
             padding: 2px 6px;
             border: 1px solid #808080;
             margin: 0 2px;
         }
-
         .taskbar-apps {
             display: flex;
             flex-grow: 1;
@@ -223,7 +203,6 @@
             gap: 2px;
             overflow: hidden;
         }
-
         .taskbar-app {
             padding: 2px 6px;
             font-size: 12px;
@@ -237,11 +216,11 @@
             background: #c0c0c0;
             border: 2px outset #ffffff;
         }
-        
+       
         .taskbar-app.active {
             border: 2px inset #c0c0c0;
         }
-        
+       
         .start-menu {
             display: none;
             position: absolute;
@@ -255,17 +234,14 @@
             border-bottom: 2px solid #000;
             z-index: 1000;
         }
-
         .start-menu.active {
             display: block;
         }
-
         .start-menu ul {
             list-style: none;
             padding: 2px;
             margin: 0;
         }
-
         .start-menu li {
             padding: 4px 8px;
             cursor: pointer;
@@ -273,25 +249,22 @@
             display: flex;
             align-items: center;
         }
-
         .start-menu li img {
             width: 22px;
             height: 22px;
             margin-right: 8px;
         }
-
         .start-menu li:hover {
             background: #000080;
             color: white;
         }
-        
+       
         .start-menu-separator {
             height: 1px;
             background: #808080;
             border-bottom: 1px solid #fff;
             margin: 4px 0;
         }
-
         .login-box {
             background: #c0c0c0;
             padding: 20px;
@@ -299,7 +272,7 @@
             text-align: center;
             border: 2px outset #ffffff;
         }
-        
+       
         .login-title {
             background: #000080;
             color: white;
@@ -308,29 +281,27 @@
             font-weight: bold;
             font-size: 12px;
         }
-        
+       
         .login-field {
             margin: 12px 0;
             text-align: left;
         }
-        
+       
         .login-field label {
             display: block;
             margin-bottom: 4px;
             font-size: 12px;
         }
-
         .login-field input, .login-field textarea {
             width: 100%;
             padding: 4px;
         }
-        
+       
         .login-buttons {
             display: flex;
             justify-content: space-around;
             margin-top: 20px;
         }
-
         .minesweeper-board {
             display: grid;
             gap: 1px;
@@ -339,7 +310,6 @@
             border: 2px inset #fff;
             margin: 0 auto;
         }
-
         .minesweeper-cell {
             width: 20px;
             height: 20px;
@@ -351,15 +321,15 @@
             font-weight: bold;
             cursor: pointer;
         }
-        
+       
         .minesweeper-cell.revealed {
             border: 1px solid #808080;
         }
-        
+       
         .minesweeper-cell.mine {
             background-color: red;
         }
-        
+       
         .color-1 { color: blue; }
         .color-2 { color: green; }
         .color-3 { color: red; }
@@ -368,7 +338,6 @@
         .color-6 { color: teal; }
         .color-7 { color: black; }
         .color-8 { color: gray; }
-
         .context-menu {
             position: absolute;
             background: #c0c0c0;
@@ -381,21 +350,17 @@
             padding: 2px;
             display: none;
         }
-
         .context-menu ul {
             list-style: none;
         }
-
         .context-menu li {
             padding: 4px 18px;
             cursor: pointer;
         }
-
         .context-menu li:hover {
             background: #000080;
             color: white;
         }
-
         .artwork-gallery img {
             width: 150px;
             height: 150px;
@@ -403,7 +368,7 @@
             border: 2px outset #ffffff;
             cursor: pointer;
         }
-        
+       
         .paint-canvas {
             border: 1px solid black;
             background: white;
@@ -411,13 +376,11 @@
             display: block;
             margin: 0 auto;
         }
-
         .paint-tools {
             display: flex;
             gap: 4px;
             margin-bottom: 8px;
         }
-
         .tool-button {
             width: 24px;
             height: 24px;
@@ -428,35 +391,29 @@
             border: 2px outset #ffffff;
             cursor: pointer;
         }
-
         .tool-button.active {
             border: 2px inset #c0c0c0;
         }
-
         .color-picker {
             display: flex;
             gap: 4px;
             margin-top: 8px;
         }
-
         .color-option {
             width: 24px;
             height: 24px;
             border: 2px outset #ffffff;
             cursor: pointer;
         }
-
         .color-option.selected {
             border: 2px inset #c0c0c0;
         }
-
         /* Blog-specific styles */
         .blog-window .window-body {
             padding: 0;
             height: calc(100% - 66px); /* Adjust for toolbar and status bar */
             background: #ffffff;
         }
-
         .blog-toolbar {
             background: #c0c0c0;
             border-bottom: 2px inset #ffffff;
@@ -464,7 +421,6 @@
             display: flex;
             gap: 4px;
         }
-
         .blog-toolbar button {
             background: #c0c0c0;
             border: 2px outset #ffffff;
@@ -472,11 +428,9 @@
             font-size: 12px;
             cursor: pointer;
         }
-
         .blog-toolbar button:hover {
             background: #e0e0e0;
         }
-
         .blog-status-bar {
             background: #c0c0c0;
             border-top: 2px inset #ffffff;
@@ -487,7 +441,6 @@
             bottom: 0;
             width: 100%;
         }
-
         .blog-post {
             margin: 10px;
             padding: 10px;
@@ -496,12 +449,10 @@
             transition: transform 0.2s ease;
             cursor: pointer;
         }
-
         .blog-post:hover {
             transform: scale(1.02);
             box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3);
         }
-
         .blog-post img {
             max-width: 100%;
             height: auto;
@@ -509,7 +460,6 @@
             margin: 10px 0;
             animation: pulse 2s infinite;
         }
-
         .blog-post h3 {
             font-size: 14px;
             color: #000080;
@@ -518,11 +468,9 @@
             transition: color 0.3s;
             animation: text-blink 1s infinite;
         }
-
         .blog-post h3:hover {
             color: #ff00ff;
         }
-
         .blog-post .date {
             font-size: 10px;
             color: #808080;
@@ -530,19 +478,16 @@
             font-style: italic;
             animation: fade-in 1.5s ease-in-out infinite;
         }
-
         .blog-post p {
             font-size: 12px;
             line-height: 1.5;
             animation: text-slide 10s linear infinite;
         }
-
         .blog-controls {
             display: flex;
             gap: 10px;
             margin: 10px;
         }
-
         .blog-controls button {
             background: #c0c0c0;
             border: 2px outset #ffffff;
@@ -550,11 +495,9 @@
             cursor: pointer;
             font-size: 12px;
         }
-
         .blog-controls button:hover {
             background: #e0e0e0;
         }
-
         .blog-form {
             display: none;
             margin: 10px;
@@ -562,11 +505,9 @@
             background: #ffffff;
             border: 2px inset #c0c0c0;
         }
-
         .blog-form.active {
             display: block;
         }
-
         .blog-form input,
         .blog-form textarea {
             width: 100%;
@@ -575,51 +516,44 @@
             font-size: 12px;
             border: 2px inset #c0c0c0;
         }
-
         .blog-form textarea {
             height: 100px;
             resize: vertical;
         }
-
         @keyframes pulse {
             0% { transform: scale(1); }
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
-
         @keyframes text-blink {
             0%, 50% { color: #000080; }
             51%, 100% { color: #ff0000; }
         }
-
         @keyframes fade-in {
             0% { opacity: 0.5; }
             50% { opacity: 1; }
             100% { opacity: 0.5; }
         }
-
         @keyframes text-slide {
             0% { transform: translateX(0); }
             50% { transform: translateX(10px); }
             100% { transform: translateX(0); }
         }
-
         @media (max-width: 768px) {
             .window {
                 width: 95%;
                 left: 2.5%;
             }
-            
+           
             .icon {
                 width: 70px;
             }
-            
+           
             .icon img {
                 width: 24px;
                 height: 24px;
             }
         }
-
         @media screen and (max-width: 600px), screen and (orientation: portrait) {
             .window {
                 width: 100% !important;
@@ -629,34 +563,28 @@
                 position: fixed;
                 resize: none;
             }
-
             .desktop {
                 display: flex;
                 flex-wrap: wrap;
                 justify-content: flex-start;
                 align-content: flex-start;
             }
-
             .icon {
                 position: relative;
                 margin: 10px;
                 width: 80px;
             }
-
             .taskbar {
                 height: 40px;
             }
-
             .start-button {
                 height: 36px;
             }
-
             .start-menu {
                 width: 100%;
                 bottom: 40px;
                 left: 0;
             }
-
             .taskbar-time {
                 min-width: 120px;
             }
@@ -669,7 +597,7 @@
     <audio id="window-open-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3"></audio>
     <audio id="window-close-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-quick-jump-arcade-game-239.mp3"></audio>
     <audio id="click-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-mouse-click-close-1113.mp3"></audio>
-    
+   
     <div id="loading-screen">
         <img src="https://win98icons.alexmeub.com/icons/png/windows-0.png" alt="Windows 95" width="48" height="48">
         <h2>Portfolio OS</h2>
@@ -679,7 +607,6 @@
             <div class="loading-progress" id="loading-progress"></div>
         </div>
     </div>
-
     <div id="login-screen" style="display: none;">
         <div class="login-box">
             <div class="login-title">Portfolio OS Login</div>
@@ -698,7 +625,7 @@
             </div>
         </div>
     </div>
-    
+   
     <div class="desktop" id="desktop" style="display: none;">
         <div class="icon" data-id="my-computer" style="left: 20px; top: 20px;" ondblclick="openWindow('my-computer-window')">
             <img src="https://win98icons.alexmeub.com/icons/png/computer-4.png" alt="My Computer">
@@ -728,6 +655,26 @@
             <img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png" alt="Friedrich">
             <p>Friedrich</p>
         </div>
+        <div class="icon" data-id="the-nyrrik" style="left: 120px; top: 260px;" ondblclick="openTheNyrrik()">
+            <img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png" alt="The Nyrrik">
+            <p>The Nyrrik</p>
+        </div>
+        <div class="icon" data-id="wanderlust-the-roadtrip" style="left: 120px; top: 340px;" ondblclick="openWanderlustTheRoadtrip()">
+            <img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png" alt="Wanderlust: The Roadtrip">
+            <p>Wanderlust: The Roadtrip</p>
+        </div>
+        <div class="icon" data-id="maxs-game" style="left: 120px; top: 420px;" ondblclick="openMaxsGame()">
+            <img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png" alt="Max's Game">
+            <p>Max's Game</p>
+        </div>
+        <div class="icon" data-id="undo" style="left: 120px; top: 500px;" ondblclick="openUndo()">
+            <img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png" alt="Undo">
+            <p>Undo</p>
+        </div>
+        <div class="icon" data-id="berlin-girl-melody" style="left: 120px; top: 580px;" ondblclick="openBerlinGirlMelody()">
+            <img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png" alt="Berlin-Girl: Melody">
+            <p>Berlin-Girl: Melody</p>
+        </div>
         <div class="icon" data-id="maya" style="left: 120px; top: 100px;" ondblclick="openMaya()">
             <img src="https://win98icons.alexmeub.com/icons/png/directx-0.png" alt="Maya 1.0">
             <p>Maya 1.0</p>
@@ -737,7 +684,7 @@
             <p>My Blog</p>
         </div>
     </div>
-    
+   
     <div class="window" id="my-computer-window" style="width: 400px; height: 300px;">
         <div class="title-bar">
             <div class="title-bar-text">My Computer</div>
@@ -756,13 +703,33 @@
                 <img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png" alt="Friedrich">
                 <p>Friedrich</p>
             </div>
+            <div class="icon" ondblclick="openTheNyrrik()">
+                <img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png" alt="The Nyrrik">
+                <p>The Nyrrik</p>
+            </div>
+            <div class="icon" ondblclick="openWanderlustTheRoadtrip()">
+                <img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png" alt="Wanderlust: The Roadtrip">
+                <p>Wanderlust: The Roadtrip</p>
+            </div>
+            <div class="icon" ondblclick="openMaxsGame()">
+                <img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png" alt="Max's Game">
+                <p>Max's Game</p>
+            </div>
+            <div class="icon" ondblclick="openUndo()">
+                <img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png" alt="Undo">
+                <p>Undo</p>
+            </div>
+            <div class="icon" ondblclick="openBerlinGirlMelody()">
+                <img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png" alt="Berlin-Girl: Melody">
+                <p>Berlin-Girl: Melody</p>
+            </div>
             <div class="icon" ondblclick="openWindow('blog-window')">
                 <img src="https://win98icons.alexmeub.com/icons/png/internet_explorer-4.png" alt="Blog">
                 <p>My Blog</p>
             </div>
         </div>
     </div>
-    
+   
     <div class="window" id="portfolio-window" style="width: 500px; height: 400px;">
         <div class="title-bar">
             <div class="title-bar-text">My 3D Art</div>
@@ -777,7 +744,7 @@
             <p>Explore my projects in the individual folders.</p>
         </div>
     </div>
-    
+   
     <div class="window" id="about-window" style="width: 400px; height: 250px;">
         <div class="title-bar">
             <div class="title-bar-text">About Me.txt - Notepad</div>
@@ -802,7 +769,7 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
             </div>
         </div>
     </div>
-    
+   
     <div class="window" id="pixelsweeper-window" style="width: auto; height: auto;">
         <div class="title-bar">
             <div class="title-bar-text">PixelSweeper</div>
@@ -820,7 +787,6 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
             <div id="minesweeper-board" class="minesweeper-board"></div>
         </div>
     </div>
-
     <div class="window" id="maya-window" style="width: 600px; height: 400px;">
         <div class="title-bar">
             <div class="title-bar-text">Maya 1.0</div>
@@ -834,7 +800,6 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
             <canvas id="maya-canvas" width="580" height="340"></canvas>
         </div>
     </div>
-
     <div class="window" id="recycle-window" style="width: 400px; height: 300px;">
         <div class="title-bar">
             <div class="title-bar-text">Recycle Bin</div>
@@ -852,7 +817,6 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
             </ul>
         </div>
     </div>
-
     <div class="window blog-window" id="blog-window" style="width: 600px; height: 400px;">
         <div class="title-bar">
             <div class="title-bar-text">My Blog - Internet Explorer</div>
@@ -882,13 +846,13 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
         </div>
         <div class="blog-status-bar">Ready</div>
     </div>
-    
+   
     <div class="context-menu" id="context-menu">
         <ul>
             <li id="context-delete">Delete</li>
         </ul>
     </div>
-    
+   
     <div class="taskbar" style="display: none;">
         <button class="start-button" id="start-button">
             <img src="https://win98icons.alexmeub.com/icons/png/windows-0.png" alt="Start">
@@ -898,11 +862,16 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
         <div class="taskbar-user" id="taskbar-user">Guest</div>
         <div class="taskbar-time" id="taskbar-time"></div>
     </div>
-    
+   
     <div class="start-menu" id="start-menu">
         <ul>
             <li onclick="openWindow('portfolio-window')"><img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png">Portfolio</li>
             <li onclick="openFriedrich()"><img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png">Friedrich</li>
+            <li onclick="openTheNyrrik()"><img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png">The Nyrrik</li>
+            <li onclick="openWanderlustTheRoadtrip()"><img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png">Wanderlust: The Roadtrip</li>
+            <li onclick="openMaxsGame()"><img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png">Max's Game</li>
+            <li onclick="openUndo()"><img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png">Undo</li>
+            <li onclick="openBerlinGirlMelody()"><img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png">Berlin-Girl: Melody</li>
             <li onclick="openWindow('about-window')"><img src="https://win98icons.alexmeub.com/icons/png/notepad_file-1.png">About Me</li>
             <li onclick="openWindow('blog-window')"><img src="https://win98icons.alexmeub.com/icons/png/internet_explorer-4.png">My Blog</li>
             <li class="start-menu-separator"></li>
@@ -913,14 +882,19 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
             <li id="login-logout-button" onclick="logout()"><img src="https://win98icons.alexmeub.com/icons/png/keys-4.png">Log Out</li>
         </ul>
     </div>
-    
+   
     <div class="audio-control" onclick="toggleSound()">
         <i class="fas fa-volume-up" id="sound-icon"></i>
     </div>
-    
+   
     <script src="https://unpkg.com/jquery@3.2.1"></script>
     <script src="https://unpkg.com/clippyjs@latest"></script>
     <script src="friedrich.js"></script>
+    <script src="the-nyrrik.js"></script>
+    <script src="wanderlust-the-roadtrip.js"></script>
+    <script src="maxs-game.js"></script>
+    <script src="undo.js"></script>
+    <script src="berlin-girl-melody.js"></script>
     <script src="artifacts.js"></script>
     <script src="blog.js"></script>
     <script>
@@ -935,10 +909,9 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
     let ieScriptLoaded = true;
     let friedrichScriptLoaded = false;
     let mayaScriptLoaded = false;
-    
+   
     const correctUsername = "Malte Stoepke";
     const correctPassword = "Maus_123";
-
     // --- DOM Elements ---
     const desktop = document.getElementById('desktop');
     const taskbar = document.querySelector('.taskbar');
@@ -947,7 +920,7 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
     const loginScreen = document.getElementById('login-screen');
     const loadingScreen = document.getElementById('loading-screen');
     const contextMenu = document.getElementById('context-menu');
-    
+   
     // --- Initialization ---
     document.addEventListener('DOMContentLoaded', () => {
         // Simulate loading progress
@@ -955,39 +928,36 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
         const interval = setInterval(() => {
             progress += 20;
             document.getElementById('loading-progress').style.width = progress + '%';
-            
+           
             if (progress >= 100) {
                 clearInterval(interval);
                 setTimeout(() => {
                     loadingScreen.style.display = 'none';
                     document.getElementById('startup-sound').play().catch(e => console.log("Audio autoplay blocked."));
-                    
+                   
                     // Initialize the OS after loading screen disappears
                     initOS();
                 }, 500);
             }
         }, 200);
     });
-
     function initOS() {
         // Auto login as guest
         guestLogin();
-        
+       
         // Initialize components
         initDB();
         updateClock();
         setupEventListeners();
         startMinesweeper(8, 8, 10);
     }
-
     function initDB() {
         const request = indexedDB.open('PortfolioOSDB', 4);
-
         request.onerror = (event) => {
             console.error("Database error: ", event.target.errorCode);
             guestLogin();
         };
-        
+       
         request.onsuccess = (event) => {
             db = event.target.result;
             console.log("Database opened successfully.");
@@ -998,7 +968,7 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
             });
             initBlog(db, currentUser);
         };
-        
+       
         request.onupgradeneeded = (event) => {
             let db = event.target.result;
             if (!db.objectStoreNames.contains('artworks')) {
@@ -1009,7 +979,7 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
             }
         };
     }
-    
+   
     function setupEventListeners() {
         // Start Menu
         document.getElementById('start-button').addEventListener('click', (e) => {
@@ -1017,17 +987,16 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
             startMenu.classList.toggle('active');
             playSound('click-sound');
         });
-
         document.addEventListener('click', () => {
             startMenu.classList.remove('active');
             contextMenu.style.display = 'none';
         });
-        
+       
         // Window Controls
         document.querySelectorAll('.window').forEach(win => {
             const winId = win.id;
             const titleBar = win.querySelector('.title-bar');
-            
+           
             if (titleBar) {
                 titleBar.addEventListener('mousedown', (e) => {
                     if (e.target.closest('.title-bar-controls')) return;
@@ -1035,17 +1004,15 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
                     bringToFront(winId);
                 });
             }
-
             const controls = win.querySelector('.title-bar-controls');
             if (controls) {
                 controls.querySelector('[aria-label="Close"]')?.addEventListener('click', () => closeWindow(winId));
                 controls.querySelector('[aria-label="Maximize"]')?.addEventListener('click', () => maximizeWindow(winId));
                 controls.querySelector('[aria-label="Minimize"]')?.addEventListener('click', () => minimizeWindow(winId));
             }
-
             win.addEventListener('mousedown', () => bringToFront(winId));
         });
-        
+       
         // Desktop Icon Context Menu
         desktop.addEventListener('contextmenu', (e) => {
             e.preventDefault();
@@ -1056,12 +1023,10 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
         });
         contextMenu.addEventListener('click', e => e.stopPropagation());
     }
-
     // --- Authentication ---
     function login() {
         const user = document.getElementById('username').value;
         const pass = document.getElementById('password').value;
-
         if (user === correctUsername && pass === correctPassword) {
             currentUser = correctUsername;
             loginScreen.style.display = 'none';
@@ -1075,14 +1040,13 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
             alert("Incorrect username or password.");
         }
     }
-
     function guestLogin() {
         currentUser = 'Guest';
         loginScreen.style.display = 'none';
         updateUIAfterLogin();
         playSound('click-sound');
     }
-    
+   
     function logout() {
         currentUser = 'Guest';
         loginScreen.style.display = 'flex';
@@ -1090,18 +1054,18 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
         playSound('click-sound');
         Object.keys(openWindows).forEach(id => closeWindow(id));
     }
-    
+   
     function updateUIAfterLogin() {
         desktop.style.display = 'block';
         taskbar.style.display = 'flex';
-        
+       
         document.getElementById('taskbar-user').textContent = currentUser;
         const editControls = document.querySelectorAll('.edit-controls');
-        
+       
         if (currentUser === correctUsername) {
             document.getElementById('login-logout-button').innerHTML = `<img src="https://win98icons.alexmeub.com/icons/png/keys-4.png">Log Out`;
             document.getElementById('login-logout-button').onclick = logout;
-            
+           
             document.querySelectorAll('.editable-field').forEach(field => {
                 field.contentEditable = true;
             });
@@ -1111,7 +1075,7 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
         } else {
             document.getElementById('login-logout-button').innerHTML = `<img src="https://win98icons.alexmeub.com/icons/png/keys-4.png">Log In`;
             document.getElementById('login-logout-button').onclick = () => { loginScreen.style.display = 'flex'; };
-            
+           
             document.querySelectorAll('.editable-field').forEach(field => {
                 field.contentEditable = false;
             });
@@ -1119,32 +1083,30 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
                 controls.style.display = 'none';
             });
         }
-        
+       
         setupIconInteraction();
         updateBlogUI(currentUser);
     }
-    
+   
     // --- Clock ---
     function updateClock() {
         document.getElementById('taskbar-time').textContent = 'Last Update: 08/01/2025';
     }
-    
+   
     // --- Window Management ---
     function openWindow(winId) {
         const win = document.getElementById(winId);
         if (!win) return;
-        
+       
         win.style.display = 'block';
         bringToFront(winId);
         playSound('window-open-sound');
-
         if (!openWindows[winId]) {
             createTaskbarApp(winId);
         }
         openWindows[winId] = { minimized: false };
         updateTaskbar();
         startMenu.classList.remove('active');
-
         if (window.clippyAgent) {
             let explanation = '';
             switch (winId) {
@@ -1185,7 +1147,7 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
             }
         }
     }
-    
+   
     function openPaint() {
         const winId = 'paint-window';
         let win = document.getElementById(winId);
@@ -1309,7 +1271,7 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
             openWindow(winId);
         }
     }
-    
+   
     function openMaya() {
         console.log('Attempting to open Maya 1.0');
         if (!mayaScriptLoaded) {
@@ -1332,33 +1294,31 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
             openWindow('maya-window');
         }
     }
-    
+   
     function closeWindow(winId) {
         const win = document.getElementById(winId);
         if (win) {
             win.style.display = 'none';
             playSound('window-close-sound');
         }
-        
+       
         delete openWindows[winId];
         if (activeWindow === winId) activeWindow = null;
         updateTaskbar();
     }
-
     function minimizeWindow(winId) {
         const win = document.getElementById(winId);
         if (win) {
             win.style.display = 'none';
             playSound('click-sound');
         }
-
         if (openWindows[winId]) {
             openWindows[winId].minimized = true;
         }
         if (activeWindow === winId) activeWindow = null;
         updateTaskbar();
     }
-    
+   
     function maximizeWindow(winId) {
         const win = document.getElementById(winId);
         if (win) {
@@ -1372,49 +1332,46 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
             }
         }
     }
-    
+   
     function bringToFront(winId) {
         if (activeWindow === winId) return;
-        
+       
         highestZIndex++;
         const win = document.getElementById(winId);
         if (win) {
             win.style.zIndex = highestZIndex;
-            
+           
             if (openWindows[winId] && openWindows[winId].minimized) {
                 openWindows[winId].minimized = false;
                 win.style.display = 'block';
             }
         }
-        
+       
         activeWindow = winId;
         updateTaskbar();
     }
-    
+   
     function startDrag(e, element) {
         let offsetX = e.clientX - element.offsetLeft;
         let offsetY = e.clientY - element.offsetTop;
-
         function drag(e) {
             if (element.classList.contains('maximized')) return;
             element.style.left = `${e.clientX - offsetX}px`;
             element.style.top = `${e.clientY - offsetY}px`;
         }
-
         function stopDrag() {
             document.removeEventListener('mousemove', drag);
             document.removeEventListener('mouseup', stopDrag);
         }
-
         document.addEventListener('mousemove', drag);
         document.addEventListener('mouseup', stopDrag);
     }
-    
+   
     // --- Taskbar ---
     function createTaskbarApp(winId) {
         const win = document.getElementById(winId);
         const title = win.querySelector('.title-bar-text').textContent;
-        
+       
         const app = document.createElement('button');
         app.className = 'taskbar-app';
         app.textContent = title;
@@ -1424,7 +1381,7 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
         };
         taskbarApps.appendChild(app);
     }
-    
+   
     function updateTaskbar() {
         const apps = taskbarApps.querySelectorAll('.taskbar-app');
         apps.forEach(app => {
@@ -1433,7 +1390,7 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
                 app.remove();
                 return;
             }
-            
+           
             if (winId === activeWindow && !openWindows[winId].minimized) {
                 app.classList.add('active');
             } else {
@@ -1441,7 +1398,6 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
             }
         });
     }
-
     // --- Desktop Icons ---
     function setupIconInteraction() {
         console.log('Setting up Definicion de iconos');
@@ -1449,25 +1405,23 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
             console.log(`Processing icon: ${icon.dataset.id}`);
             const newIcon = icon.cloneNode(true);
             icon.parentNode.replaceChild(newIcon, icon);
-
             const savedPos = localStorage.getItem(`iconpos_${newIcon.dataset.id}`);
             if (savedPos) {
                 const { top, left } = JSON.parse(savedPos);
                 newIcon.style.top = top;
                 newIcon.style.left = left;
             }
-
             if (currentUser === correctUsername) {
                 newIcon.classList.add('draggable');
                 makeIconDraggable(newIcon);
             } else {
                 newIcon.classList.remove('draggable');
             }
-            
+           
             newIcon.addEventListener('dblclick', () => {
                 console.log(`Double-clicked icon: ${newIcon.dataset.id}`);
-                const windowId = newIcon.dataset.id === 'paint' ? null : 
-                                newIcon.dataset.id === 'friedrich' ? null : 
+                const windowId = newIcon.dataset.id === 'paint' ? null :
+                                newIcon.dataset.id === 'friedrich' ? null :
                                 newIcon.dataset.id === 'maya' ? null :
                                 `${newIcon.dataset.id}-window`;
                 if (newIcon.dataset.id === 'paint') {
@@ -1480,49 +1434,42 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
                     openWindow(windowId);
                 }
             });
-
             newIcon.addEventListener('click', (e) => {
                 e.stopPropagation();
                 document.querySelectorAll('.icon.selected').forEach(i => i.classList.remove('selected'));
                 newIcon.classList.add('selected');
             });
         });
-        
+       
         desktop.addEventListener('click', () => {
             document.querySelectorAll('.icon.selected').forEach(i => i.classList.remove('selected'));
         });
     }
-
     function makeIconDraggable(icon) {
         icon.addEventListener('mousedown', e => {
             e.preventDefault();
             e.stopPropagation();
-
             let offsetX = e.clientX - icon.offsetLeft;
             let offsetY = e.clientY - icon.offsetTop;
-
             function drag(e) {
                 icon.style.left = `${e.clientX - offsetX}px`;
                 icon.style.top = `${e.clientY - offsetY}px`;
             }
-
             function stopDrag() {
                 localStorage.setItem(`iconpos_${icon.dataset.id}`, JSON.stringify({ top: icon.style.top, left: icon.style.left }));
                 document.removeEventListener('mousemove', drag);
                 document.removeEventListener('mouseup', stopDrag);
             }
-            
+           
             document.addEventListener('mousemove', drag);
             document.addEventListener('mouseup', stopDrag);
         });
     }
-
     // --- Context Menu ---
     function showContextMenu(x, y, id) {
         contextMenu.style.top = `${y}px`;
         contextMenu.style.left = `${x}px`;
         contextMenu.style.display = 'block';
-
         const deleteBtn = document.getElementById('context-delete');
         deleteBtn.onclick = () => {
             if (confirm("Are you sure you want to delete this item?")) {
@@ -1535,20 +1482,17 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
             contextMenu.style.display = 'none';
         };
     }
-
     // --- IndexedDB: Artworks ---
     function addArtwork(artwork) {
         const transaction = db.transaction(['artworks'], 'readwrite');
         const store = transaction.objectStore('artworks');
         store.add(artwork);
-
         transaction.oncomplete = () => {
             playSound('click-sound');
             alert('Artwork added!');
         };
         transaction.onerror = (e) => console.error('Error adding artwork:', e);
     }
-
     function deleteArtwork(id) {
         const transaction = db.transaction(['artworks'], 'readwrite');
         const store = transaction.objectStore('artworks');
@@ -1557,19 +1501,18 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
             playSound('click-sound');
         };
     }
-    
+   
     function saveAboutEdits() {
         const bio = document.getElementById('about-bio').innerHTML;
         const desc = document.getElementById('about-desc').innerHTML;
         const contact = document.getElementById('about-contact').innerHTML;
-        
+       
         const aboutData = { bio, desc, contact };
         localStorage.setItem('aboutData', JSON.stringify(aboutData));
-        
+       
         playSound('click-sound');
         alert('About information updated!');
     }
-
     // --- Blog Navigation (Dummy Functions for IE Toolbar) ---
     function goBack() {
         playSound('click-sound');
@@ -1578,7 +1521,6 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
             document.querySelector('.blog-status-bar').textContent = 'Ready';
         }, 1000);
     }
-
     function goForward() {
         playSound('click-sound');
         document.querySelector('.blog-status-bar').textContent = 'Navigating forward...';
@@ -1586,7 +1528,6 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
             document.querySelector('.blog-status-bar').textContent = 'Ready';
         }, 1000);
     }
-
     function refreshBlog() {
         playSound('click-sound');
         document.querySelector('.blog-status-bar').textContent = 'Refreshing...';
@@ -1595,24 +1536,23 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
             document.querySelector('.blog-status-bar').textContent = 'Ready';
         }, 1000);
     }
-
     // --- Applications ---
     function startMinesweeper(width, height, mineCount) {
         const boardEl = document.getElementById('minesweeper-board');
         boardEl.innerHTML = '';
         boardEl.style.gridTemplateColumns = `repeat(${width}, 20px)`;
-        
+       
         let board = [];
         let mines = [];
         let revealed = [];
-        
+       
         for (let r = 0; r < height; r++) {
             board[r] = [];
             revealed[r] = [];
             for (let c = 0; c < width; c++) {
                 board[r][c] = 0;
                 revealed[r][c] = false;
-                
+               
                 const cell = document.createElement('div');
                 cell.className = 'minesweeper-cell';
                 cell.dataset.row = r;
@@ -1620,7 +1560,7 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
                 boardEl.appendChild(cell);
             }
         }
-        
+       
         let minesPlaced = 0;
         while (minesPlaced < mineCount) {
             const r = Math.floor(Math.random() * height);
@@ -1629,7 +1569,7 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
                 mines.push({r, c});
                 board[r][c] = 'X';
                 minesPlaced++;
-                
+               
                 for (let i = -1; i <= 1; i++) {
                     for (let j = -1; j <= 1; j++) {
                         if (i === 0 && j === 0) continue;
@@ -1641,14 +1581,14 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
                 }
             }
         }
-        
+       
         boardEl.addEventListener('click', (e) => {
             const cell = e.target.closest('.minesweeper-cell');
             if (!cell) return;
-            
+           
             const r = parseInt(cell.dataset.row);
             const c = parseInt(cell.dataset.col);
-            
+           
             if (board[r][c] === 'X') {
                 cell.classList.add('mine');
                 cell.innerHTML = '💣';
@@ -1662,11 +1602,11 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
                 if (board[r][c] > 0) {
                     cell.classList.add(`color-${board[r][c]}`);
                 }
-                
+               
                 if (board[r][c] === 0) {
                     revealAdjacent(r, c, board, revealed);
                 }
-                
+               
                 if (checkWin(board, revealed, mines.length)) {
                     playSound('click-sound');
                     alert('Congratulations! You won!');
@@ -1674,7 +1614,7 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
                 }
             }
         });
-        
+       
         function revealAdjacent(r, c, board, revealed) {
             for (let i = -1; i <= 1; i++) {
                 for (let j = -1; j <= 1; j++) {
@@ -1695,7 +1635,7 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
                 }
             }
         }
-        
+       
         function checkWin(board, revealed, mineCount) {
             let safeRevealed = 0;
             for (let r = 0; r < height; r++) {
@@ -1708,7 +1648,7 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
             return safeRevealed === (width * height - mineCount);
         }
     }
-    
+   
     // --- Audio Control ---
     function playSound(id) {
         if (!soundEnabled) return;
@@ -1716,10 +1656,10 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
         sound.currentTime = 0;
         sound.play().catch(e => console.log("Sound play prevented:", e));
     }
-    
+   
     function toggleSound() {
         soundEnabled = !soundEnabled;
-        document.getElementById('sound-icon').className = soundEnabled ? 
+        document.getElementById('sound-icon').className = soundEnabled ?
             'fas fa-volume-up' : 'fas fa-volume-mute';
         playSound('click-sound');
     }
