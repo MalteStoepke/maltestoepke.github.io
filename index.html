@@ -1,19 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- META TAGS AND TITLE -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Malte Stoepke's Portfolio OS</title>
+    
+    <!-- EXTERNAL STYLESHEETS -->
+    <!-- 98.css for Windows 98 style UI -->
     <link rel="stylesheet" href="https://unpkg.com/98.css">
+    <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Clippy.js stylesheet for the assistant -->
     <link rel="stylesheet" type="text/css" href="https://gitcdn.xyz/repo/pi0/clippyjs/master/assets/clippy.css">
+    
+    <!-- INLINE CUSTOM STYLES -->
     <style>
+        /* GLOBAL STYLES */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: "MS Sans Serif", "Tahoma", Arial, sans-serif;
         }
+        
+        /* BODY BACKGROUND AND LAYOUT */
         body {
             background: #008080 url('https://static.wikitide.net/windowswallpaperwiki/2/24/Clouds_%28Windows_95%29.png') no-repeat center center fixed;
             background-size: cover;
@@ -23,12 +34,16 @@
             flex-direction: column;
             position: relative;
         }
+        
+        /* DESKTOP AREA */
         .desktop {
             flex-grow: 1;
             padding: 10px;
             position: relative;
             z-index: 1;
         }
+        
+        /* DESKTOP ICON STYLES */
         .icon {
             position: absolute;
             text-align: center;
@@ -65,6 +80,8 @@
         .icon[data-id="maya"] {
             z-index: 2 !important;
         }
+        
+        /* WINDOW STYLES */
         .window {
             display: none;
             position: absolute;
@@ -94,6 +111,7 @@
             display: block;
         }
        
+        /* TITLE BAR STYLES */
         .title-bar {
             position: relative;
             height: 22px;
@@ -126,6 +144,8 @@
             border-left-color: #fff;
             cursor: pointer;
         }
+        
+        /* WINDOW BODY STYLES */
         .window-body {
             margin-top: 22px;
             padding: 8px;
@@ -153,6 +173,8 @@
             border: 2px outset #ffffff;
             cursor: pointer;
         }
+        
+        /* TASKBAR STYLES */
         .taskbar {
             height: 30px;
             background: #c0c0c0;
@@ -221,6 +243,7 @@
             border: 2px inset #c0c0c0;
         }
        
+        /* START MENU STYLES */
         .start-menu {
             display: none;
             position: absolute;
@@ -265,6 +288,8 @@
             border-bottom: 1px solid #fff;
             margin: 4px 0;
         }
+        
+        /* LOGIN BOX STYLES */
         .login-box {
             background: #c0c0c0;
             padding: 20px;
@@ -302,6 +327,8 @@
             justify-content: space-around;
             margin-top: 20px;
         }
+        
+        /* MINESWEEPER (PIXELSWEEPER) STYLES */
         .minesweeper-board {
             display: grid;
             gap: 1px;
@@ -338,6 +365,8 @@
         .color-6 { color: teal; }
         .color-7 { color: black; }
         .color-8 { color: gray; }
+        
+        /* CONTEXT MENU STYLES */
         .context-menu {
             position: absolute;
             background: #c0c0c0;
@@ -361,6 +390,8 @@
             background: #000080;
             color: white;
         }
+        
+        /* ARTWORK GALLERY STYLES */
         .artwork-gallery img {
             width: 150px;
             height: 150px;
@@ -369,6 +400,7 @@
             cursor: pointer;
         }
        
+        /* PAINT APPLICATION STYLES */
         .paint-canvas {
             border: 1px solid black;
             background: white;
@@ -408,7 +440,8 @@
         .color-option.selected {
             border: 2px inset #c0c0c0;
         }
-        /* Blog-specific styles */
+        
+        /* BLOG-SPECIFIC STYLES */
         .blog-window .window-body {
             padding: 0;
             height: calc(100% - 66px); /* Adjust for toolbar and status bar */
@@ -520,6 +553,8 @@
             height: 100px;
             resize: vertical;
         }
+        
+        /* ANIMATIONS FOR BLOG */
         @keyframes pulse {
             0% { transform: scale(1); }
             50% { transform: scale(1.05); }
@@ -539,6 +574,8 @@
             50% { transform: translateX(10px); }
             100% { transform: translateX(0); }
         }
+        
+        /* MEDIA QUERIES FOR RESPONSIVENESS */
         @media (max-width: 768px) {
             .window {
                 width: 95%;
@@ -592,12 +629,14 @@
     </style>
 </head>
 <body>
+    <!-- AUDIO ELEMENTS FOR SOUNDS -->
     <audio id="startup-sound" src="https://orangefreesounds.com/wp-content/uploads/2022/05/Windows-95-startup-sound.mp3" preload="auto"></audio>
     <audio id="error-sound" src="https://orangefreesounds.com/wp-content/uploads/2020/09/Windows-95-error-sound.mp3" preload="auto"></audio>
     <audio id="window-open-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3"></audio>
     <audio id="window-close-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-quick-jump-arcade-game-239.mp3"></audio>
     <audio id="click-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-mouse-click-close-1113.mp3"></audio>
    
+    <!-- LOADING SCREEN -->
     <div id="loading-screen">
         <img src="https://win98icons.alexmeub.com/icons/png/windows-0.png" alt="Windows 95" width="48" height="48">
         <h2>Portfolio OS</h2>
@@ -607,6 +646,8 @@
             <div class="loading-progress" id="loading-progress"></div>
         </div>
     </div>
+    
+    <!-- LOGIN SCREEN -->
     <div id="login-screen" style="display: none;">
         <div class="login-box">
             <div class="login-title">Portfolio OS Login</div>
@@ -626,7 +667,9 @@
         </div>
     </div>
    
+    <!-- DESKTOP AREA WITH ICONS -->
     <div class="desktop" id="desktop" style="display: none;">
+        <!-- CORE ICONS -->
         <div class="icon" data-id="my-computer" style="left: 20px; top: 20px;" ondblclick="openWindow('my-computer-window')">
             <img src="https://win98icons.alexmeub.com/icons/png/computer-4.png" alt="My Computer">
             <p>My Computer</p>
@@ -651,6 +694,9 @@
             <img src="https://win98icons.alexmeub.com/icons/png/recycle_full-2.png" alt="Recycle Bin">
             <p>Recycle Bin</p>
         </div>
+        
+        <!-- PROJECT FOLDER ICONS -->
+        <!-- Add or remove project folders here by copying the structure -->
         <div class="icon" data-id="friedrich" style="left: 120px; top: 20px;" ondblclick="openFriedrich()">
             <img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png" alt="Friedrich">
             <p>Friedrich</p>
@@ -675,6 +721,8 @@
             <img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png" alt="Berlin-Girl: Melody">
             <p>Berlin-Girl: Melody</p>
         </div>
+        
+        <!-- OTHER ICONS -->
         <div class="icon" data-id="maya" style="left: 120px; top: 100px;" ondblclick="openMaya()">
             <img src="https://win98icons.alexmeub.com/icons/png/directx-0.png" alt="Maya 1.0">
             <p>Maya 1.0</p>
@@ -685,6 +733,8 @@
         </div>
     </div>
    
+    <!-- WINDOW DEFINITIONS -->
+    <!-- Each div here is a window that opens on double-click. Add/remove windows as needed. -->
     <div class="window" id="my-computer-window" style="width: 400px; height: 300px;">
         <div class="title-bar">
             <div class="title-bar-text">My Computer</div>
@@ -695,10 +745,12 @@
             </div>
         </div>
         <div class="window-body">
+            <!-- Icons inside My Computer window -->
             <div class="icon" ondblclick="openWindow('portfolio-window')">
                 <img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png" alt="Portfolio">
                 <p>My 3D Art</p>
             </div>
+            <!-- Project folders inside My Computer -->
             <div class="icon" ondblclick="openFriedrich()">
                 <img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png" alt="Friedrich">
                 <p>Friedrich</p>
@@ -755,6 +807,7 @@
             </div>
         </div>
         <div class="window-body" style="background: white; font-family: 'Lucida Console', monospace;">
+            <!-- Editable about content -->
             <p class="editable-field" contenteditable="false" id="about-bio"><strong>Malte Stoepke - 3D Artist</strong></p>
             <br>
             <p class="editable-field" contenteditable="false" id="about-desc">Hello. I'm Malte, a 3D artist who’s absolutely crazy about creating characters and creatures! I pour my heart into developing a character’s story, sketching ideas, and sculpting them in 3D with insane detail. I love taking a concept and making it game-ready through retopology, and I can even import and animate in Unreal Engine 5 (check out my work: [Friedrich]). I spend hours perfecting every little thing because I’m just that passionate about what I do!
@@ -847,12 +900,14 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
         <div class="blog-status-bar">Ready</div>
     </div>
    
+    <!-- CONTEXT MENU -->
     <div class="context-menu" id="context-menu">
         <ul>
             <li id="context-delete">Delete</li>
         </ul>
     </div>
    
+    <!-- TASKBAR -->
     <div class="taskbar" style="display: none;">
         <button class="start-button" id="start-button">
             <img src="https://win98icons.alexmeub.com/icons/png/windows-0.png" alt="Start">
@@ -863,8 +918,10 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
         <div class="taskbar-time" id="taskbar-time"></div>
     </div>
    
+    <!-- START MENU -->
     <div class="start-menu" id="start-menu">
         <ul>
+            <!-- Menu items for projects and apps - add/remove li elements here -->
             <li onclick="openWindow('portfolio-window')"><img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png">Portfolio</li>
             <li onclick="openFriedrich()"><img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png">Friedrich</li>
             <li onclick="openTheNyrrik()"><img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png">The Nyrrik</li>
@@ -883,36 +940,48 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
         </ul>
     </div>
    
+    <!-- AUDIO CONTROL ICON -->
     <div class="audio-control" onclick="toggleSound()">
         <i class="fas fa-volume-up" id="sound-icon"></i>
     </div>
    
+    <!-- EXTERNAL SCRIPTS -->
     <script src="https://unpkg.com/jquery@3.2.1"></script>
     <script src="https://unpkg.com/clippyjs@latest"></script>
+    
+    <!-- PROJECT-SPECIFIC SCRIPTS -->
+    <!-- Add or remove project scripts here -->
     <script src="friedrich.js"></script>
     <script src="the-nyrrik.js"></script>
     <script src="wanderlust-the-roadtrip.js"></script>
     <script src="maxs-game.js"></script>
     <script src="undo.js"></script>
     <script src="berlin-girl-melody.js"></script>
+    
+    <!-- OTHER SCRIPTS -->
     <script src="artifacts.js"></script>
     <script src="blog.js"></script>
+    
+    <!-- MAIN JAVASCRIPT CODE -->
     <script>
-    // --- State & Config ---
-    let db;
-    let currentUser = 'Guest';
-    let activeWindow = null;
-    let openWindows = {};
-    let highestZIndex = 10;
-    let soundEnabled = true;
-    let paintScriptLoaded = false;
-    let ieScriptLoaded = true;
-    let friedrichScriptLoaded = false;
-    let mayaScriptLoaded = false;
+    // --- STATE AND CONFIG VARIABLES ---
+    // These variables manage the app's state like user, windows, sounds, etc.
+    let db; // IndexedDB database
+    let currentUser = 'Guest'; // Current logged-in user
+    let activeWindow = null; // Currently active window ID
+    let openWindows = {}; // Object tracking open windows
+    let highestZIndex = 10; // For stacking windows
+    let soundEnabled = true; // Sound toggle
+    let paintScriptLoaded = false; // Flag for if paint.js is loaded
+    let ieScriptLoaded = true; // Flag for IE/blog script
+    let friedrichScriptLoaded = false; // Flag for Friedrich script
+    let mayaScriptLoaded = false; // Flag for Maya script
    
-    const correctUsername = "Malte Stoepke";
-    const correctPassword = "Maus_123";
-    // --- DOM Elements ---
+    const correctUsername = "Malte Stoepke"; // Admin username
+    const correctPassword = "Maus_123"; // Admin password
+    
+    // --- DOM ELEMENTS REFERENCES ---
+    // Quick access to key elements
     const desktop = document.getElementById('desktop');
     const taskbar = document.querySelector('.taskbar');
     const taskbarApps = document.getElementById('taskbar-apps');
@@ -921,9 +990,10 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
     const loadingScreen = document.getElementById('loading-screen');
     const contextMenu = document.getElementById('context-menu');
    
-    // --- Initialization ---
+    // --- INITIALIZATION FUNCTIONS ---
+    // Runs when the page loads
     document.addEventListener('DOMContentLoaded', () => {
-        // Simulate loading progress
+        // Simulate loading progress bar
         let progress = 0;
         const interval = setInterval(() => {
             progress += 20;
@@ -941,6 +1011,8 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
             }
         }, 200);
     });
+    
+    // Main init function
     function initOS() {
         // Auto login as guest
         guestLogin();
@@ -949,8 +1021,10 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
         initDB();
         updateClock();
         setupEventListeners();
-        startMinesweeper(8, 8, 10);
+        startMinesweeper(8, 8, 10); // Start minesweeper game with beginner settings
     }
+    
+    // Initialize IndexedDB
     function initDB() {
         const request = indexedDB.open('PortfolioOSDB', 4);
         request.onerror = (event) => {
@@ -966,7 +1040,7 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
                 agent.show();
                 agent.speak("Hi! I'm Clippy. Welcome to Malte Stoepke's Portfolio OS. Explore my 3D art projects!");
             });
-            initBlog(db, currentUser);
+            initBlog(db, currentUser); // Initialize blog with DB
         };
        
         request.onupgradeneeded = (event) => {
@@ -980,8 +1054,9 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
         };
     }
    
+    // Setup event listeners for interactions
     function setupEventListeners() {
-        // Start Menu
+        // Start Menu toggle
         document.getElementById('start-button').addEventListener('click', (e) => {
             e.stopPropagation();
             startMenu.classList.toggle('active');
@@ -992,7 +1067,7 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
             contextMenu.style.display = 'none';
         });
        
-        // Window Controls
+        // Window drag and controls
         document.querySelectorAll('.window').forEach(win => {
             const winId = win.id;
             const titleBar = win.querySelector('.title-bar');
@@ -1013,7 +1088,7 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
             win.addEventListener('mousedown', () => bringToFront(winId));
         });
        
-        // Desktop Icon Context Menu
+        // Desktop icon right-click for context menu (admin only)
         desktop.addEventListener('contextmenu', (e) => {
             e.preventDefault();
             const icon = e.target.closest('.icon');
@@ -1023,7 +1098,9 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
         });
         contextMenu.addEventListener('click', e => e.stopPropagation());
     }
-    // --- Authentication ---
+    
+    // --- AUTHENTICATION FUNCTIONS ---
+    // Login as admin
     function login() {
         const user = document.getElementById('username').value;
         const pass = document.getElementById('password').value;
@@ -1040,6 +1117,8 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
             alert("Incorrect username or password.");
         }
     }
+    
+    // Guest login
     function guestLogin() {
         currentUser = 'Guest';
         loginScreen.style.display = 'none';
@@ -1047,6 +1126,7 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
         playSound('click-sound');
     }
    
+    // Logout function
     function logout() {
         currentUser = 'Guest';
         loginScreen.style.display = 'flex';
@@ -1055,6 +1135,7 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
         Object.keys(openWindows).forEach(id => closeWindow(id));
     }
    
+    // Update UI after login/logout
     function updateUIAfterLogin() {
         desktop.style.display = 'block';
         taskbar.style.display = 'flex';
@@ -1084,16 +1165,18 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
             });
         }
        
-        setupIconInteraction();
-        updateBlogUI(currentUser);
+        setupIconInteraction(); // Setup draggable icons and clicks
+        updateBlogUI(currentUser); // Update blog based on user
     }
    
-    // --- Clock ---
+    // --- CLOCK FUNCTION ---
+    // Static clock for last update
     function updateClock() {
         document.getElementById('taskbar-time').textContent = 'Last Update: 08/01/2025';
     }
    
-    // --- Window Management ---
+    // --- WINDOW MANAGEMENT FUNCTIONS ---
+    // Open a window by ID
     function openWindow(winId) {
         const win = document.getElementById(winId);
         if (!win) return;
@@ -1148,6 +1231,7 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
         }
     }
    
+    // Open Paint window and load script if needed
     function openPaint() {
         const winId = 'paint-window';
         let win = document.getElementById(winId);
@@ -1272,6 +1356,7 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
         }
     }
    
+    // Open Maya window and load script if needed
     function openMaya() {
         console.log('Attempting to open Maya 1.0');
         if (!mayaScriptLoaded) {
@@ -1295,6 +1380,7 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
         }
     }
    
+    // Close a window
     function closeWindow(winId) {
         const win = document.getElementById(winId);
         if (win) {
@@ -1306,6 +1392,8 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
         if (activeWindow === winId) activeWindow = null;
         updateTaskbar();
     }
+    
+    // Minimize a window
     function minimizeWindow(winId) {
         const win = document.getElementById(winId);
         if (win) {
@@ -1319,6 +1407,7 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
         updateTaskbar();
     }
    
+    // Maximize a window
     function maximizeWindow(winId) {
         const win = document.getElementById(winId);
         if (win) {
@@ -1333,6 +1422,7 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
         }
     }
    
+    // Bring window to front
     function bringToFront(winId) {
         if (activeWindow === winId) return;
        
@@ -1351,6 +1441,7 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
         updateTaskbar();
     }
    
+    // Drag window function
     function startDrag(e, element) {
         let offsetX = e.clientX - element.offsetLeft;
         let offsetY = e.clientY - element.offsetTop;
@@ -1367,7 +1458,8 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
         document.addEventListener('mouseup', stopDrag);
     }
    
-    // --- Taskbar ---
+    // --- TASKBAR FUNCTIONS ---
+    // Create taskbar button for open window
     function createTaskbarApp(winId) {
         const win = document.getElementById(winId);
         const title = win.querySelector('.title-bar-text').textContent;
@@ -1382,6 +1474,7 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
         taskbarApps.appendChild(app);
     }
    
+    // Update taskbar buttons state
     function updateTaskbar() {
         const apps = taskbarApps.querySelectorAll('.taskbar-app');
         apps.forEach(app => {
@@ -1398,7 +1491,9 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
             }
         });
     }
-    // --- Desktop Icons ---
+    
+    // --- DESKTOP ICON FUNCTIONS ---
+    // Setup interactions for icons (drag, click, etc.)
     function setupIconInteraction() {
         console.log('Setting up Definicion de iconos');
         document.querySelectorAll('.icon').forEach(icon => {
@@ -1445,6 +1540,8 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
             document.querySelectorAll('.icon.selected').forEach(i => i.classList.remove('selected'));
         });
     }
+    
+    // Make icon draggable (admin only)
     function makeIconDraggable(icon) {
         icon.addEventListener('mousedown', e => {
             e.preventDefault();
@@ -1465,7 +1562,9 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
             document.addEventListener('mouseup', stopDrag);
         });
     }
-    // --- Context Menu ---
+    
+    // --- CONTEXT MENU FUNCTIONS ---
+    // Show context menu for delete (admin only)
     function showContextMenu(x, y, id) {
         contextMenu.style.top = `${y}px`;
         contextMenu.style.left = `${x}px`;
@@ -1482,7 +1581,9 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
             contextMenu.style.display = 'none';
         };
     }
-    // --- IndexedDB: Artworks ---
+    
+    // --- INDEXEDDB FUNCTIONS FOR ARTWORKS ---
+    // Add new artwork to DB
     function addArtwork(artwork) {
         const transaction = db.transaction(['artworks'], 'readwrite');
         const store = transaction.objectStore('artworks');
@@ -1493,6 +1594,8 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
         };
         transaction.onerror = (e) => console.error('Error adding artwork:', e);
     }
+    
+    // Delete artwork from DB
     function deleteArtwork(id) {
         const transaction = db.transaction(['artworks'], 'readwrite');
         const store = transaction.objectStore('artworks');
@@ -1502,6 +1605,7 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
         };
     }
    
+    // Save edits to about section (localStorage)
     function saveAboutEdits() {
         const bio = document.getElementById('about-bio').innerHTML;
         const desc = document.getElementById('about-desc').innerHTML;
@@ -1513,7 +1617,9 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
         playSound('click-sound');
         alert('About information updated!');
     }
-    // --- Blog Navigation (Dummy Functions for IE Toolbar) ---
+    
+    // --- BLOG NAVIGATION DUMMY FUNCTIONS ---
+    // Back button (dummy)
     function goBack() {
         playSound('click-sound');
         document.querySelector('.blog-status-bar').textContent = 'Navigating back...';
@@ -1521,6 +1627,8 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
             document.querySelector('.blog-status-bar').textContent = 'Ready';
         }, 1000);
     }
+    
+    // Forward button (dummy)
     function goForward() {
         playSound('click-sound');
         document.querySelector('.blog-status-bar').textContent = 'Navigating forward...';
@@ -1528,6 +1636,8 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
             document.querySelector('.blog-status-bar').textContent = 'Ready';
         }, 1000);
     }
+    
+    // Refresh blog
     function refreshBlog() {
         playSound('click-sound');
         document.querySelector('.blog-status-bar').textContent = 'Refreshing...';
@@ -1536,7 +1646,9 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
             document.querySelector('.blog-status-bar').textContent = 'Ready';
         }, 1000);
     }
-    // --- Applications ---
+    
+    // --- APPLICATION FUNCTIONS ---
+    // Minesweeper (PixelSweeper) game logic
     function startMinesweeper(width, height, mineCount) {
         const boardEl = document.getElementById('minesweeper-board');
         boardEl.innerHTML = '';
@@ -1615,6 +1727,7 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
             }
         });
        
+        // Reveal adjacent cells for zero mines
         function revealAdjacent(r, c, board, revealed) {
             for (let i = -1; i <= 1; i++) {
                 for (let j = -1; j <= 1; j++) {
@@ -1636,6 +1749,7 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
             }
         }
        
+        // Check if game is won
         function checkWin(board, revealed, mineCount) {
             let safeRevealed = 0;
             for (let r = 0; r < height; r++) {
@@ -1649,7 +1763,8 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
         }
     }
    
-    // --- Audio Control ---
+    // --- AUDIO CONTROL FUNCTIONS ---
+    // Play a sound by ID
     function playSound(id) {
         if (!soundEnabled) return;
         const sound = document.getElementById(id);
@@ -1657,6 +1772,7 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
         sound.play().catch(e => console.log("Sound play prevented:", e));
     }
    
+    // Toggle sound on/off
     function toggleSound() {
         soundEnabled = !soundEnabled;
         document.getElementById('sound-icon').className = soundEnabled ?
