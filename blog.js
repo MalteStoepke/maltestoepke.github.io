@@ -83,48 +83,69 @@ function updateBlogUI(currentUser) {
     }
 }
 
-function loadBlogPosts(db, currentUser) {
-    const postsDiv = document.getElementById('blog-posts');
+function loadBlogPosts(db, currentUser, isRefresh = false) {
     const blogWindow = document.getElementById('blog-window');
-    postsDiv.innerHTML = '<div class="loading-bar"><div class="loading-progress" id="loading-progress"></div></div>';
-    const transaction = db.transaction(['blogPosts'], 'readonly');
-    const store = transaction.objectStore('blogPosts');
-    const request = store.getAll();
+    const postsDiv = blogWindow.querySelector('#blog-posts');
+    const blogControls = blogWindow.querySelector('#blog-controls');
+    const blogForm = blogWindow.querySelector('#blog-form');
     
-    request.onsuccess = () => {
-        const posts = request.result;
-        posts.sort((a, b) => new Date(b.date) - new Date(a.date));
-        postsDiv.innerHTML = '';
-        posts.forEach(post => {
-            const postDiv = document.createElement('div');
-            postDiv.className = 'blog-post';
-            postDiv.dataset.id = `blog-post-${post.id}`;
-            postDiv.innerHTML = `
-                <h3 class="editable-field" contenteditable="${currentUser === 'Malte Stoepke'}">${post.title}</h3>
-                <div class="date">${post.date}</div>
-                <img src="${post.image}" alt="${post.title}">
-                <p class="editable-field" contenteditable="${currentUser === 'Malte Stoepke'}">${post.content.substring(0, 100)}...</p>
-                ${currentUser === 'Malte Stoepke' ? `<button onclick="saveBlogPostEdit(${post.id})">Save Edit</button>` : ''}
-            `;
-            postDiv.addEventListener('click', (e) => {
-                if (!e.target.closest('button') && !e.target.closest('.editable-field')) {
-                    showPostInWindow(post, blogWindow);
-                }
-            });
-            if (currentUser === 'Malte Stoepke') {
-                postDiv.addEventListener('contextmenu', (e) => {
-                    e.preventDefault();
-                    showContextMenu(e.clientX, e.clientY, `blog-post-${post.id}`);
+    postsDiv.innerHTML = '<div class="loading-bar"><div class="loading-progress" id="loading-progress"></div></div>';
+    document.querySelector('.blog-status-bar').textContent = isRefresh ? 'Refreshing...' : 'Loading...';
+    
+    let progress = 0;
+    const progressBar = document.getElementById('loading-progress');
+    const interval = setInterval(() => {
+        progress += 20;
+        progressBar.style.width = progress + '%';
+        if (progress >= 100) {
+            clearInterval(interval);
+            const transaction = db.transaction(['blogPosts'], 'readonly');
+            const store = transaction.objectStore('blogPosts');
+            const request = store.getAll();
+            
+            request.onsuccess = () => {
+                const posts = request.result;
+                posts.sort((a, b) => new Date(b.date) - new Date(a.date));
+                postsDiv.innerHTML = '';
+                postsDiv.className = 'blog-posts-grid';
+                posts.forEach(post => {
+                    const postDiv = document.createElement('div');
+                    postDiv.className = 'blog-post';
+                    postDiv.dataset.id = `blog-post-${post.id}`;
+                    postDiv.innerHTML = `
+                        <h3 class="editable-field" contenteditable="${currentUser === 'Malte Stoepke'}">${post.title}</h3>
+                        <div class="date">${post.date}</div>
+                        <img src="${post.image}" alt="${post.title}">
+                        <p class="editable-field" contenteditable="${currentUser === 'Malte Stoepke'}">${post.content.substring(0, 100)}...</p>
+                        ${currentUser === 'Malte Stoepke' ? `<button class="blog-button" onclick="saveBlogPostEdit(${post.id})">Save Edit</button>` : ''}
+                    `;
+                    postDiv.addEventListener('click', (e) => {
+                        if (!e.target.closest('button') && !e.target.closest('.editable-field')) {
+                            showPostInWindow(post, blogWindow);
+                        }
+                    });
+                    if (currentUser === 'Malte Stoepke') {
+                        postDiv.addEventListener('contextmenu', (e) => {
+                            e.preventDefault();
+                            showContextMenu(e.clientX, e.clientY, `blog-post-${post.id}`);
+                        });
+                    }
+                    postsDiv.appendChild(postDiv);
                 });
-            }
-            postsDiv.appendChild(postDiv);
-        });
-        document.querySelector('.blog-status-bar').textContent = `Loaded ${posts.length} posts`;
-    };
-    request.onerror = (e) => {
-        console.error('Error loading blog posts:', e);
-        document.querySelector('.blog-status-bar').textContent = 'Error loading posts';
-    };
+                blogControls.style.display = currentUser === 'Malte Stoepke' ? 'block' : 'none';
+                blogForm.style.display = 'none';
+                document.querySelector('.blog-status-bar').textContent = `Loaded ${posts.length} posts`;
+                window.blogHistory = window.blogHistory || [];
+                window.blogHistoryIndex = -1;
+            };
+            request.onerror = (e) => {
+                console.error('Error loading blog posts:', e);
+                document.querySelector('.blog-status-bar').textContent = 'Error loading posts';
+            };
+        }
+    }, 200);
+    
+    playSound('click-sound');
 }
 
 function showPostInWindow(post, blogWindow) {
@@ -132,20 +153,33 @@ function showPostInWindow(post, blogWindow) {
     const blogControls = blogWindow.querySelector('#blog-controls');
     const blogForm = blogWindow.querySelector('#blog-form');
     
-    postsDiv.innerHTML = `
-        <div class="blog-post">
-            <h3>${post.title}</h3>
-            <div class="date">${post.date}</div>
-            <img src="${post.image}" alt="${post.title}">
-            <p>${post.content}</p>
-        </div>
-    `;
-    blogControls.style.display = 'none';
-    blogForm.style.display = 'none';
-    document.querySelector('.blog-status-bar').textContent = 'Viewing post';
-    window.blogHistory = window.blogHistory || [];
-    window.blogHistory.push(post.id);
-    window.blogHistoryIndex = window.blogHistory.length - 1;
+    postsDiv.innerHTML = '<div class="loading-bar"><div class="loading-progress" id="loading-progress"></div></div>';
+    document.querySelector('.blog-status-bar').textContent = 'Loading post...';
+    
+    let progress = 0;
+    const progressBar = document.getElementById('loading-progress');
+    const interval = setInterval(() => {
+        progress += 20;
+        progressBar.style.width = progress + '%';
+        if (progress >= 100) {
+            clearInterval(interval);
+            postsDiv.innerHTML = `
+                <div class="blog-post single-post">
+                    <h3>${post.title}</h3>
+                    <div class="date">${post.date}</div>
+                    <img src="${post.image}" alt="${post.title}">
+                    <p>${post.content}</p>
+                </div>
+            `;
+            blogControls.style.display = 'none';
+            blogForm.style.display = 'none';
+            document.querySelector('.blog-status-bar').textContent = 'Viewing post';
+            window.blogHistory = window.blogHistory || [];
+            window.blogHistory.push(post.id);
+            window.blogHistoryIndex = window.blogHistory.length - 1;
+        }
+    }, 200);
+    
     playSound('click-sound');
 }
 
@@ -268,28 +302,47 @@ function deleteBlogPost(postId) {
 }
 
 function goBack() {
-    if (!window.blogHistory || window.blogHistoryIndex <= 0) {
+    if (!window.blogHistory || window.blogHistoryIndex <= -1) {
         playSound('error-sound');
         document.querySelector('.blog-status-bar').textContent = 'No previous page';
         return;
     }
     
-    window.blogHistoryIndex--;
-    const postId = window.blogHistory[window.blogHistoryIndex];
-    const transaction = db.transaction(['blogPosts'], 'readonly');
-    const store = transaction.objectStore('blogPosts');
-    const request = store.get(postId);
+    const blogWindow = document.getElementById('blog-window');
+    const postsDiv = blogWindow.querySelector('#blog-posts');
+    postsDiv.innerHTML = '<div class="loading-bar"><div class="loading-progress" id="loading-progress"></div></div>';
+    document.querySelector('.blog-status-bar').textContent = 'Navigating back...';
     
-    request.onsuccess = () => {
-        const post = request.result;
-        showPostInWindow(post, document.getElementById('blog-window'));
-        document.querySelector('.blog-status-bar').textContent = 'Navigated back';
-    };
+    let progress = 0;
+    const progressBar = document.getElementById('loading-progress');
+    const interval = setInterval(() => {
+        progress += 20;
+        progressBar.style.width = progress + '%';
+        if (progress >= 100) {
+            clearInterval(interval);
+            if (window.blogHistoryIndex === 0) {
+                loadBlogPosts(db, currentUser);
+            } else {
+                window.blogHistoryIndex--;
+                const postId = window.blogHistory[window.blogHistoryIndex];
+                const transaction = db.transaction(['blogPosts'], 'readonly');
+                const store = transaction.objectStore('blogPosts');
+                const request = store.get(postId);
+                
+                request.onsuccess = () => {
+                    const post = request.result;
+                    showPostInWindow(post, blogWindow);
+                    document.querySelector('.blog-status-bar').textContent = 'Navigated back';
+                };
+                
+                request.onerror = (e) => {
+                    console.error('Error navigating back:', e);
+                    document.querySelector('.blog-status-bar').textContent = 'Error navigating back';
+                };
+            }
+        }
+    }, 200);
     
-    request.onerror = (e) => {
-        console.error('Error navigating back:', e);
-        document.querySelector('.blog-status-bar').textContent = 'Error navigating back';
-    };
     playSound('click-sound');
 }
 
@@ -300,31 +353,10 @@ function goForward() {
         return;
     }
     
-    window.blogHistoryIndex++;
-    const postId = window.blogHistory[window.blogHistoryIndex];
-    const transaction = db.transaction(['blogPosts'], 'readonly');
-    const store = transaction.objectStore('blogPosts');
-    const request = store.get(postId);
-    
-    request.onsuccess = () => {
-        const post = request.result;
-        showPostInWindow(post, document.getElementById('blog-window'));
-        document.querySelector('.blog-status-bar').textContent = 'Navigated forward';
-    };
-    
-    request.onerror = (e) => {
-        console.error('Error navigating forward:', e);
-        document.querySelector('.blog-status-bar').textContent = 'Error navigating forward';
-    };
-    playSound('click-sound');
-}
-
-function refreshBlog() {
-    const postsDiv = document.getElementById('blog-posts');
-    const blogControls = document.getElementById('blog-controls');
-    const blogForm = document.getElementById('blog-form');
+    const blogWindow = document.getElementById('blog-window');
+    const postsDiv = blogWindow.querySelector('#blog-posts');
     postsDiv.innerHTML = '<div class="loading-bar"><div class="loading-progress" id="loading-progress"></div></div>';
-    document.querySelector('.blog-status-bar').textContent = 'Refreshing...';
+    document.querySelector('.blog-status-bar').textContent = 'Navigating forward...';
     
     let progress = 0;
     const progressBar = document.getElementById('loading-progress');
@@ -333,21 +365,35 @@ function refreshBlog() {
         progressBar.style.width = progress + '%';
         if (progress >= 100) {
             clearInterval(interval);
-            loadBlogPosts(db, currentUser);
-            blogControls.style.display = currentUser === 'Malte Stoepke' ? 'block' : 'none';
-            blogForm.style.display = 'none';
-            document.querySelector('.blog-status-bar').textContent = 'Ready';
+            window.blogHistoryIndex++;
+            const postId = window.blogHistory[window.blogHistoryIndex];
+            const transaction = db.transaction(['blogPosts'], 'readonly');
+            const store = transaction.objectStore('blogPosts');
+            const request = store.get(postId);
+            
+            request.onsuccess = () => {
+                const post = request.result;
+                showPostInWindow(post, blogWindow);
+                document.querySelector('.blog-status-bar').textContent = 'Navigated forward';
+            };
+            
+            request.onerror = (e) => {
+                console.error('Error navigating forward:', e);
+                document.querySelector('.blog-status-bar').textContent = 'Error navigating forward';
+            };
         }
     }, 200);
     
     playSound('click-sound');
 }
 
+function refreshBlog() {
+    loadBlogPosts(db, currentUser, true);
+}
+
 function goHome() {
-    const postsDiv = document.getElementById('blog-posts');
-    const blogControls = document.getElementById('blog-controls');
-    const blogForm = document.getElementById('blog-form');
-    
+    const blogWindow = document.getElementById('blog-window');
+    const postsDiv = blogWindow.querySelector('#blog-posts');
     postsDiv.innerHTML = '<div class="loading-bar"><div class="loading-progress" id="loading-progress"></div></div>';
     document.querySelector('.blog-status-bar').textContent = 'Loading home...';
     
@@ -359,9 +405,8 @@ function goHome() {
         if (progress >= 100) {
             clearInterval(interval);
             loadBlogPosts(db, currentUser);
-            blogControls.style.display = currentUser === 'Malte Stoepke' ? 'block' : 'none';
-            blogForm.style.display = 'none';
-            document.querySelector('.blog-status-bar').textContent = 'Ready';
+            window.blogHistory = [];
+            window.blogHistoryIndex = -1;
         }
     }, 200);
     
