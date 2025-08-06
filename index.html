@@ -626,11 +626,60 @@
                 min-width: 120px;
             }
         }
+
+        /* LOADING SCREEN STYLES (Windows 95-like) */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000080; /* Dark blue like Windows 95 boot */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 16px;
+            z-index: 1000;
+        }
+        #loading-screen img {
+            margin-bottom: 20px;
+        }
+        #loading-screen h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        #loading-screen p {
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .loading-bar {
+            width: 300px;
+            height: 10px;
+            background: #c0c0c0;
+            border: 1px solid #000;
+            overflow: hidden;
+        }
+        .loading-progress {
+            width: 0;
+            height: 100%;
+            background: #000080;
+            transition: width 0.2s;
+        }
+
+        /* AUDIO CONTROL STYLES (Placed in taskbar) */
+        .audio-control {
+            font-size: 11px;
+            padding: 2px 4px;
+            margin-left: 4px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
     <!-- AUDIO ELEMENTS FOR SOUNDS -->
-    <audio id="startup-sound" src="https://orangefreesounds.com/wp-content/uploads/2022/05/Windows-95-startup-sound.mp3" preload="auto"></audio>
+    <audio id="startup-sound" src="https://www.winhistory.de/more/winstart/ogg/win95.ogg" preload="auto"></audio>
     <audio id="error-sound" src="https://orangefreesounds.com/wp-content/uploads/2020/09/Windows-95-error-sound.mp3" preload="auto"></audio>
     <audio id="window-open-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3"></audio>
     <audio id="window-close-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-quick-jump-arcade-game-239.mp3"></audio>
@@ -724,7 +773,7 @@
         
         <!-- OTHER ICONS -->
         <div class="icon" data-id="maya" style="left: 120px; top: 100px;" ondblclick="openMaya()">
-            <img src="https://static.wikia.nocookie.net/logo-timeline/images/a/a9/Maya_logo_2.0.png/revision/latest?cb=20230113200109" alt="Maya 1.0">
+            <img src="https://images.seeklogo.com/logo-png/0/1/alias-maya-logo-png_seeklogo-6538.png" alt="Maya 1.0">
             <p>Maya 1.0</p>
         </div>
         <div class="icon" data-id="blog" style="left: 120px; top: 180px;" ondblclick="openWindow('blog-window')">
@@ -915,6 +964,10 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
         </button>
         <div class="taskbar-apps" id="taskbar-apps"></div>
         <div class="taskbar-user" id="taskbar-user">Guest</div>
+        <!-- AUDIO CONTROL MOVED HERE -->
+        <div class="audio-control" onclick="toggleSound()">
+            <i class="fas fa-volume-up" id="sound-icon"></i>
+        </div>
         <div class="taskbar-time" id="taskbar-time"></div>
     </div>
    
@@ -934,15 +987,10 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
             <li class="start-menu-separator"></li>
             <li onclick="openPaint()"><img src="https://win98icons.alexmeub.com/icons/png/paint_old-0.png">Paint</li>
             <li onclick="openWindow('pixelsweeper-window')"><img src="https://win98icons.alexmeub.com/icons/png/game_mine_2-1.png">PixelSweeper</li>
-            <li onclick="openMaya()"><img src="https://static.wikia.nocookie.net/logo-timeline/images/a/a9/Maya_logo_2.0.png/revision/latest?cb=20230113200109">Maya 1.0</li>
+            <li onclick="openMaya()"><img src="https://images.seeklogo.com/logo-png/0/1/alias-maya-logo-png_seeklogo-6538.png">Maya 1.0</li>
             <li class="start-menu-separator"></li>
             <li id="login-logout-button" onclick="logout()"><img src="https://win98icons.alexmeub.com/icons/png/keys-4.png">Log Out</li>
         </ul>
-    </div>
-   
-    <!-- AUDIO CONTROL ICON -->
-    <div class="audio-control" onclick="toggleSound()">
-        <i class="fas fa-volume-up" id="sound-icon"></i>
     </div>
    
     <!-- EXTERNAL SCRIPTS -->
@@ -1003,10 +1051,13 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
                 clearInterval(interval);
                 setTimeout(() => {
                     loadingScreen.style.display = 'none';
-                    document.getElementById('startup-sound').play().catch(e => console.log("Audio autoplay blocked."));
                    
                     // Initialize the OS after loading screen disappears
                     initOS();
+                    // Play startup sound with a small delay after desktop is visible
+                    setTimeout(() => {
+                        document.getElementById('startup-sound').play().catch(e => console.log("Audio autoplay blocked."));
+                    }, 500); // 500ms delay
                 }, 500);
             }
         }, 200);
