@@ -726,6 +726,90 @@
             from { opacity: 0; }
             to { opacity: 1; }
         }
+        
+        /* ABOUT ME STYLES */
+        #about-window .window-body {
+            font-family: 'Lucida Console', monospace;
+            line-height: 1.6;
+            color: #000;
+            background: white;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        #about-window img {
+            float: right;
+            width: 150px;
+            height: auto;
+            margin: 0 0 10px 10px;
+            border: 2px inset #c0c0c0;
+            animation: pulse 2s infinite;
+        }
+        #about-window p {
+            margin-bottom: 15px;
+        }
+        .typewriter {
+            overflow: hidden; /* Ensures the content is not revealed until the animation */
+            border-right: .15em solid orange; /* The typwriter cursor */
+            white-space: nowrap; /* Keeps the content on a single line */
+            margin: 0 auto; /* Gives that scrolling effect as the typing happens */
+            letter-spacing: .15em; /* Adjust as needed */
+            animation: 
+              typing 3.5s steps(40, end),
+              blink-caret .75s step-end infinite;
+        }
+        
+        /* The typing effect */
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        /* The typewriter cursor effect */
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: orange; }
+        }
+
+        /* RECYCLE BIN CRAZY STYLES */
+        #recycle-window .window-body {
+            background: linear-gradient(45deg, #ff0000, #00ff00, #0000ff);
+            background-size: 400% 400%;
+            animation: rainbow 15s ease infinite;
+            padding: 20px;
+            color: white;
+            text-shadow: 1px 1px 2px black;
+        }
+        #recycle-window ul {
+            list-style: none;
+            padding: 0;
+        }
+        #recycle-window li {
+            margin-bottom: 10px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px dashed yellow;
+            animation: spin 2s linear infinite alternate, color-change 3s infinite;
+            transition: transform 0.3s;
+        }
+        #recycle-window li:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 0 20px rgba(255, 255, 0, 0.8);
+        }
+        @keyframes rainbow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        @keyframes spin {
+            0% { transform: rotate(-5deg); }
+            100% { transform: rotate(5deg); }
+        }
+        @keyframes color-change {
+            0% { color: red; }
+            33% { color: green; }
+            66% { color: blue; }
+            100% { color: red; }
+        }
     </style>
 </head>
 <body>
@@ -827,6 +911,10 @@
             <img src="https://win98icons.alexmeub.com/icons/png/msie2-5.png" alt="Blog">
             <p>My Blog</p>
         </div>
+        <div class="icon" data-id="artstation" style="left: 20px; top: 580px;" ondblclick="window.open('https://www.artstation.com/malte_stoepke', '_blank')">
+            <img src="https://www.artstation.com/assets/about/logo/logo-artstation-vertical-ec60efc77a6d4b7aa4b177d65b5726766b4e6ad194c90bbb588ecb65e481dd01.png" alt="Artstation">
+            <p>Artstation</p>
+        </div>
     </div>
    
     <!-- WINDOW DEFINITIONS -->
@@ -890,7 +978,7 @@
         </div>
     </div>
    
-    <div class="window" id="about-window" style="width: 400px; height: 250px;">
+    <div class="window" id="about-window" style="width: 600px; height: 400px;">
         <div class="title-bar">
             <div class="title-bar-text">About Me.txt - Notepad</div>
             <div class="title-bar-controls">
@@ -900,16 +988,12 @@
             </div>
         </div>
         <div class="window-body" style="background: white; font-family: 'Lucida Console', monospace;">
-            <!-- Editable about content -->
-            <p class="editable-field" contenteditable="false" id="about-bio"><strong>Malte Stoepke - 3D Artist</strong></p>
+            <img src="https://cdnb.artstation.com/p/users/avatars/012/151/525/large/da513e8f4a0d5d5688dce4805d2e6c88.jpg?1718660145" alt="Malte Stoepke">
+            <p class="editable-field typewriter" contenteditable="false" id="about-bio"><strong>Malte Stoepke - 3D Artist</strong></p>
             <br>
-            <p class="editable-field" contenteditable="false" id="about-desc">Hello. I'm Malte, a 3D artist who’s absolutely crazy about creating characters and creatures! I pour my heart into developing a character’s story, sketching ideas, and sculpting them in 3D with insane detail. I love taking a concept and making it game-ready through retopology, and I can even import and animate in Unreal Engine 5 (check out my work: [Friedrich]). I spend hours perfecting every little thing because I’m just that passionate about what I do!
-I’m in my third year of a four-year Bachelor’s program in Creative Media and Game Technologies (CMGT) at Hanze University of Applied Sciences in Groningen, Netherlands. Right now, I’m studying abroad at Kansai Gaidai University in Japan for the first semester, diving into their Asian Studies program. After this, I’m on the hunt for an internship in the gaming industry or animation industry.
-I’ve got some programming experience in C# with Unity, plus HTML and JavaScript (yep, I built this website myself!). Some might think my skills are too spread out, but let me tell you, understanding game programming makes collaborating with developers so much smoother, which is super important for awesome projects.
-On top of that, I’m really experienced with Scrum/Agile processes and can rock roles like product owner or project manager. Last semester in my second year, I led a student project for Bosch as both project manager and lead artist. We totally nailed it, and our client was thrilled with the result (check it out: [Wanderlust: The Roadtrip]).
-I’m really, really, really passionate about my work, and I hope you’ll take a moment to explore my portfolio website!</p>
+            <p class="editable-field typewriter" contenteditable="false" id="about-desc">Hello! I'm Malte, a passionate 3D artist obsessed with crafting characters and creatures.<br><br>I pour my heart into every step: developing a character's story, sketching concepts, and sculpting in 3D with meticulous detail.<br><br>I love transforming ideas into game-ready assets through retopology, and I can even import and animate in Unreal Engine 5 (check out my work: [Friedrich]).<br><br>Perfection is my goal—I spend hours refining every aspect because I'm deeply passionate about my craft!<br><br>I'm in my third year of a four-year Bachelor's in Creative Media and Game Technologies (CMGT) at Hanze University of Applied Sciences in Groningen, Netherlands.<br><br>Currently, I'm studying abroad at Kansai Gaidai University in Japan for the first semester, immersing in their Asian Studies program.<br><br>After this, I'm seeking an internship in gaming or animation.<br><br>I have programming experience in C# with Unity, plus HTML and JavaScript (I built this website myself!).<br><br>Some say my skills are broad, but understanding game programming enhances collaboration with developers—key for great projects.<br><br>I'm experienced in Scrum/Agile, serving as product owner or project manager.<br><br>Last semester, I led a Bosch student project as project manager and lead artist—we delivered successfully, delighting the client (see [Wanderlust: The Roadtrip]).<br><br>I'm incredibly passionate about my work and invite you to explore my portfolio!</p>
             <br>
-            <p class="editable-field" contenteditable="false" id="about-contact"> If you’re pressed for time, definitely swing by my ArtStation to see my creations!</p>
+            <p class="editable-field typewriter" contenteditable="false" id="about-contact">Short on time? Visit my ArtStation for a quick look at my creations!</p>
             <div class="edit-controls">
                 <button onclick="saveAboutEdits()">Save Changes</button>
             </div>
@@ -958,8 +1042,10 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
         <div class="window-body">
             <p>Unfinished work:</p>
             <ul>
-                <li>Project 1: Incomplete 3D model</li>
-                <li>Project 2: Draft blog post</li>
+                <li>Project 1: Incomplete 3D model of a dragon - needs more scales!</li>
+                <li>Project 2: Draft blog post about AI in art - half-written ideas.</li>
+                <li>Test Item 1: Forgotten sketch - spinning wildly.</li>
+                <li>Test Item 2: Broken code snippet - flashing colors.</li>
             </ul>
         </div>
     </div>
