@@ -664,7 +664,7 @@
         .loading-progress {
             width: 0;
             height: 100%;
-            background: #000080;
+            background: #ffffff; /* Changed to white for visibility */
             transition: width 0.2s;
         }
 
@@ -674,6 +674,53 @@
             padding: 2px 4px;
             margin-left: 4px;
             cursor: pointer;
+        }
+
+        /* SELECTION RECTANGLE FOR MULTI-SELECT */
+        .selection-rect {
+            position: absolute;
+            background: rgba(0, 0, 255, 0.2);
+            border: 1px solid blue;
+            pointer-events: none;
+            z-index: 5;
+        }
+        
+        /* MY COMPUTER EASTER EGG STYLES */
+        .setup-section {
+            margin-bottom: 20px;
+            animation: fadeIn 1s ease-in;
+        }
+        .setup-section h3 {
+            color: #000080;
+            font-size: 14px;
+            margin-bottom: 10px;
+            text-decoration: underline;
+        }
+        .setup-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 5px;
+            border: 1px solid #c0c0c0;
+            background: #ffffff;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .setup-item:hover {
+            transform: scale(1.05);
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        .setup-item img {
+            width: 32px;
+            height: 32px;
+            margin-right: 10px;
+            animation: pulse 2s infinite;
+        }
+        .setup-item p {
+            font-size: 12px;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
     </style>
 </head>
@@ -723,10 +770,6 @@
             <img src="https://win98icons.alexmeub.com/icons/png/computer-4.png" alt="My Computer">
             <p>My Computer</p>
         </div>
-        <div class="icon" data-id="portfolio" style="left: 20px; top: 100px;" ondblclick="openWindow('portfolio-window')">
-            <img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png" alt="Portfolio">
-            <p>My 3D Art</p>
-        </div>
         <div class="icon" data-id="about" style="left: 20px; top: 180px;" ondblclick="openWindow('about-window')">
             <img src="https://win98icons.alexmeub.com/icons/png/notepad_file-1.png" alt="About">
             <p>About Me.txt</p>
@@ -746,37 +789,37 @@
         
         <!-- PROJECT FOLDER ICONS -->
         <!-- Add or remove project folders here by copying the structure -->
-        <div class="icon" data-id="friedrich" style="left: 120px; top: 20px;" ondblclick="openFriedrich()">
+        <div class="icon" data-id="friedrich" style="left: calc(100% - 120px); top: 20px;" ondblclick="openFriedrich()">
             <img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png" alt="Friedrich">
             <p>Friedrich</p>
         </div>
-        <div class="icon" data-id="the-nyrrik" style="left: 120px; top: 260px;" ondblclick="openTheNyrrik()">
+        <div class="icon" data-id="the-nyrrik" style="left: calc(100% - 120px); top: 100px;" ondblclick="openTheNyrrik()">
             <img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png" alt="The Nyrrik">
             <p>The Nyrrik</p>
         </div>
-        <div class="icon" data-id="wanderlust-the-roadtrip" style="left: 120px; top: 340px;" ondblclick="openWanderlustTheRoadtrip()">
-            <img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png" alt="Wanderlust: The Roadtrip">
-            <p>Wanderlust: The Roadtrip</p>
-        </div>
-        <div class="icon" data-id="maxs-game" style="left: 120px; top: 420px;" ondblclick="openMaxsGame()">
-            <img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png" alt="Max's Game">
-            <p>Max's Game</p>
-        </div>
-        <div class="icon" data-id="undo" style="left: 120px; top: 500px;" ondblclick="openUndo()">
-            <img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png" alt="Undo">
-            <p>Undo</p>
-        </div>
-        <div class="icon" data-id="berlin-girl-melody" style="left: 120px; top: 580px;" ondblclick="openBerlinGirlMelody()">
+        <div class="icon" data-id="berlin-girl-melody" style="left: calc(100% - 120px); top: 180px;" ondblclick="openBerlinGirlMelody()">
             <img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png" alt="Berlin-Girl: Melody">
             <p>Berlin-Girl: Melody</p>
         </div>
+        <div class="icon" data-id="wanderlust-the-roadtrip" style="left: calc(100% - 120px); top: calc(100vh - 200px);" ondblclick="openWanderlustTheRoadtrip()">
+            <img src="https://win98icons.alexmeub.com/icons/png/joystick-5.png" alt="Wanderlust: The Roadtrip">
+            <p>Wanderlust: The Roadtrip</p>
+        </div>
+        <div class="icon" data-id="maxs-game" style="left: calc(100% - 120px); top: calc(100vh - 280px);" ondblclick="openMaxsGame()">
+            <img src="https://win98icons.alexmeub.com/icons/png/joystick-5.png" alt="Max's Game">
+            <p>Max's Game</p>
+        </div>
+        <div class="icon" data-id="undo" style="left: calc(100% - 120px); top: calc(100vh - 360px);" ondblclick="openUndo()">
+            <img src="https://win98icons.alexmeub.com/icons/png/joystick-5.png" alt="Undo">
+            <p>Undo</p>
+        </div>
         
         <!-- OTHER ICONS -->
-        <div class="icon" data-id="maya" style="left: 120px; top: 100px;" ondblclick="openMaya()">
+        <div class="icon" data-id="maya" style="left: 20px; top: 100px;" ondblclick="openMaya()">
             <img src="https://images.seeklogo.com/logo-png/0/1/alias-maya-logo-png_seeklogo-6538.png" alt="Maya 1.0">
             <p>Maya 1.0</p>
         </div>
-        <div class="icon" data-id="blog" style="left: 120px; top: 180px;" ondblclick="openWindow('blog-window')">
+        <div class="icon" data-id="blog" style="left: 20px; top: 180px;" ondblclick="openWindow('blog-window')">
             <img src="https://win98icons.alexmeub.com/icons/png/msie2-5.png" alt="Blog">
             <p>My Blog</p>
         </div>
@@ -784,7 +827,7 @@
    
     <!-- WINDOW DEFINITIONS -->
     <!-- Each div here is a window that opens on double-click. Add/remove windows as needed. -->
-    <div class="window" id="my-computer-window" style="width: 400px; height: 300px;">
+    <div class="window" id="my-computer-window" style="width: 600px; height: 400px;">
         <div class="title-bar">
             <div class="title-bar-text">My Computer</div>
             <div class="title-bar-controls">
@@ -794,55 +837,52 @@
             </div>
         </div>
         <div class="window-body">
-            <!-- Icons inside My Computer window -->
-            <div class="icon" ondblclick="openWindow('portfolio-window')">
-                <img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png" alt="Portfolio">
-                <p>My 3D Art</p>
+            <h2>Welcome to My Setup - Easter Egg!</h2>
+            <p>Here's a peek into the tools and hardware I use for my 3D art and game development.</p>
+            
+            <div class="setup-section">
+                <h3>Software Tools</h3>
+                <div class="setup-item">
+                    <img src="https://win98icons.alexmeub.com/icons/png/paintbrush-0.png" alt="ZBrush">
+                    <p>ZBrush for sculpting</p>
+                </div>
+                <div class="setup-item">
+                    <img src="https://win98icons.alexmeub.com/icons/png/directx-0.png" alt="Maya">
+                    <p>Maya for modeling and animating</p>
+                </div>
+                <div class="setup-item">
+                    <img src="https://win98icons.alexmeub.com/icons/png/paint_old-0.png" alt="Clip Studio Paint">
+                    <p>Clip Studio Paint for drawing</p>
+                </div>
+                <div class="setup-item">
+                    <img src="https://win98icons.alexmeub.com/icons/png/photoshop-2.png" alt="Affinity Suite">
+                    <p>Affinity Suite for everything in between</p>
+                </div>
+                <div class="setup-item">
+                    <img src="https://win98icons.alexmeub.com/icons/png/paintbrush-0.png" alt="Substance 3D Painter">
+                    <p>Substance 3D Painter for Texturing</p>
+                </div>
+                <div class="setup-item">
+                    <img src="https://win98icons.alexmeub.com/icons/png/joystick-5.png" alt="Unity">
+                    <p>Unity for making games</p>
+                </div>
+                <div class="setup-item">
+                    <img src="https://win98icons.alexmeub.com/icons/png/picture-0.png" alt="PureRef">
+                    <p>PureRef for moodboards</p>
+                </div>
             </div>
-            <!-- Project folders inside My Computer -->
-            <div class="icon" ondblclick="openFriedrich()">
-                <img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png" alt="Friedrich">
-                <p>Friedrich</p>
+            
+            <div class="setup-section">
+                <h3>Hardware Setup</h3>
+                <div class="setup-item">
+                    <img src="https://win98icons.alexmeub.com/icons/png/computer-4.png" alt="Lenovo Legion">
+                    <p>Lenovo Legion 5 Pro (2023) with RTX 4060, Ryzen 7, 48GB DDR5 RAM, 4TB SSD + 1TB SSD</p>
+                </div>
+                <div class="setup-item">
+                    <img src="https://win98icons.alexmeub.com/icons/png/tablet-0.png" alt="XP Pen">
+                    <p>XP Pen Artist Pro 24 (4K) second gen for drawing and sculpting</p>
+                </div>
             </div>
-            <div class="icon" ondblclick="openTheNyrrik()">
-                <img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png" alt="The Nyrrik">
-                <p>The Nyrrik</p>
-            </div>
-            <div class="icon" ondblclick="openWanderlustTheRoadtrip()">
-                <img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png" alt="Wanderlust: The Roadtrip">
-                <p>Wanderlust: The Roadtrip</p>
-            </div>
-            <div class="icon" ondblclick="openMaxsGame()">
-                <img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png" alt="Max's Game">
-                <p>Max's Game</p>
-            </div>
-            <div class="icon" ondblclick="openUndo()">
-                <img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png" alt="Undo">
-                <p>Undo</p>
-            </div>
-            <div class="icon" ondblclick="openBerlinGirlMelody()">
-                <img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png" alt="Berlin-Girl: Melody">
-                <p>Berlin-Girl: Melody</p>
-            </div>
-            <div class="icon" ondblclick="openWindow('blog-window')">
-                <img src="https://win98icons.alexmeub.com/icons/png/msie2-5.png" alt="Blog">
-                <p>My Blog</p>
-            </div>
-        </div>
-    </div>
-   
-    <div class="window" id="portfolio-window" style="width: 500px; height: 400px;">
-        <div class="title-bar">
-            <div class="title-bar-text">My 3D Art</div>
-            <div class="title-bar-controls">
-                <button aria-label="Minimize" onclick="minimizeWindow('portfolio-window')"></button>
-                <button aria-label="Maximize" onclick="maximizeWindow('portfolio-window')"></button>
-                <button aria-label="Close" onclick="closeWindow('portfolio-window')"></button>
-            </div>
-        </div>
-        <div class="window-body" id="portfolio-content">
-            <h2>My 3D Artworks</h2>
-            <p>Explore my projects in the individual folders.</p>
         </div>
     </div>
    
@@ -975,12 +1015,11 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
     <div class="start-menu" id="start-menu">
         <ul>
             <!-- Menu items for projects and apps - add/remove li elements here -->
-            <li onclick="openWindow('portfolio-window')"><img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png">Portfolio</li>
             <li onclick="openFriedrich()"><img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png">Friedrich</li>
             <li onclick="openTheNyrrik()"><img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png">The Nyrrik</li>
-            <li onclick="openWanderlustTheRoadtrip()"><img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png">Wanderlust: The Roadtrip</li>
-            <li onclick="openMaxsGame()"><img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png">Max's Game</li>
-            <li onclick="openUndo()"><img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png">Undo</li>
+            <li onclick="openWanderlustTheRoadtrip()"><img src="https://win98icons.alexmeub.com/icons/png/joystick-5.png">Wanderlust: The Roadtrip</li>
+            <li onclick="openMaxsGame()"><img src="https://win98icons.alexmeub.com/icons/png/joystick-5.png">Max's Game</li>
+            <li onclick="openUndo()"><img src="https://win98icons.alexmeub.com/icons/png/joystick-5.png">Undo</li>
             <li onclick="openBerlinGirlMelody()"><img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png">Berlin-Girl: Melody</li>
             <li onclick="openWindow('about-window')"><img src="https://win98icons.alexmeub.com/icons/png/notepad_file-1.png">About Me</li>
             <li onclick="openWindow('blog-window')"><img src="https://win98icons.alexmeub.com/icons/png/msie2-5.png">My Blog</li>
@@ -1148,6 +1187,46 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
             }
         });
         contextMenu.addEventListener('click', e => e.stopPropagation());
+
+        // Multiple selection with drag
+        let selectionRect = null;
+        let startX, startY;
+        desktop.addEventListener('mousedown', (e) => {
+            if (!e.target.closest('.icon')) {
+                document.querySelectorAll('.icon.selected').forEach(i => i.classList.remove('selected'));
+                startX = e.clientX;
+                startY = e.clientY;
+                selectionRect = document.createElement('div');
+                selectionRect.className = 'selection-rect';
+                selectionRect.style.left = `${startX}px`;
+                selectionRect.style.top = `${startY}px`;
+                desktop.appendChild(selectionRect);
+            }
+        });
+        desktop.addEventListener('mousemove', (e) => {
+            if (selectionRect) {
+                const currentX = e.clientX;
+                const currentY = e.clientY;
+                selectionRect.style.width = `${Math.abs(currentX - startX)}px`;
+                selectionRect.style.height = `${Math.abs(currentY - startY)}px`;
+                selectionRect.style.left = `${Math.min(currentX, startX)}px`;
+                selectionRect.style.top = `${Math.min(currentY, startY)}px`;
+            }
+        });
+        desktop.addEventListener('mouseup', () => {
+            if (selectionRect) {
+                const rect = selectionRect.getBoundingClientRect();
+                document.querySelectorAll('.icon').forEach(icon => {
+                    const iconRect = icon.getBoundingClientRect();
+                    if (iconRect.left < rect.right && iconRect.right > rect.left &&
+                        iconRect.top < rect.bottom && iconRect.bottom > rect.top) {
+                        icon.classList.add('selected');
+                    }
+                });
+                selectionRect.remove();
+                selectionRect = null;
+            }
+        });
     }
     
     // --- AUTHENTICATION FUNCTIONS ---
@@ -1246,9 +1325,6 @@ I’m really, really, really passionate about my work, and I hope you’ll take 
             switch (winId) {
                 case 'my-computer-window':
                     explanation = 'This is My Computer. It contains access to my portfolio and blog.';
-                    break;
-                case 'portfolio-window':
-                    explanation = 'This is my portfolio. Explore my 3D art projects in the folders.';
                     break;
                 case 'about-window':
                     explanation = 'Read about me in this Notepad file.';
