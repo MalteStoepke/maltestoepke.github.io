@@ -11,8 +11,6 @@
     <link rel="stylesheet" href="https://unpkg.com/98.css">
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Clippy.js stylesheet for the assistant -->
-    <link rel="stylesheet" type="text/css" href="https://gitcdn.xyz/repo/pi0/clippyjs/master/assets/clippy.css">
     
     <!-- INLINE CUSTOM STYLES -->
     <style>
@@ -810,6 +808,49 @@
             66% { color: blue; }
             100% { color: red; }
         }
+
+        /* CUSTOM CLIPPY STYLES */
+        #custom-clippy {
+            position: fixed;
+            bottom: 50px;
+            right: 20px;
+            z-index: 9999;
+            display: none;
+        }
+        #custom-clippy img {
+            width: 100px;
+            height: auto;
+        }
+        #speech-bubble {
+            position: fixed;
+            bottom: 160px;
+            right: 140px;
+            background: #ffffe0;
+            border: 2px solid #000;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+            max-width: 300px;
+            z-index: 9998;
+            display: none;
+            font-size: 12px;
+        }
+        #speech-bubble:after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            right: 20px;
+            border-width: 10px;
+            border-style: solid;
+            border-color: #ffffe0 transparent transparent transparent;
+        }
+        #speech-bubble button {
+            margin-top: 10px;
+            padding: 5px 10px;
+            background: #c0c0c0;
+            border: 2px outset #ffffff;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -1122,9 +1163,18 @@
         </ul>
     </div>
    
+    <!-- CUSTOM CLIPPY -->
+    <div id="custom-clippy">
+        <img src="https://media1.tenor.com/m/CFEyyN92GaYAAAAC/clippy-head-scratch.gif" alt="Clippy">
+    </div>
+    <div id="speech-bubble">
+        <p id="bubble-text"></p>
+        <button id="yes-btn">Yes</button>
+        <button id="no-btn">No</button>
+    </div>
+   
     <!-- EXTERNAL SCRIPTS -->
     <script src="https://unpkg.com/jquery@3.2.1"></script>
-    <script src="https://unpkg.com/clippyjs@latest"></script>
     
     <!-- PROJECT-SPECIFIC SCRIPTS -->
     <!-- Add or remove project scripts here -->
@@ -1153,6 +1203,7 @@
     let ieScriptLoaded = true; // Flag for IE/blog script
     let friedrichScriptLoaded = false; // Flag for Friedrich script
     let mayaScriptLoaded = false; // Flag for Maya script
+    let assistance = false; // Flag for Clippy assistance
    
     const correctUsername = "Malte Stoepke"; // Admin username
     const correctPassword = "Maus_123"; // Admin password
@@ -1166,6 +1217,11 @@
     const loginScreen = document.getElementById('login-screen');
     const loadingScreen = document.getElementById('loading-screen');
     const contextMenu = document.getElementById('context-menu');
+    const clippy = document.getElementById('custom-clippy');
+    const speechBubble = document.getElementById('speech-bubble');
+    const bubbleText = document.getElementById('bubble-text');
+    const yesBtn = document.getElementById('yes-btn');
+    const noBtn = document.getElementById('no-btn');
    
     // --- INITIALIZATION FUNCTIONS ---
     // Runs when the page loads
@@ -1202,6 +1258,7 @@
         updateClock();
         setupEventListeners();
         startMinesweeper(8, 8, 10); // Start minesweeper game with beginner settings
+        initCustomClippy();
     }
     
     // Initialize IndexedDB
@@ -1215,11 +1272,6 @@
         request.onsuccess = (event) => {
             db = event.target.result;
             console.log("Database opened successfully.");
-            clippy.load('Clippy', function(agent) {
-                window.clippyAgent = agent;
-                agent.show();
-                agent.speak("Hi! I'm Clippy. Welcome to Malte Stoepke's Portfolio OS. Explore my 3D art projects!");
-            });
             initBlog(db, currentUser); // Initialize blog with DB
         };
        
@@ -1329,9 +1381,6 @@
             loginScreen.style.display = 'none';
             updateUIAfterLogin();
             playSound('start-sound');
-            if (window.clippyAgent) {
-                window.clippyAgent.speak('Logged in as admin. You can now edit content and manage blog posts.');
-            }
         } else {
             playSound('error-sound');
             alert("Incorrect username or password.");
@@ -1410,7 +1459,7 @@
         openWindows[winId] = { minimized: false };
         updateTaskbar();
         startMenu.classList.remove('active');
-        if (window.clippyAgent) {
+        if (assistance) {
             let explanation = '';
             switch (winId) {
                 case 'my-computer-window':
@@ -1426,7 +1475,7 @@
                     explanation = 'Play PixelSweeper, a Minesweeper clone.';
                     break;
                 case 'recycle-window':
-                    explanation = 'This is the Recycle Bin, containing unfinished work.';
+                    explanation = 'Dive into the chaotic Recycle Bin—full of unfinished madness with wild animations!';
                     break;
                 case 'friedrich-window':
                     explanation = 'Explore the Friedrich project, showcasing a character design with various emotions and technical details.';
@@ -1443,7 +1492,7 @@
                     }
             }
             if (explanation) {
-                window.clippyAgent.speak(explanation);
+                showSpeechBubble(explanation);
             }
         }
     }
@@ -1571,6 +1620,9 @@
             }
             openWindow(winId);
         }
+        if (assistance) {
+            showSpeechBubble('Use Paint to create your own artwork and save it to the desktop.');
+        }
     }
    
     // Open Maya window and load script if needed
@@ -1594,6 +1646,9 @@
         } else {
             console.log('Maya script already loaded, opening window');
             openWindow('maya-window');
+        }
+        if (assistance) {
+            showSpeechBubble('This is Maya 1.0, a 3D modeling application with interactive controls.');
         }
     }
    
@@ -1744,6 +1799,56 @@
                     openMaya();
                 } else {
                     openWindow(windowId);
+                }
+                if (assistance) {
+                    let explanation = '';
+                    switch (newIcon.dataset.id) {
+                        case 'my-computer':
+                            explanation = 'This is My Computer. It contains access to my portfolio and blog.';
+                            break;
+                        case 'about':
+                            explanation = 'Read about me in this Notepad file.';
+                            break;
+                        case 'paint':
+                            explanation = 'Use Paint to create your own artwork and save it to the desktop.';
+                            break;
+                        case 'pixelsweeper':
+                            explanation = 'Play PixelSweeper, a Minesweeper clone.';
+                            break;
+                        case 'recycle':
+                            explanation = 'Dive into the chaotic Recycle Bin—full of unfinished madness with wild animations!';
+                            break;
+                        case 'friedrich':
+                            explanation = 'Explore the Friedrich project, showcasing a character design with various emotions and technical details.';
+                            break;
+                        case 'the-nyrrik':
+                            explanation = 'Open the Nyrrik folder to see my latest creature design.';
+                            break;
+                        case 'wanderlust-the-roadtrip':
+                            explanation = 'Check out Wanderlust: The Roadtrip, a student project for Bosch.';
+                            break;
+                        case 'maxs-game':
+                            explanation = 'Play Max\'s Game, a fun interactive experience.';
+                            break;
+                        case 'undo':
+                            explanation = 'Undo folder contains experimental works.';
+                            break;
+                        case 'berlin-girl-melody':
+                            explanation = 'Discover Berlin-Girl: Melody, a character with a unique story.';
+                            break;
+                        case 'maya':
+                            explanation = 'This is Maya 1.0, a 3D modeling application with interactive controls.';
+                            break;
+                        case 'blog':
+                            explanation = 'Check out my blog! Click posts to view them or add new ones if you\'re logged in as admin.';
+                            break;
+                        case 'artstation':
+                            explanation = 'Visit my ArtStation profile in a new tab.';
+                            break;
+                    }
+                    if (explanation) {
+                        showSpeechBubble(explanation);
+                    }
                 }
             });
             newIcon.addEventListener('click', (e) => {
@@ -1995,6 +2100,35 @@
         document.getElementById('sound-icon').className = soundEnabled ?
             'fas fa-volume-up' : 'fas fa-volume-mute';
         playSound('click-sound');
+    }
+    
+    // --- CUSTOM CLIPPY FUNCTIONS ---
+    function initCustomClippy() {
+        clippy.style.display = 'block';
+        showSpeechBubble('Hi! I\'m Clippy, your office assistant. Do you want assistance exploring the portfolio?', true);
+    }
+    
+    function showSpeechBubble(text, showButtons = false) {
+        bubbleText.textContent = text;
+        speechBubble.style.display = 'block';
+        if (showButtons) {
+            yesBtn.style.display = 'inline';
+            noBtn.style.display = 'inline';
+            yesBtn.onclick = () => {
+                assistance = true;
+                speechBubble.style.display = 'none';
+            };
+            noBtn.onclick = () => {
+                assistance = false;
+                speechBubble.style.display = 'none';
+            };
+        } else {
+            yesBtn.style.display = 'none';
+            noBtn.style.display = 'none';
+            setTimeout(() => {
+                speechBubble.style.display = 'none';
+            }, 3000); // Hide after 3 seconds
+        }
     }
     </script>
 </body>
