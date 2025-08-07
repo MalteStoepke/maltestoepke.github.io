@@ -851,6 +851,14 @@
             border: 2px outset #ffffff;
             cursor: pointer;
         }
+        #clippy-btn {
+            background: #c0c0c0;
+            border: 2px outset #ffffff;
+            padding: 2px 6px;
+            height: 26px;
+            cursor: pointer;
+            margin-left: 4px;
+        }
     </style>
 </head>
 <body>
@@ -1139,6 +1147,7 @@
         <div class="audio-control" onclick="toggleSound()">
             <i class="fas fa-volume-up" id="sound-icon"></i>
         </div>
+        <button id="clippy-btn" onclick="toggleClippy()">Clippy</button>
         <div class="taskbar-time" id="taskbar-time"></div>
     </div>
    
@@ -1204,6 +1213,7 @@
     let friedrichScriptLoaded = false; // Flag for Friedrich script
     let mayaScriptLoaded = false; // Flag for Maya script
     let assistance = false; // Flag for Clippy assistance
+    let clippyVisible = false; // Flag for Clippy visibility
    
     const correctUsername = "Malte Stoepke"; // Admin username
     const correctPassword = "Maus_123"; // Admin password
@@ -1258,7 +1268,6 @@
         updateClock();
         setupEventListeners();
         startMinesweeper(8, 8, 10); // Start minesweeper game with beginner settings
-        initCustomClippy();
     }
     
     // Initialize IndexedDB
@@ -1436,6 +1445,7 @@
        
         setupIconInteraction(); // Setup draggable icons and clicks
         updateBlogUI(currentUser); // Update blog based on user
+        initCustomClippy(); // Show Clippy after desktop is visible
     }
    
     // --- CLOCK FUNCTION ---
@@ -1725,6 +1735,9 @@
         function stopDrag() {
             document.removeEventListener('mousemove', drag);
             document.removeEventListener('mouseup', stopDrag);
+            if (assistance) {
+                showSpeechBubble('You just dragged a window! Try opening About Me next.');
+            }
         }
         document.addEventListener('mousemove', drag);
         document.addEventListener('mouseup', stopDrag);
@@ -1878,8 +1891,10 @@
                 localStorage.setItem(`iconpos_${icon.dataset.id}`, JSON.stringify({ top: icon.style.top, left: icon.style.left }));
                 document.removeEventListener('mousemove', drag);
                 document.removeEventListener('mouseup', stopDrag);
+                if (assistance) {
+                    showSpeechBubble('You just dragged a window! Try opening About Me next.');
+                }
             }
-           
             document.addEventListener('mousemove', drag);
             document.addEventListener('mouseup', stopDrag);
         });
@@ -2117,10 +2132,14 @@
             yesBtn.onclick = () => {
                 assistance = true;
                 speechBubble.style.display = 'none';
+                showSpeechBubble('Great! This is Malte Stoepke\'s personal portfolio website. Let me guide you. Start by double-clicking "About Me.txt".');
+                animateClippy();
             };
             noBtn.onclick = () => {
                 assistance = false;
                 speechBubble.style.display = 'none';
+                clippy.style.display = 'none';
+                clippyVisible = false;
             };
         } else {
             yesBtn.style.display = 'none';
@@ -2129,6 +2148,24 @@
                 speechBubble.style.display = 'none';
             }, 3000); // Hide after 3 seconds
         }
+    }
+    
+    function toggleClippy() {
+        if (clippyVisible) {
+            clippy.style.display = 'none';
+            clippyVisible = false;
+        } else {
+            clippy.style.display = 'block';
+            clippyVisible = true;
+            showSpeechBubble('Hi again! Do you need assistance now?', true);
+        }
+    }
+    
+    function animateClippy() {
+        const randomX = Math.random() * (window.innerWidth - 100);
+        const randomY = Math.random() * (window.innerHeight - 150);
+        clippy.style.left = `${randomX}px`;
+        clippy.style.top = `${randomY}px`;
     }
     </script>
 </body>
