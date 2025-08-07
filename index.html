@@ -2117,56 +2117,225 @@
         playSound('click-sound');
     }
     
-    // --- CUSTOM CLIPPY FUNCTIONS ---
-    function initCustomClippy() {
-        clippy.style.display = 'block';
-        showSpeechBubble('Hi! I\'m Clippy, your office assistant. Do you want assistance exploring the portfolio?', true);
+   <script>
+// --- CLIPPY ASSISTANT ---
+
+const clippy = document.getElementById('custom-clippy');
+const speechBubble = document.getElementById('speech-bubble');
+let clippyVisible = false;
+
+// Dialog tree for actions (easy to extend!)
+const clippyDialog = {
+  'init': {
+    text: "Hi! I'm Clippy, your friendly office assistant. How can I help you explore Malte Stoepke's portfolio?",
+    buttons: [
+      { label: "Show me around!", action: "intro" },
+      { label: "What is this site?", action: "siteinfo" },
+      { label: "No thanks", action: "hide" }
+    ]
+  },
+  'intro': {
+    text: "Double-click any icon to learn more. Want a suggestion?",
+    buttons: [
+      { label: "About Me.txt", action: "about" },
+      { label: "Show 3D Projects", action: "show3d" },
+      { label: "Surprise me!", action: "random" }
+    ]
+  },
+  'siteinfo': {
+    text: "This is Malte Stoepke's interactive portfolio, styled like Windows 98! Explore artwork, games, blog, and more.",
+    buttons: [
+      { label: "Show me around!", action: "intro" },
+      { label: "Back", action: "init" }
+    ]
+  },
+  'about': {
+    text: "‘About Me.txt’ contains a quick summary about Malte. Want a preview?",
+    buttons: [
+      { label: "Show preview", action: "aboutPreview" },
+      { label: "Open About Me.txt", action: "openAbout" },
+      { label: "Back", action: "intro" }
+    ]
+  },
+  'aboutPreview': {
+    text: "Malte Stoepke is a creative 3D artist and game developer. Want to read the full story?",
+    buttons: [
+      { label: "Open About Me.txt", action: "openAbout" },
+      { label: "Back", action: "about" }
+    ]
+  },
+  'openAbout': {
+    text: "Opening About Me.txt...",
+    buttons: []
+  },
+  'show3d': {
+    text: "Check out Malte’s 3D projects like Maya 1.0, Friedrich, Undo, and Max’s Game. Which one interests you?",
+    buttons: [
+      { label: "Maya 1.0", action: "maya" },
+      { label: "Friedrich", action: "friedrich" },
+      { label: "Undo", action: "undo" }
+    ]
+  },
+  'maya': {
+    text: "Maya 1.0 is a project exploring the roots of 3D development. Would you like to know why it was made, see a demo, or explore more 3D work?",
+    buttons: [
+      { label: "Why?", action: "mayaWhy" },
+      { label: "Demo", action: "mayaDemo" },
+      { label: "More 3D", action: "show3d" }
+    ]
+  },
+  'mayaWhy': {
+    text: "Malte created Maya 1.0 to learn about the origin of digital 3D art and tools.",
+    buttons: [
+      { label: "Back", action: "maya" },
+      { label: "More 3D", action: "show3d" }
+    ]
+  },
+  'mayaDemo': {
+    text: "Launching the Maya 1.0 demo...",
+    buttons: [
+      { label: "Back", action: "maya" }
+    ]
+  },
+  'friedrich': {
+    text: "Friedrich is a 3D project by Malte. Want to know more?",
+    buttons: [
+      { label: "Why?", action: "friedrichWhy" },
+      { label: "Back", action: "show3d" }
+    ]
+  },
+  'friedrichWhy': {
+    text: "Friedrich explores unique character modeling and animation.",
+    buttons: [
+      { label: "Back", action: "friedrich" }
+    ]
+  },
+  'undo': {
+    text: "Undo is a time-reversal puzzle game. Curious about the concept?",
+    buttons: [
+      { label: "Why?", action: "undoWhy" },
+      { label: "Back", action: "show3d" }
+    ]
+  },
+  'undoWhy': {
+    text: "Undo lets you experiment with time mechanics in gameplay.",
+    buttons: [
+      { label: "Back", action: "undo" }
+    ]
+  },
+  // Add more dialog nodes as needed...
+  'random': {
+    text: "Try double-clicking any icon, or let me suggest: ‘About Me.txt’ or ‘Maya 1.0’.",
+    buttons: [
+      { label: "About Me.txt", action: "about" },
+      { label: "Maya 1.0", action: "maya" }
+    ]
+  },
+  'hide': {
+    text: "Okay, I'll hide for now. Call me anytime!",
+    buttons: []
+  }
+};
+
+// Typewriter effect for speech bubble
+function typeWriter(text, callback) {
+  speechBubble.innerHTML = '';
+  let i = 0;
+  function typing() {
+    if (i < text.length) {
+      speechBubble.innerHTML += text.charAt(i);
+      i++;
+      setTimeout(typing, 20);
+    } else {
+      if (callback) callback();
     }
-    
-    function showSpeechBubble(text, showButtons = false) {
-        bubbleText.textContent = text;
-        speechBubble.style.display = 'block';
-        if (showButtons) {
-            yesBtn.style.display = 'inline';
-            noBtn.style.display = 'inline';
-            yesBtn.onclick = () => {
-                assistance = true;
-                speechBubble.style.display = 'none';
-                showSpeechBubble('Great! This is Malte Stoepke\'s personal portfolio website. Let me guide you. Start by double-clicking "About Me.txt".');
-                animateClippy();
-            };
-            noBtn.onclick = () => {
-                assistance = false;
-                speechBubble.style.display = 'none';
-                clippy.style.display = 'none';
-                clippyVisible = false;
-            };
-        } else {
-            yesBtn.style.display = 'none';
-            noBtn.style.display = 'none';
-            setTimeout(() => {
-                speechBubble.style.display = 'none';
-            }, 3000); // Hide after 3 seconds
-        }
-    }
-    
-    function toggleClippy() {
-        if (clippyVisible) {
+  }
+  typing();
+}
+
+// Show speech bubble with options
+function showSpeechBubble(clippyState) {
+  const dialog = clippyDialog[clippyState];
+  if (!dialog) return;
+  typeWriter(dialog.text, () => {
+    if (dialog.buttons && dialog.buttons.length) {
+      const btnDiv = document.createElement('div');
+      btnDiv.style.marginTop = '10px';
+      dialog.buttons.forEach(btn => {
+        const button = document.createElement('button');
+        button.textContent = btn.label;
+        button.onclick = () => {
+          if (btn.action === 'hide') {
+            speechBubble.style.display = 'none';
             clippy.style.display = 'none';
             clippyVisible = false;
-        } else {
-            clippy.style.display = 'block';
-            clippyVisible = true;
-            showSpeechBubble('Hi again! Do you need assistance now?', true);
-        }
+          } else if (btn.action === 'openAbout') {
+            // Trigger your About Me window opening code here:
+            openWindow('about-window');
+            showSpeechBubble('about'); // Return to dialog after opening window
+          } else if (btn.action === 'mayaDemo') {
+            openMaya(); // Launch Maya window
+            showSpeechBubble('maya');
+          } else {
+            showSpeechBubble(btn.action);
+          }
+        };
+        btnDiv.appendChild(button);
+      });
+      speechBubble.appendChild(btnDiv);
     }
-    
-    function animateClippy() {
-        const randomX = Math.random() * (window.innerWidth - 100);
-        const randomY = Math.random() * (window.innerHeight - 150);
-        clippy.style.left = `${randomX}px`;
-        clippy.style.top = `${randomY}px`;
-    }
-    </script>
-</body>
-</html>
+  });
+  speechBubble.style.display = 'block';
+  clippy.style.display = 'block';
+  clippyVisible = true;
+}
+
+// Clippy startup
+function initCustomClippy() {
+  clippy.style.display = 'block';
+  showSpeechBubble('init');
+}
+
+// Optional: toggle Clippy on/off (can be called from your taskbar button)
+function toggleClippy() {
+  if (clippyVisible) {
+    clippy.style.display = 'none';
+    speechBubble.style.display = 'none';
+    clippyVisible = false;
+  } else {
+    clippy.style.display = 'block';
+    showSpeechBubble('init');
+    clippyVisible = true;
+  }
+}
+
+// Clippy moves to a random location when called
+function animateClippy() {
+  const randomX = Math.random() * (window.innerWidth - 100);
+  const randomY = Math.random() * (window.innerHeight - 150);
+  clippy.style.left = `${randomX}px`;
+  clippy.style.top = `${randomY}px`;
+}
+
+// Example: Connect Clippy to your icons (add as needed)
+document.querySelector('.icon[data-id="maya"]').ondblclick = function() {
+  showSpeechBubble('maya');
+  openMaya();
+};
+document.querySelector('.icon[data-id="about"]').ondblclick = function() {
+  showSpeechBubble('about');
+  openWindow('about-window');
+};
+// Add similar event listeners for other icons...
+
+// Dismiss speech bubble when clicking outside
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('#speech-bubble') && !e.target.closest('#custom-clippy') && !e.target.closest('.icon')) {
+    speechBubble.style.display = 'none';
+  }
+});
+
+// Initialize Clippy on page load (or call when you want)
+window.addEventListener('DOMContentLoaded', initCustomClippy);
+</script>
+
