@@ -2117,56 +2117,163 @@
         playSound('click-sound');
     }
     
-    // --- CUSTOM CLIPPY FUNCTIONS ---
-    function initCustomClippy() {
-        clippy.style.display = 'block';
-        showSpeechBubble('Hi! I\'m Clippy, your office assistant. Do you want assistance exploring the portfolio?', true);
-    }
-    
-    function showSpeechBubble(text, showButtons = false) {
-        bubbleText.textContent = text;
-        speechBubble.style.display = 'block';
-        if (showButtons) {
-            yesBtn.style.display = 'inline';
-            noBtn.style.display = 'inline';
-            yesBtn.onclick = () => {
-                assistance = true;
-                speechBubble.style.display = 'none';
-                showSpeechBubble('Great! This is Malte Stoepke\'s personal portfolio website. Let me guide you. Start by double-clicking "About Me.txt".');
-                animateClippy();
-            };
-            noBtn.onclick = () => {
-                assistance = false;
-                speechBubble.style.display = 'none';
-                clippy.style.display = 'none';
-                clippyVisible = false;
-            };
-        } else {
-            yesBtn.style.display = 'none';
-            noBtn.style.display = 'none';
-            setTimeout(() => {
-                speechBubble.style.display = 'none';
-            }, 3000); // Hide after 3 seconds
-        }
-    }
-    
-    function toggleClippy() {
-        if (clippyVisible) {
-            clippy.style.display = 'none';
-            clippyVisible = false;
-        } else {
-            clippy.style.display = 'block';
-            clippyVisible = true;
-            showSpeechBubble('Hi again! Do you need assistance now?', true);
-        }
-    }
-    
-    function animateClippy() {
-        const randomX = Math.random() * (window.innerWidth - 100);
-        const randomY = Math.random() * (window.innerHeight - 150);
-        clippy.style.left = `${randomX}px`;
-        clippy.style.top = `${randomY}px`;
-    }
-    </script>
+// --- CUSTOM CLIPPY FUNCTIONS ---
+function initCustomClippy() {
+    clippy.style.display = 'block';
+    clippyVisible = true;
+    showMessage('Hi! I'm Clippy, your office assistant. Do you want assistance exploring the portfolio?', true, () => {
+        assistance = true;
+        showMessage('Great! This is Malte Stoepke's personal portfolio website. It's designed like Windows 95 to showcase his 3D art in a fun way. The content includes projects like Friedrich and tools like Paint. I'll explain as you interact. Start by double-clicking "About Me.txt".');
+        animateClippy();
+        startClippyMovement();
+    }, () => {
+        assistance = false;
+        clippy.style.display = 'none';
+        clippyVisible = false;
+    });
+}
+let chatHistory = document.createElement('div');
+chatHistory.id = 'chat-history';
+chatHistory.style.maxHeight = '200px';
+chatHistory.style.overflowY = 'auto';
+speechBubble.appendChild(chatHistory);
+let inputField = document.createElement('input');
+inputField.id = 'clippy-input';
+inputField.type = 'text';
+inputField.placeholder = 'Ask me anything...';
+inputField.style.width = '100%';
+inputField.style.marginTop = '10px';
+speechBubble.appendChild(inputField);
+inputField.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        const query = inputField.value.trim();
+        if (query) {
+            addToChat('You: ' + query, 'user');
+            inputField.value = '';
+            handleQuery(query);
+        }
+    }
+});
+function addToChat(text, sender) {
+    const message = document.createElement('p');
+    message.textContent = text;
+    message.style.textAlign = sender === 'user' ? 'right' : 'left';
+    message.style.color = sender === 'user' ? 'blue' : 'black';
+    chatHistory.appendChild(message);
+    chatHistory.scrollTop = chatHistory.scrollHeight;
+}
+function showMessage(text, showButtons = false, callbackYes = null, callbackNo = null) {
+    addToChat('Clippy: ' + text, 'clippy');
+    speechBubble.style.display = 'block';
+    if (assistance) {
+        inputField.style.display = 'block';
+    } else {
+        inputField.style.display = 'none';
+    }
+    if (showButtons) {
+        yesBtn.style.display = 'inline';
+        noBtn.style.display = 'inline';
+        yesBtn.onclick = () => {
+            if (callbackYes) callbackYes();
+        };
+        noBtn.onclick = () => {
+            if (callbackNo) callbackNo();
+        };
+    } else {
+        yesBtn.style.display = 'none';
+        noBtn.style.display = 'none';
+    }
+}
+function toggleClippy() {
+    if (clippyVisible) {
+        clippy.style.display = 'none';
+        speechBubble.style.display = 'none';
+        clippyVisible = false;
+        stopClippyMovement();
+    } else {
+        clippy.style.display = 'block';
+        clippyVisible = true;
+        showMessage('Hi again! How can I help?');
+        startClippyMovement();
+    }
+}
+function animateClippy() {
+    changeAnimation();
+}
+const animations = [
+    'https://media1.tenor.com/m/CFEyyN92GaYAAAAC/clippy-head-scratch.gif',
+    'https://example.com/clippy-wave.gif', // Replace with actual GIF URLs
+    'https://example.com/clippy-think.gif',
+    'https://example.com/clippy-jump.gif'
+];
+function changeAnimation() {
+    const randomGif = animations[Math.floor(Math.random() * animations.length)];
+    clippy.querySelector('img').src = randomGif;
+}
+let movementInterval;
+function startClippyMovement() {
+    movementInterval = setInterval(() => {
+        const randomX = Math.random() * (window.innerWidth - 100);
+        const randomY = Math.random() * (window.innerHeight - 150 - 30); // Adjust for taskbar
+        clippy.style.left = ${randomX}px;
+        clippy.style.top = ${randomY}px;
+        changeAnimation();
+    }, 5000); // Move every 5 seconds
+}
+function stopClippyMovement() {
+    clearInterval(movementInterval);
+}
+function handleQuery(query) {
+    let response = 'Sorry, I don't understand that. Ask about a specific project or feature.';
+    query = query.toLowerCase();
+    if (query.includes('friedrich')) {
+        response = 'Friedrich is a character project with various emotions and technical details. It demonstrates my skills in 3D sculpting and animation.';
+    } else if (query.includes('nyrrik')) {
+        response = 'The Nyrrik is a creature design project, showcasing detailed texturing and modeling.';
+    } else if (query.includes('wanderlust')) {
+        response = 'Wanderlust: The Roadtrip is a student project for Bosch, where I served as project manager and lead artist.';
+    } else if (query.includes('maxs game')) {
+        response = 'Max's Game is an interactive experience built in Unity.';
+    } else if (query.includes('undo')) {
+        response = 'Undo contains experimental works and ideas in progress.';
+    } else if (query.includes('berlin girl')) {
+        response = 'Berlin-Girl: Melody is a character with a unique story, featuring melody-based animations.';
+    } else if (query.includes('maya')) {
+        response = 'Maya 1.0 is a 3D modeling tool. Here you can experiment with basic 3D controls.';
+    } else if (query.includes('blog')) {
+        response = 'The blog allows viewing posts. If logged in as admin, you can add new ones.';
+    } else if (query.includes('artstation')) {
+        response = 'ArtStation is my external portfolio with more works.';
+    } else if (query.includes('paint')) {
+        response = 'Paint is a simple drawing tool for creating artwork.';
+    } else if (query.includes('pixelsweeper')) {
+        response = 'PixelSweeper is a fun Minesweeper game clone.';
+    } else if (query.includes('recycle')) {
+        response = 'The Recycle Bin holds unfinished projects with crazy animations.';
+    } else if (query.includes('my computer')) {
+        response = 'My Computer shows my software tools and hardware setup.';
+    } else if (query.includes('about me')) {
+        response = 'About Me contains my bio and background.';
+    } else if (query.includes('how made')) {
+        response = 'This portfolio was built using HTML, CSS, and JavaScript to mimic Windows 95, with tools like 98.css for styling.';
+    } else if (query.includes('disappear')) {
+        response = 'Okay, bye!';
+        assistance = false;
+        clippy.style.display = 'none';
+        clippyVisible = false;
+        stopClippyMovement();
+        return;
+    }
+    showMessage(response);
+    animateClippy();
+    setTimeout(() => {
+        showMessage('What else can I help with?');
+    }, 3000);
+}
+// In updateUIAfterLogin, call initCustomClippy()
+// In dblclick for icons, if assistance, showMessage(explanation);
+// In stopDrag, if assistance, showMessage('You just dragged the window! Good job.');
+// Add more keyword responses as needed
+ </script>
 </body>
 </html>
