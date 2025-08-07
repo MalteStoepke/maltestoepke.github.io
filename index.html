@@ -5,13 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Malte Stoepke's Portfolio OS</title>
-    
+   
     <!-- EXTERNAL STYLESHEETS -->
     <!-- 98.css for Windows 98 style UI -->
     <link rel="stylesheet" href="https://unpkg.com/98.css">
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+   
     <!-- INLINE CUSTOM STYLES -->
     <style>
         /* GLOBAL STYLES */
@@ -21,7 +21,7 @@
             box-sizing: border-box;
             font-family: "MS Sans Serif", "Tahoma", Arial, sans-serif;
         }
-        
+       
         /* BODY BACKGROUND AND LAYOUT */
         body {
             background: #008080 url('https://static.wikitide.net/windowswallpaperwiki/2/24/Clouds_%28Windows_95%29.png') no-repeat center center fixed;
@@ -32,7 +32,7 @@
             flex-direction: column;
             position: relative;
         }
-        
+       
         /* DESKTOP AREA */
         .desktop {
             flex-grow: 1;
@@ -40,7 +40,7 @@
             position: relative;
             z-index: 1;
         }
-        
+       
         /* DESKTOP ICON STYLES */
         .icon {
             position: absolute;
@@ -53,7 +53,7 @@
             display: block !important;
             visibility: visible !important;
         }
-       
+      
         .icon.draggable:hover {
             background: rgba(0, 0, 128, 0.5);
             border: 1px dotted white;
@@ -71,14 +71,14 @@
             word-wrap: break-word;
             background: #008080;
         }
-       
+      
         .icon.selected p {
             background-color: #000080;
         }
         .icon[data-id="maya"] {
             z-index: 2 !important;
         }
-        
+       
         /* WINDOW STYLES */
         .window {
             display: none;
@@ -108,7 +108,7 @@
         .window.active {
             display: block;
         }
-       
+      
         /* TITLE BAR STYLES */
         .title-bar {
             position: relative;
@@ -142,7 +142,7 @@
             border-left-color: #fff;
             cursor: pointer;
         }
-        
+       
         /* WINDOW BODY STYLES */
         .window-body {
             margin-top: 22px;
@@ -171,7 +171,7 @@
             border: 2px outset #ffffff;
             cursor: pointer;
         }
-        
+       
         /* TASKBAR STYLES */
         .taskbar {
             height: 30px;
@@ -198,7 +198,7 @@
             height: 20px;
             margin-right: 4px;
         }
-       
+      
         .taskbar-time {
             font-size: 11px;
             padding: 2px 4px;
@@ -209,7 +209,7 @@
             text-align: center;
             margin-left: 4px;
         }
-       
+      
         .taskbar-user {
             font-size: 11px;
             padding: 2px 6px;
@@ -236,11 +236,11 @@
             background: #c0c0c0;
             border: 2px outset #ffffff;
         }
-       
+      
         .taskbar-app.active {
             border: 2px inset #c0c0c0;
         }
-       
+      
         /* START MENU STYLES */
         .start-menu {
             display: none;
@@ -279,14 +279,14 @@
             background: #000080;
             color: white;
         }
-       
+      
         .start-menu-separator {
             height: 1px;
             background: #808080;
             border-bottom: 1px solid #fff;
             margin: 4px 0;
         }
-        
+       
         /* LOGIN BOX STYLES */
         .login-box {
             background: #c0c0c0;
@@ -295,7 +295,7 @@
             text-align: center;
             border: 2px outset #ffffff;
         }
-       
+      
         .login-title {
             background: #000080;
             color: white;
@@ -304,12 +304,12 @@
             font-weight: bold;
             font-size: 12px;
         }
-       
+      
         .login-field {
             margin: 12px 0;
             text-align: left;
         }
-       
+      
         .login-field label {
             display: block;
             margin-bottom: 4px;
@@ -319,13 +319,13 @@
             width: 100%;
             padding: 4px;
         }
-       
+      
         .login-buttons {
             display: flex;
             justify-content: space-around;
             margin-top: 20px;
         }
-        
+       
         /* MINESWEEPER (PIXELSWEEPER) STYLES */
         .minesweeper-board {
             display: grid;
@@ -346,15 +346,15 @@
             font-weight: bold;
             cursor: pointer;
         }
-       
+      
         .minesweeper-cell.revealed {
             border: 1px solid #808080;
         }
-       
+      
         .minesweeper-cell.mine {
             background-color: red;
         }
-       
+      
         .color-1 { color: blue; }
         .color-2 { color: green; }
         .color-3 { color: red; }
@@ -363,7 +363,7 @@
         .color-6 { color: teal; }
         .color-7 { color: black; }
         .color-8 { color: gray; }
-        
+       
         /* CONTEXT MENU STYLES */
         .context-menu {
             position: absolute;
@@ -388,7 +388,7 @@
             background: #000080;
             color: white;
         }
-        
+       
         /* ARTWORK GALLERY STYLES */
         .artwork-gallery img {
             width: 150px;
@@ -397,7 +397,7 @@
             border: 2px outset #ffffff;
             cursor: pointer;
         }
-       
+      
         /* PAINT APPLICATION STYLES */
         .paint-canvas {
             border: 1px solid black;
@@ -438,7 +438,7 @@
         .color-option.selected {
             border: 2px inset #c0c0c0;
         }
-        
+       
         /* BLOG-SPECIFIC STYLES */
         .blog-window .window-body {
             padding: 0;
@@ -551,7 +551,7 @@
             height: 100px;
             resize: vertical;
         }
-        
+       
         /* ANIMATIONS FOR BLOG */
         @keyframes pulse {
             0% { transform: scale(1); }
@@ -572,18 +572,18 @@
             50% { transform: translateX(10px); }
             100% { transform: translateX(0); }
         }
-        
+       
         /* MEDIA QUERIES FOR RESPONSIVENESS */
         @media (max-width: 768px) {
             .window {
                 width: 95%;
                 left: 2.5%;
             }
-           
+          
             .icon {
                 width: 70px;
             }
-           
+          
             .icon img {
                 width: 24px;
                 height: 24px;
@@ -624,7 +624,6 @@
                 min-width: 120px;
             }
         }
-
         /* LOADING SCREEN STYLES (Windows 95-like) */
         #loading-screen {
             position: fixed;
@@ -665,7 +664,6 @@
             background: #ffffff; /* Changed to white for visibility */
             transition: width 0.2s;
         }
-
         /* AUDIO CONTROL STYLES (Placed in taskbar) */
         .audio-control {
             font-size: 11px;
@@ -673,7 +671,6 @@
             margin-left: 4px;
             cursor: pointer;
         }
-
         /* SELECTION RECTANGLE FOR MULTI-SELECT */
         .selection-rect {
             position: absolute;
@@ -682,7 +679,7 @@
             pointer-events: none;
             z-index: 5;
         }
-        
+       
         /* MY COMPUTER SETUP STYLES */
         .setup-section {
             margin-bottom: 20px;
@@ -724,7 +721,7 @@
             from { opacity: 0; }
             to { opacity: 1; }
         }
-        
+       
         /* ABOUT ME STYLES */
         #about-window .window-body {
             font-family: 'Lucida Console', monospace;
@@ -751,23 +748,22 @@
             white-space: nowrap; /* Keeps the content on a single line */
             margin: 0 auto; /* Gives that scrolling effect as the typing happens */
             letter-spacing: .15em; /* Adjust as needed */
-            animation: 
+            animation:
               typing 3.5s steps(40, end),
               blink-caret .75s step-end infinite;
         }
-        
+       
         /* The typing effect */
         @keyframes typing {
             from { width: 0 }
             to { width: 100% }
         }
-        
+       
         /* The typewriter cursor effect */
         @keyframes blink-caret {
             from, to { border-color: transparent }
             50% { border-color: orange; }
         }
-
         /* RECYCLE BIN CRAZY STYLES */
         #recycle-window .window-body {
             background: linear-gradient(45deg, #ff0000, #00ff00, #0000ff);
@@ -808,7 +804,6 @@
             66% { color: blue; }
             100% { color: red; }
         }
-
         /* CUSTOM CLIPPY STYLES */
         #custom-clippy {
             position: fixed;
@@ -859,6 +854,9 @@
             cursor: pointer;
             margin-left: 4px;
         }
+        #chat-history p {
+            margin: 5px 0;
+        }
     </style>
 </head>
 <body>
@@ -868,7 +866,7 @@
     <audio id="window-open-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3"></audio>
     <audio id="window-close-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-quick-jump-arcade-game-239.mp3"></audio>
     <audio id="click-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-mouse-click-close-1113.mp3"></audio>
-   
+  
     <!-- LOADING SCREEN -->
     <div id="loading-screen">
         <img src="https://win98icons.alexmeub.com/icons/png/windows-0.png" alt="Windows 95" width="48" height="48">
@@ -879,7 +877,7 @@
             <div class="loading-progress" id="loading-progress"></div>
         </div>
     </div>
-    
+   
     <!-- LOGIN SCREEN -->
     <div id="login-screen" style="display: none;">
         <div class="login-box">
@@ -899,7 +897,7 @@
             </div>
         </div>
     </div>
-   
+  
     <!-- DESKTOP AREA WITH ICONS -->
     <div class="desktop" id="desktop" style="display: none;">
         <!-- CORE ICONS -->
@@ -923,7 +921,7 @@
             <img src="https://win98icons.alexmeub.com/icons/png/recycle_bin_full_cool-3.png" alt="Recycle Bin">
             <p>Recycle Bin</p>
         </div>
-        
+       
         <!-- PROJECT FOLDER ICONS -->
         <!-- Add or remove project folders here by copying the structure -->
         <div class="icon" data-id="friedrich" style="left: calc(100% - 120px); top: 20px;" ondblclick="openFriedrich()">
@@ -950,7 +948,7 @@
             <img src="https://win98icons.alexmeub.com/icons/png/joystick-5.png" alt="Undo">
             <p>Undo</p>
         </div>
-        
+       
         <!-- OTHER ICONS -->
         <div class="icon" data-id="maya" style="left: 20px; top: 420px;" ondblclick="openMaya()">
             <img src="https://images.seeklogo.com/logo-png/0/1/alias-maya-logo-png_seeklogo-6538.png" alt="Maya 1.0">
@@ -965,7 +963,7 @@
             <p>Artstation</p>
         </div>
     </div>
-   
+  
     <!-- WINDOW DEFINITIONS -->
     <!-- Each div here is a window that opens on double-click. Add/remove windows as needed. -->
     <div class="window" id="my-computer-window" style="width: 600px; height: 400px;">
@@ -980,7 +978,7 @@
         <div class="window-body">
             <h2>Welcome to My Setup!</h2>
             <p>Discover the powerful tools and hardware that fuel my creative process in 3D art and game development.</p>
-            
+           
             <div class="setup-section">
                 <h3>Software Tools</h3>
                 <div class="setup-item dark-bg">
@@ -1012,7 +1010,7 @@
                     <p>PureRef - Ideal for creating and organizing reference moodboards efficiently.</p>
                 </div>
             </div>
-            
+           
             <div class="setup-section">
                 <h3>Hardware Setup</h3>
                 <div class="setup-item">
@@ -1026,7 +1024,7 @@
             </div>
         </div>
     </div>
-   
+  
     <div class="window" id="about-window" style="width: 600px; height: 400px;">
         <div class="title-bar">
             <div class="title-bar-text">About Me.txt - Notepad</div>
@@ -1048,7 +1046,7 @@
             </div>
         </div>
     </div>
-   
+  
     <div class="window" id="pixelsweeper-window" style="width: auto; height: auto;">
         <div class="title-bar">
             <div class="title-bar-text">PixelSweeper</div>
@@ -1127,14 +1125,14 @@
         </div>
         <div class="blog-status-bar">Ready</div>
     </div>
-   
+  
     <!-- CONTEXT MENU -->
     <div class="context-menu" id="context-menu">
         <ul>
             <li id="context-delete">Delete</li>
         </ul>
     </div>
-   
+  
     <!-- TASKBAR -->
     <div class="taskbar" style="display: none;">
         <button class="start-button" id="start-button">
@@ -1150,7 +1148,7 @@
         <button id="clippy-btn" onclick="toggleClippy()">Clippy</button>
         <div class="taskbar-time" id="taskbar-time"></div>
     </div>
-   
+  
     <!-- START MENU -->
     <div class="start-menu" id="start-menu">
         <ul>
@@ -1171,20 +1169,21 @@
             <li id="login-logout-button" onclick="logout()"><img src="https://win98icons.alexmeub.com/icons/png/keys-4.png">Log Out</li>
         </ul>
     </div>
-   
+  
     <!-- CUSTOM CLIPPY -->
     <div id="custom-clippy">
         <img src="https://media1.tenor.com/m/CFEyyN92GaYAAAAC/clippy-head-scratch.gif" alt="Clippy">
     </div>
     <div id="speech-bubble">
-        <p id="bubble-text"></p>
+        <div id="chat-history"></div>
+        <input id="clippy-input" type="text" placeholder="Ask me anything..." style="width: 100%; margin-top: 10px;">
         <button id="yes-btn">Yes</button>
         <button id="no-btn">No</button>
     </div>
-   
+  
     <!-- EXTERNAL SCRIPTS -->
     <script src="https://unpkg.com/jquery@3.2.1"></script>
-    
+   
     <!-- PROJECT-SPECIFIC SCRIPTS -->
     <!-- Add or remove project scripts here -->
     <script src="friedrich.js"></script>
@@ -1193,11 +1192,11 @@
     <script src="maxs-game.js"></script>
     <script src="undo.js"></script>
     <script src="berlin-girl-melody.js"></script>
-    
+   
     <!-- OTHER SCRIPTS -->
     <script src="artifacts.js"></script>
     <script src="blog.js"></script>
-    
+   
     <!-- MAIN JAVASCRIPT CODE -->
     <script>
     // --- STATE AND CONFIG VARIABLES ---
@@ -1214,10 +1213,10 @@
     let mayaScriptLoaded = false; // Flag for Maya script
     let assistance = false; // Flag for Clippy assistance
     let clippyVisible = false; // Flag for Clippy visibility
-   
+  
     const correctUsername = "Malte Stoepke"; // Admin username
     const correctPassword = "Maus_123"; // Admin password
-    
+   
     // --- DOM ELEMENTS REFERENCES ---
     // Quick access to key elements
     const desktop = document.getElementById('desktop');
@@ -1229,10 +1228,11 @@
     const contextMenu = document.getElementById('context-menu');
     const clippy = document.getElementById('custom-clippy');
     const speechBubble = document.getElementById('speech-bubble');
-    const bubbleText = document.getElementById('bubble-text');
     const yesBtn = document.getElementById('yes-btn');
     const noBtn = document.getElementById('no-btn');
-   
+    const chatHistory = document.getElementById('chat-history');
+    const inputField = document.getElementById('clippy-input');
+  
     // --- INITIALIZATION FUNCTIONS ---
     // Runs when the page loads
     document.addEventListener('DOMContentLoaded', () => {
@@ -1241,12 +1241,12 @@
         const interval = setInterval(() => {
             progress += 20;
             document.getElementById('loading-progress').style.width = progress + '%';
-           
+          
             if (progress >= 100) {
                 clearInterval(interval);
                 setTimeout(() => {
                     loadingScreen.style.display = 'none';
-                   
+                  
                     // Initialize the OS after loading screen disappears
                     initOS();
                     // Play startup sound with a small delay after desktop is visible
@@ -1257,19 +1257,19 @@
             }
         }, 200);
     });
-    
+   
     // Main init function
     function initOS() {
         // Auto login as guest
         guestLogin();
-       
+      
         // Initialize components
         initDB();
         updateClock();
         setupEventListeners();
         startMinesweeper(8, 8, 10); // Start minesweeper game with beginner settings
     }
-    
+   
     // Initialize IndexedDB
     function initDB() {
         const request = indexedDB.open('PortfolioOSDB', 4);
@@ -1277,13 +1277,13 @@
             console.error("Database error: ", event.target.errorCode);
             guestLogin();
         };
-       
+      
         request.onsuccess = (event) => {
             db = event.target.result;
             console.log("Database opened successfully.");
             initBlog(db, currentUser); // Initialize blog with DB
         };
-       
+      
         request.onupgradeneeded = (event) => {
             let db = event.target.result;
             if (!db.objectStoreNames.contains('artworks')) {
@@ -1294,7 +1294,7 @@
             }
         };
     }
-   
+  
     // Setup event listeners for interactions
     function setupEventListeners() {
         // Start Menu toggle
@@ -1307,12 +1307,12 @@
             startMenu.classList.remove('active');
             contextMenu.style.display = 'none';
         });
-       
+      
         // Window drag and controls
         document.querySelectorAll('.window').forEach(win => {
             const winId = win.id;
             const titleBar = win.querySelector('.title-bar');
-           
+          
             if (titleBar) {
                 titleBar.addEventListener('mousedown', (e) => {
                     if (e.target.closest('.title-bar-controls')) return;
@@ -1328,7 +1328,7 @@
             }
             win.addEventListener('mousedown', () => bringToFront(winId));
         });
-       
+      
         // Desktop icon right-click for context menu (admin only)
         desktop.addEventListener('contextmenu', (e) => {
             e.preventDefault();
@@ -1338,7 +1338,6 @@
             }
         });
         contextMenu.addEventListener('click', e => e.stopPropagation());
-
         // Multiple selection with drag
         let selectionRect = null;
         let startX, startY;
@@ -1379,7 +1378,7 @@
             }
         });
     }
-    
+   
     // --- AUTHENTICATION FUNCTIONS ---
     // Login as admin
     function login() {
@@ -1395,7 +1394,7 @@
             alert("Incorrect username or password.");
         }
     }
-    
+   
     // Guest login
     function guestLogin() {
         currentUser = 'Guest';
@@ -1403,7 +1402,7 @@
         updateUIAfterLogin();
         playSound('click-sound');
     }
-   
+  
     // Logout function
     function logout() {
         currentUser = 'Guest';
@@ -1412,19 +1411,19 @@
         playSound('click-sound');
         Object.keys(openWindows).forEach(id => closeWindow(id));
     }
-   
+  
     // Update UI after login/logout
     function updateUIAfterLogin() {
         desktop.style.display = 'block';
         taskbar.style.display = 'flex';
-       
+      
         document.getElementById('taskbar-user').textContent = currentUser;
         const editControls = document.querySelectorAll('.edit-controls');
-       
+      
         if (currentUser === correctUsername) {
             document.getElementById('login-logout-button').innerHTML = `<img src="https://win98icons.alexmeub.com/icons/png/keys-4.png">Log Out`;
             document.getElementById('login-logout-button').onclick = logout;
-           
+          
             document.querySelectorAll('.editable-field').forEach(field => {
                 field.contentEditable = true;
             });
@@ -1434,7 +1433,7 @@
         } else {
             document.getElementById('login-logout-button').innerHTML = `<img src="https://win98icons.alexmeub.com/icons/png/keys-4.png">Log In`;
             document.getElementById('login-logout-button').onclick = () => { loginScreen.style.display = 'flex'; };
-           
+          
             document.querySelectorAll('.editable-field').forEach(field => {
                 field.contentEditable = false;
             });
@@ -1442,24 +1441,24 @@
                 controls.style.display = 'none';
             });
         }
-       
+      
         setupIconInteraction(); // Setup draggable icons and clicks
         updateBlogUI(currentUser); // Update blog based on user
         initCustomClippy(); // Show Clippy after desktop is visible
     }
-   
+  
     // --- CLOCK FUNCTION ---
     // Static clock for last update
     function updateClock() {
         document.getElementById('taskbar-time').textContent = 'Last Update: 08/01/2025';
     }
-   
+  
     // --- WINDOW MANAGEMENT FUNCTIONS ---
     // Open a window by ID
     function openWindow(winId) {
         const win = document.getElementById(winId);
         if (!win) return;
-       
+      
         win.style.display = 'block';
         bringToFront(winId);
         playSound('window-open-sound');
@@ -1502,11 +1501,11 @@
                     }
             }
             if (explanation) {
-                showSpeechBubble(explanation);
+                showMessage(explanation);
             }
         }
     }
-   
+  
     // Open Paint window and load script if needed
     function openPaint() {
         const winId = 'paint-window';
@@ -1634,7 +1633,7 @@
             showSpeechBubble('Use Paint to create your own artwork and save it to the desktop.');
         }
     }
-   
+  
     // Open Maya window and load script if needed
     function openMaya() {
         console.log('Attempting to open Maya 1.0');
@@ -1661,7 +1660,7 @@
             showSpeechBubble('This is Maya 1.0, a 3D modeling application with interactive controls.');
         }
     }
-   
+  
     // Close a window
     function closeWindow(winId) {
         const win = document.getElementById(winId);
@@ -1669,12 +1668,12 @@
             win.style.display = 'none';
             playSound('window-close-sound');
         }
-       
+      
         delete openWindows[winId];
         if (activeWindow === winId) activeWindow = null;
         updateTaskbar();
     }
-    
+   
     // Minimize a window
     function minimizeWindow(winId) {
         const win = document.getElementById(winId);
@@ -1688,7 +1687,7 @@
         if (activeWindow === winId) activeWindow = null;
         updateTaskbar();
     }
-   
+  
     // Maximize a window
     function maximizeWindow(winId) {
         const win = document.getElementById(winId);
@@ -1703,52 +1702,61 @@
             }
         }
     }
-   
+  
     // Bring window to front
     function bringToFront(winId) {
         if (activeWindow === winId) return;
-       
+      
         highestZIndex++;
         const win = document.getElementById(winId);
         if (win) {
             win.style.zIndex = highestZIndex;
-           
+          
             if (openWindows[winId] && openWindows[winId].minimized) {
                 openWindows[winId].minimized = false;
                 win.style.display = 'block';
             }
         }
-       
+      
         activeWindow = winId;
         updateTaskbar();
     }
-   
+  
     // Drag window function
     function startDrag(e, element) {
         let offsetX = e.clientX - element.offsetLeft;
         let offsetY = e.clientY - element.offsetTop;
         function drag(e) {
             if (element.classList.contains('maximized')) return;
-            element.style.left = `${e.clientX - offsetX}px`;
-            element.style.top = `${e.clientY - offsetY}px`;
+            element.style.left = e.clientX - offsetX + 'px';
+            element.style.top = e.clientY - offsetY + 'px';
         }
         function stopDrag() {
             document.removeEventListener('mousemove', drag);
             document.removeEventListener('mouseup', stopDrag);
             if (assistance) {
-                showSpeechBubble('You just dragged a window! Try opening About Me next.');
+                showMessage('You just dragged the window! Good job. Do you need further assistance or should I disappear?', true, () => {
+                    // continue
+                    showMessage('Okay, let\'s continue. Try opening another icon.');
+                    animateClippy();
+                }, () => {
+                    assistance = false;
+                    clippy.style.display = 'none';
+                    clippyVisible = false;
+                    stopClippyMovement();
+                });
             }
         }
         document.addEventListener('mousemove', drag);
         document.addEventListener('mouseup', stopDrag);
     }
-   
+  
     // --- TASKBAR FUNCTIONS ---
     // Create taskbar button for open window
     function createTaskbarApp(winId) {
         const win = document.getElementById(winId);
         const title = win.querySelector('.title-bar-text').textContent;
-       
+      
         const app = document.createElement('button');
         app.className = 'taskbar-app';
         app.textContent = title;
@@ -1758,7 +1766,7 @@
         };
         taskbarApps.appendChild(app);
     }
-   
+  
     // Update taskbar buttons state
     function updateTaskbar() {
         const apps = taskbarApps.querySelectorAll('.taskbar-app');
@@ -1768,7 +1776,7 @@
                 app.remove();
                 return;
             }
-           
+          
             if (winId === activeWindow && !openWindows[winId].minimized) {
                 app.classList.add('active');
             } else {
@@ -1776,7 +1784,7 @@
             }
         });
     }
-    
+   
     // --- DESKTOP ICON FUNCTIONS ---
     // Setup interactions for icons (drag, click, etc.)
     function setupIconInteraction() {
@@ -1797,7 +1805,7 @@
             } else {
                 newIcon.classList.remove('draggable');
             }
-           
+          
             newIcon.addEventListener('dblclick', () => {
                 console.log(`Double-clicked icon: ${newIcon.dataset.id}`);
                 const windowId = newIcon.dataset.id === 'paint' ? null :
@@ -1860,7 +1868,7 @@
                             break;
                     }
                     if (explanation) {
-                        showSpeechBubble(explanation);
+                        showMessage(explanation);
                     }
                 }
             });
@@ -1870,12 +1878,12 @@
                 newIcon.classList.add('selected');
             });
         });
-       
+      
         desktop.addEventListener('click', () => {
             document.querySelectorAll('.icon.selected').forEach(i => i.classList.remove('selected'));
         });
     }
-    
+   
     // Make icon draggable (admin only)
     function makeIconDraggable(icon) {
         icon.addEventListener('mousedown', e => {
@@ -1884,27 +1892,36 @@
             let offsetX = e.clientX - icon.offsetLeft;
             let offsetY = e.clientY - icon.offsetTop;
             function drag(e) {
-                icon.style.left = `${e.clientX - offsetX}px`;
-                icon.style.top = `${e.clientY - offsetY}px`;
+                icon.style.left = e.clientX - offsetX + 'px';
+                icon.style.top = e.clientY - offsetY + 'px';
             }
             function stopDrag() {
                 localStorage.setItem(`iconpos_${icon.dataset.id}`, JSON.stringify({ top: icon.style.top, left: icon.style.left }));
                 document.removeEventListener('mousemove', drag);
                 document.removeEventListener('mouseup', stopDrag);
                 if (assistance) {
-                    showSpeechBubble('You just dragged a window! Try opening About Me next.');
+                    showMessage('You just dragged an icon! Good job. Do you need further assistance or should I disappear?', true, () => {
+                        // continue
+                        showMessage('Okay, let\'s continue. Try opening another icon.');
+                        animateClippy();
+                    }, () => {
+                        assistance = false;
+                        clippy.style.display = 'none';
+                        clippyVisible = false;
+                        stopClippyMovement();
+                    });
                 }
             }
             document.addEventListener('mousemove', drag);
             document.addEventListener('mouseup', stopDrag);
         });
     }
-    
+   
     // --- CONTEXT MENU FUNCTIONS ---
     // Show context menu for delete (admin only)
     function showContextMenu(x, y, id) {
-        contextMenu.style.top = `${y}px`;
-        contextMenu.style.left = `${x}px`;
+        contextMenu.style.top = y + 'px';
+        contextMenu.style.left = x + 'px';
         contextMenu.style.display = 'block';
         const deleteBtn = document.getElementById('context-delete');
         deleteBtn.onclick = () => {
@@ -1918,7 +1935,7 @@
             contextMenu.style.display = 'none';
         };
     }
-    
+   
     // --- INDEXEDDB FUNCTIONS FOR ARTWORKS ---
     // Add new artwork to DB
     function addArtwork(artwork) {
@@ -1931,7 +1948,7 @@
         };
         transaction.onerror = (e) => console.error('Error adding artwork:', e);
     }
-    
+   
     // Delete artwork from DB
     function deleteArtwork(id) {
         const transaction = db.transaction(['artworks'], 'readwrite');
@@ -1941,20 +1958,20 @@
             playSound('click-sound');
         };
     }
-   
+  
     // Save edits to about section (localStorage)
     function saveAboutEdits() {
         const bio = document.getElementById('about-bio').innerHTML;
         const desc = document.getElementById('about-desc').innerHTML;
         const contact = document.getElementById('about-contact').innerHTML;
-       
+      
         const aboutData = { bio, desc, contact };
         localStorage.setItem('aboutData', JSON.stringify(aboutData));
-       
+      
         playSound('click-sound');
         alert('About information updated!');
     }
-    
+   
     // --- BLOG NAVIGATION DUMMY FUNCTIONS ---
     // Back button (dummy)
     function goBack() {
@@ -1964,7 +1981,7 @@
             document.querySelector('.blog-status-bar').textContent = 'Ready';
         }, 1000);
     }
-    
+   
     // Forward button (dummy)
     function goForward() {
         playSound('click-sound');
@@ -1973,7 +1990,7 @@
             document.querySelector('.blog-status-bar').textContent = 'Ready';
         }, 1000);
     }
-    
+   
     // Refresh blog
     function refreshBlog() {
         playSound('click-sound');
@@ -1983,25 +2000,25 @@
             document.querySelector('.blog-status-bar').textContent = 'Ready';
         }, 1000);
     }
-    
+   
     // --- APPLICATION FUNCTIONS ---
     // Minesweeper (PixelSweeper) game logic
     function startMinesweeper(width, height, mineCount) {
         const boardEl = document.getElementById('minesweeper-board');
         boardEl.innerHTML = '';
         boardEl.style.gridTemplateColumns = `repeat(${width}, 20px)`;
-       
+      
         let board = [];
         let mines = [];
         let revealed = [];
-       
+      
         for (let r = 0; r < height; r++) {
             board[r] = [];
             revealed[r] = [];
             for (let c = 0; c < width; c++) {
                 board[r][c] = 0;
                 revealed[r][c] = false;
-               
+              
                 const cell = document.createElement('div');
                 cell.className = 'minesweeper-cell';
                 cell.dataset.row = r;
@@ -2009,7 +2026,7 @@
                 boardEl.appendChild(cell);
             }
         }
-       
+      
         let minesPlaced = 0;
         while (minesPlaced < mineCount) {
             const r = Math.floor(Math.random() * height);
@@ -2018,7 +2035,7 @@
                 mines.push({r, c});
                 board[r][c] = 'X';
                 minesPlaced++;
-               
+              
                 for (let i = -1; i <= 1; i++) {
                     for (let j = -1; j <= 1; j++) {
                         if (i === 0 && j === 0) continue;
@@ -2030,14 +2047,14 @@
                 }
             }
         }
-       
+      
         boardEl.addEventListener('click', (e) => {
             const cell = e.target.closest('.minesweeper-cell');
             if (!cell) return;
-           
+          
             const r = parseInt(cell.dataset.row);
             const c = parseInt(cell.dataset.col);
-           
+          
             if (board[r][c] === 'X') {
                 cell.classList.add('mine');
                 cell.innerHTML = '💣';
@@ -2051,11 +2068,11 @@
                 if (board[r][c] > 0) {
                     cell.classList.add(`color-${board[r][c]}`);
                 }
-               
+              
                 if (board[r][c] === 0) {
                     revealAdjacent(r, c, board, revealed);
                 }
-               
+              
                 if (checkWin(board, revealed, mines.length)) {
                     playSound('click-sound');
                     alert('Congratulations! You won!');
@@ -2063,7 +2080,7 @@
                 }
             }
         });
-       
+      
         // Reveal adjacent cells for zero mines
         function revealAdjacent(r, c, board, revealed) {
             for (let i = -1; i <= 1; i++) {
@@ -2085,7 +2102,7 @@
                 }
             }
         }
-       
+      
         // Check if game is won
         function checkWin(board, revealed, mineCount) {
             let safeRevealed = 0;
@@ -2099,7 +2116,7 @@
             return safeRevealed === (width * height - mineCount);
         }
     }
-   
+  
     // --- AUDIO CONTROL FUNCTIONS ---
     // Play a sound by ID
     function playSound(id) {
@@ -2108,7 +2125,7 @@
         sound.currentTime = 0;
         sound.play().catch(e => console.log("Sound play prevented:", e));
     }
-   
+  
     // Toggle sound on/off
     function toggleSound() {
         soundEnabled = !soundEnabled;
@@ -2116,27 +2133,29 @@
             'fas fa-volume-up' : 'fas fa-volume-mute';
         playSound('click-sound');
     }
-    
+   
 // --- CUSTOM CLIPPY FUNCTIONS ---
 function initCustomClippy() {
-    clippy.style.display = 'block';
-    clippyVisible = true;
-    showMessage('Hi! I'm Clippy, your office assistant. Do you want assistance exploring the portfolio?', true, () => {
-        assistance = true;
-        showMessage('Great! This is Malte Stoepke's personal portfolio website. It's designed like Windows 95 to showcase his 3D art in a fun way. The content includes projects like Friedrich and tools like Paint. I'll explain as you interact. Start by double-clicking "About Me.txt".');
-        animateClippy();
-        startClippyMovement();
-    }, () => {
-        assistance = false;
-        clippy.style.display = 'none';
-        clippyVisible = false;
-    });
+    clippy.style.display = 'block';
+    clippyVisible = true;
+    showMessage('Hi! I\'m Clippy, your office assistant. Do you want assistance exploring the portfolio?', true, () => {
+        assistance = true;
+        showMessage('Great! This is Malte Stoepke\'s personal portfolio website. It\'s designed like Windows 95 to showcase his 3D art in a fun way. The content includes projects like Friedrich and tools like Paint. I\'ll explain as you interact. Start by double-clicking "About Me.txt".');
+        animateClippy();
+        startClippyMovement();
+    }, () => {
+        assistance = false;
+        clippy.style.display = 'none';
+        clippyVisible = false;
+    });
 }
+
 let chatHistory = document.createElement('div');
 chatHistory.id = 'chat-history';
 chatHistory.style.maxHeight = '200px';
 chatHistory.style.overflowY = 'auto';
 speechBubble.appendChild(chatHistory);
+
 let inputField = document.createElement('input');
 inputField.id = 'clippy-input';
 inputField.type = 'text';
@@ -2144,136 +2163,152 @@ inputField.placeholder = 'Ask me anything...';
 inputField.style.width = '100%';
 inputField.style.marginTop = '10px';
 speechBubble.appendChild(inputField);
+
 inputField.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-        const query = inputField.value.trim();
-        if (query) {
-            addToChat('You: ' + query, 'user');
-            inputField.value = '';
-            handleQuery(query);
-        }
-    }
+    if (e.key === 'Enter') {
+        const query = inputField.value.trim();
+        if (query) {
+            addToChat('You: ' + query, 'user');
+            inputField.value = '';
+            handleQuery(query);
+        }
+    }
 });
+
 function addToChat(text, sender) {
-    const message = document.createElement('p');
-    message.textContent = text;
-    message.style.textAlign = sender === 'user' ? 'right' : 'left';
-    message.style.color = sender === 'user' ? 'blue' : 'black';
-    chatHistory.appendChild(message);
-    chatHistory.scrollTop = chatHistory.scrollHeight;
+    const message = document.createElement('p');
+    message.textContent = text;
+    message.style.textAlign = sender === 'user' ? 'right' : 'left';
+    message.style.color = sender === 'user' ? 'blue' : 'black';
+    chatHistory.appendChild(message);
+    chatHistory.scrollTop = chatHistory.scrollHeight;
 }
+
 function showMessage(text, showButtons = false, callbackYes = null, callbackNo = null) {
-    addToChat('Clippy: ' + text, 'clippy');
-    speechBubble.style.display = 'block';
-    if (assistance) {
-        inputField.style.display = 'block';
-    } else {
-        inputField.style.display = 'none';
-    }
-    if (showButtons) {
-        yesBtn.style.display = 'inline';
-        noBtn.style.display = 'inline';
-        yesBtn.onclick = () => {
-            if (callbackYes) callbackYes();
-        };
-        noBtn.onclick = () => {
-            if (callbackNo) callbackNo();
-        };
-    } else {
-        yesBtn.style.display = 'none';
-        noBtn.style.display = 'none';
-    }
+    addToChat('Clippy: ' + text, 'clippy');
+    speechBubble.style.display = 'block';
+    if (assistance) {
+        inputField.style.display = 'block';
+    } else {
+        inputField.style.display = 'none';
+    }
+    if (showButtons) {
+        yesBtn.style.display = 'inline';
+        noBtn.style.display = 'inline';
+        yesBtn.onclick = () => {
+            if (callbackYes) callbackYes();
+        };
+        noBtn.onclick = () => {
+            if (callbackNo) callbackNo();
+        };
+    } else {
+        yesBtn.style.display = 'none';
+        noBtn.style.display = 'none';
+    }
 }
+
 function toggleClippy() {
-    if (clippyVisible) {
-        clippy.style.display = 'none';
-        speechBubble.style.display = 'none';
-        clippyVisible = false;
-        stopClippyMovement();
-    } else {
-        clippy.style.display = 'block';
-        clippyVisible = true;
-        showMessage('Hi again! How can I help?');
-        startClippyMovement();
-    }
+    if (clippyVisible) {
+        clippy.style.display = 'none';
+        speechBubble.style.display = 'none';
+        clippyVisible = false;
+        stopClippyMovement();
+    } else {
+        clippy.style.display = 'block';
+        clippyVisible = true;
+        showMessage('Hi again! How can I help?');
+        startClippyMovement();
+    }
 }
+
 function animateClippy() {
-    changeAnimation();
+    changeAnimation();
 }
+
 const animations = [
-    'https://media1.tenor.com/m/CFEyyN92GaYAAAAC/clippy-head-scratch.gif',
-    'https://example.com/clippy-wave.gif', // Replace with actual GIF URLs
-    'https://example.com/clippy-think.gif',
-    'https://example.com/clippy-jump.gif'
+    'https://media1.tenor.com/m/CFEyyN92GaYAAAAC/clippy-head-scratch.gif',
+    // Add more GIF URLs for different animations, e.g.,
+    'https://example.com/clippy-wave.gif',
+    'https://example.com/clippy-think.gif',
+    'https://example.com/clippy-jump.gif'
 ];
+
 function changeAnimation() {
-    const randomGif = animations[Math.floor(Math.random() * animations.length)];
-    clippy.querySelector('img').src = randomGif;
+    const randomGif = animations[Math.floor(Math.random() * animations.length)];
+    clippy.querySelector('img').src = randomGif;
 }
+
 let movementInterval;
 function startClippyMovement() {
-    movementInterval = setInterval(() => {
-        const randomX = Math.random() * (window.innerWidth - 100);
-        const randomY = Math.random() * (window.innerHeight - 150 - 30); // Adjust for taskbar
-        clippy.style.left = ${randomX}px;
-        clippy.style.top = ${randomY}px;
-        changeAnimation();
-    }, 5000); // Move every 5 seconds
+    movementInterval = setInterval(() => {
+        const randomX = Math.random() * (window.innerWidth - 100);
+        const randomY = Math.random() * (window.innerHeight - 150 - 30); // Adjust for taskbar
+        clippy.style.left = `${randomX}px`;
+        clippy.style.top = `${randomY}px`;
+        changeAnimation();
+    }, 5000); // Move every 5 seconds
 }
+
 function stopClippyMovement() {
-    clearInterval(movementInterval);
+    clearInterval(movementInterval);
 }
+
 function handleQuery(query) {
-    let response = 'Sorry, I don't understand that. Ask about a specific project or feature.';
-    query = query.toLowerCase();
-    if (query.includes('friedrich')) {
-        response = 'Friedrich is a character project with various emotions and technical details. It demonstrates my skills in 3D sculpting and animation.';
-    } else if (query.includes('nyrrik')) {
-        response = 'The Nyrrik is a creature design project, showcasing detailed texturing and modeling.';
-    } else if (query.includes('wanderlust')) {
-        response = 'Wanderlust: The Roadtrip is a student project for Bosch, where I served as project manager and lead artist.';
-    } else if (query.includes('maxs game')) {
-        response = 'Max's Game is an interactive experience built in Unity.';
-    } else if (query.includes('undo')) {
-        response = 'Undo contains experimental works and ideas in progress.';
-    } else if (query.includes('berlin girl')) {
-        response = 'Berlin-Girl: Melody is a character with a unique story, featuring melody-based animations.';
-    } else if (query.includes('maya')) {
-        response = 'Maya 1.0 is a 3D modeling tool. Here you can experiment with basic 3D controls.';
-    } else if (query.includes('blog')) {
-        response = 'The blog allows viewing posts. If logged in as admin, you can add new ones.';
-    } else if (query.includes('artstation')) {
-        response = 'ArtStation is my external portfolio with more works.';
-    } else if (query.includes('paint')) {
-        response = 'Paint is a simple drawing tool for creating artwork.';
-    } else if (query.includes('pixelsweeper')) {
-        response = 'PixelSweeper is a fun Minesweeper game clone.';
-    } else if (query.includes('recycle')) {
-        response = 'The Recycle Bin holds unfinished projects with crazy animations.';
-    } else if (query.includes('my computer')) {
-        response = 'My Computer shows my software tools and hardware setup.';
-    } else if (query.includes('about me')) {
-        response = 'About Me contains my bio and background.';
-    } else if (query.includes('how made')) {
-        response = 'This portfolio was built using HTML, CSS, and JavaScript to mimic Windows 95, with tools like 98.css for styling.';
-    } else if (query.includes('disappear')) {
-        response = 'Okay, bye!';
-        assistance = false;
-        clippy.style.display = 'none';
-        clippyVisible = false;
-        stopClippyMovement();
-        return;
-    }
-    showMessage(response);
-    animateClippy();
-    setTimeout(() => {
-        showMessage('What else can I help with?');
-    }, 3000);
+    let response = 'Sorry, I don\'t understand that. Ask about a specific project or feature.';
+    query = query.toLowerCase();
+    if (query.includes('friedrich')) {
+        response = 'Friedrich is a character project with various emotions and technical details. It demonstrates my skills in 3D sculpting and animation.';
+    } else if (query.includes('nyrrik')) {
+        response = 'The Nyrrik is a creature design project, showcasing detailed texturing and modeling.';
+    } else if (query.includes('wanderlust')) {
+        response = 'Wanderlust: The Roadtrip is a student project for Bosch, where I served as project manager and lead artist.';
+    } else if (query.includes('maxs game')) {
+        response = 'Max\'s Game is an interactive experience built in Unity.';
+    } else if (query.includes('undo')) {
+        response = 'Undo contains experimental works and ideas in progress.';
+    } else if (query.includes('berlin girl')) {
+        response = 'Berlin-Girl: Melody is a character with a unique story, featuring melody-based animations.';
+    } else if (query.includes('maya')) {
+        response = 'Maya 1.0 is a 3D modeling tool. Here you can experiment with basic 3D controls.';
+    } else if (query.includes('blog')) {
+        response = 'The blog allows viewing posts. If logged in as admin, you can add new ones.';
+    } else if (query.includes('artstation')) {
+        response = 'ArtStation is my external portfolio with more works.';
+    } else if (query.includes('paint')) {
+        response = 'Paint is a simple drawing tool for creating artwork.';
+    } else if (query.includes('pixelsweeper')) {
+        response = 'PixelSweeper is a fun Minesweeper game clone.';
+    } else if (query.includes('recycle')) {
+        response = 'The Recycle Bin holds unfinished projects with crazy animations.';
+    } else if (query.includes('my computer')) {
+        response = 'My Computer shows my software tools and hardware setup.';
+    } else if (query.includes('about me')) {
+        response = 'About Me contains my bio and background.';
+    } else if (query.includes('how made')) {
+        response = 'This portfolio was built using HTML, CSS, and JavaScript to mimic Windows 95, with tools like 98.css for styling.';
+    } else if (query.includes('disappear')) {
+        response = 'Okay, bye!';
+        assistance = false;
+        clippy.style.display = 'none';
+        clippyVisible = false;
+        stopClippyMovement();
+        return;
+    }
+    showMessage(response);
+    animateClippy();
+    setTimeout(() => {
+        showMessage('What else can I help with?');
+    }, 3000);
 }
+
 // In updateUIAfterLogin, call initCustomClippy()
+
 // In dblclick for icons, if assistance, showMessage(explanation);
+
 // In stopDrag, if assistance, showMessage('You just dragged the window! Good job.');
+
 // Add more keyword responses as needed
- </script>
+
+ </script>
 </body>
 </html>
